@@ -354,7 +354,7 @@
  ELSEIF(IP.EQ.4) THEN
    CALL POLATEV4(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
                  IGDTNUMO,IGDTMPLO,IGDTLENO, &
-                 MI,MO,KM,IBI,LI,UI,VI,&
+                 MI,MO,KM,IBI,UI,VI,&
                  NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  NEIGHBOR-BUDGET INTERPOLATION
