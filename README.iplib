@@ -183,7 +183,6 @@ II. Entry point list
                                    "E" STAGGER.
    GDSWZD_ROT_EQUID_CYLIND         GDS WIZARD FOR ROTATED EQUIDISTANT CYCLINDRICAL
                                    NON "E" STAGGER.
-   GAUSSLAT                        COMPUTE GAUSSIAN LATITUDES
    IJKGDS0/1                       RETURN FIELD POSITION FOR A GIVEN GRID POINT
 
               Transform subprograms for special irregular grids

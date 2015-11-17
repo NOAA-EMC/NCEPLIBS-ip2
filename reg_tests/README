@@ -2,7 +2,7 @@
 HOW TO RUN THE REGRESSION TEST SUITE
 ---------------------------------------------------------------
 
-The regression test suite consists of seven Fortran programs
+The regression test suite consists of six Fortran programs
 that invoke a subset of IPOLATES (or IPLIB) routines.  IPOLATES
 developers are required to run this test suite to ensure their
 branch changes perform as expected before they are merged to 
@@ -181,13 +181,11 @@ The tests in the following subdirectories are designed to test
 a subset of IPLIB.  It was too difficult to create a single test
 that exercised every routine.  
 
-1)  gausslat - A fortran program that calls routine gausslat 
-    to calculate the gaussian latitudes for a t382 grid.
-2)  gdswzd - A fortran program that calls gdswzd
+1)  gdswzd - A fortran program that calls gdswzd
     and all of its child routines to calculate lat/lon and
     other map-related fields for several grids of
     of various map projections.
-3)  ipolates - A fortran program that interpolates a global
+2)  ipolates - A fortran program that interpolates a global
     lat/lon grid of substrate temperature to several grids of various
     projections using the ipolates suite of routines.  All
     interpolation options are used:
@@ -198,7 +196,7 @@ that exercised every routine.
       5) bicubic
       6) neighbor-budget
     This test is run twice, with 1 and 4 threads.
-4)  ipolatev - A fortran program that interpolates a global
+3)  ipolatev - A fortran program that interpolates a global
     lat/lon grid of vector u/v wind to several grids of various
     projections using the ipolatev suite of routines.  All
     interpolation options are used:
@@ -209,20 +207,20 @@ that exercised every routine.
       5) bicubic
       6) neighbor-budget
     This test is run twice, with 1 and 4 threads.
-5)  ipxetas - A fortran program that call routine ipxetas
+4)  ipxetas - A fortran program that call routine ipxetas
     to transform between data on a staggered and unstaggered
     eta grid (rotated lat/lon with arakawa "e" staggering):
       1) Create staggered mass data from unstaggered data.
       2) Create staggered velocity data from unstaggered data.
       3) Create unstaggered data from staggered mass data.
       4) Create unstaggered data from staggered velocity data.
-6)  ipxwafs - Test ip routines ipxwafs, ipxwafs2 and ipxwafs3 by 
+5)  ipxwafs - Test ip routines ipxwafs, ipxwafs2 and ipxwafs3 by 
     transforming data between 'full' and 'thinned' WAFS grids 37 and 44.
     Routine ixpwafs does not handle bitmapped data, so a field of
     600mb temperature is transformed when testing this routine.  
     Routines ipxwafs2/3 do handle bitmaps, so a field of soil temperature
     (land only) is transformed.
-7)  copygb2 - A modified version of the copygb2 program is used to 
+6)  copygb2 - A modified version of the copygb2 program is used to 
     transform global lat/lon fields of u/v wind, terrain height, and
     maximum snow albedo to the following grids types:
       1) global 0.5-degree
@@ -260,7 +258,6 @@ module name                      regression test
 ===============                  ===============
 
 earth_radius                     gdswzd, ipolates, ipolatev, ipxetas, copygb2
-gausslat                         gausslat
 gdswzd_mod                       gdswzd, ipolates, ipolatev, ipxetas, copygb2
 gdswzd_equid_cylind_mod          gdswzd, ipolates, ipolatev, copygb2
 gdswzd_gaussian_mod              gdswzd, ipolates, ipolatev, copygb2

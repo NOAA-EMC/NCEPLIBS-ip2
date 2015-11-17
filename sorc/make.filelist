@@ -4,7 +4,6 @@ FPP_FILES =
 # The list of regular source files
 FSRC_FILES = \
  earth_radius.f90 \
- gausslat.f90 \
  gdswzd_equid_cylind_mod.f90 \
  gdswzd_mercator_mod.f90 \
  gdswzd_lambert_conf_mod.f90 \

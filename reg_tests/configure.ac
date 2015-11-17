@@ -10,14 +10,13 @@ AC_MSG_NOTICE([ip AC_PACKAGE_VERSION])
 # Check for existence of unique file before proceeding
 # Can only check for one file.  Not a file in each
 # subdirectory.
-AC_CONFIG_SRCDIR([gausslat/sorc/gausslat_driver.f90])
+AC_CONFIG_SRCDIR([gdswzd/sorc/gdswzd_driver.f90])
 
 # Define the configuration files
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([ipxetas/sorc/Makefile])
 AC_CONFIG_FILES([ipxwafs/sorc/Makefile])
 AC_CONFIG_FILES([copygb2/sorc/Makefile])
-AC_CONFIG_FILES([gausslat/sorc/Makefile])
 AC_CONFIG_FILES([gdswzd/sorc/Makefile])
 AC_CONFIG_FILES([ipolates/sorc/Makefile])
 AC_CONFIG_FILES([ipolatev/sorc/Makefile])

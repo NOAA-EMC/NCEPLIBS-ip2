@@ -7,7 +7,6 @@ MAKE="gmake"
 # Target specification
 all clean install uninstall:
 	cd copygb2/sorc && $(MAKE) $@
-	cd gausslat/sorc && $(MAKE) $@
 	cd gdswzd/sorc && $(MAKE) $@
 	cd ipxetas/sorc && $(MAKE) $@
 	cd ipxwafs/sorc && $(MAKE) $@
@@ -16,7 +15,6 @@ all clean install uninstall:
 
 distclean:
 	cd copygb2/sorc && $(MAKE) $@
-	cd gausslat/sorc && $(MAKE) $@
 	cd gdswzd/sorc && $(MAKE) $@
 	cd ipxetas/sorc && $(MAKE) $@
 	cd ipxwafs/sorc && $(MAKE) $@

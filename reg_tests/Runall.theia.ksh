@@ -40,11 +40,8 @@ module load intel
 
 export OMP_NUM_THREADS=1
 
-GAUSSLAT=$(qsub -l procs=1 -l vmem=500M -l walltime=0:01:00 -A $PROJECT_CODE -N iptest_gausslat -o $LOG_FILE -e $LOG_FILE \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gausslat/scripts/runall.ksh)
-
 GDSWZD=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:10:00 -A $PROJECT_CODE -N iptest_gdswzd -o $LOG_FILE -e $LOG_FILE \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$GAUSSLAT $REG_DIR/gdswzd/scripts/runall.ksh)
+      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gdswzd/scripts/runall.ksh)
 
 IPXETAS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N iptest_ipxetas -o $LOG_FILE -e $LOG_FILE \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$GDSWZD $REG_DIR/ipxetas/scripts/runall.ksh)

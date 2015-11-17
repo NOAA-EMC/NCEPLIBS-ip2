@@ -1,5 +1,4 @@
  earth_radius.o : earth_radius.f90
- gausslat.o : gausslat.f90
  gdswzd_equid_cylind_mod.o : gdswzd_equid_cylind_mod.f90
  gdswzd_mercator_mod.o : gdswzd_mercator_mod.f90
  gdswzd_lambert_conf_mod.o : gdswzd_lambert_conf_mod.f90
