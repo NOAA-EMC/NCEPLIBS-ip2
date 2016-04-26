@@ -10,7 +10,7 @@
 # is specified via files in the config-setup/ subdirectory that are sourced
 # within this script.
 #
-# The installation directory is ${PWD}
+# The installation directory is ${PWD}.
 #
 ###############################################################################
 
@@ -53,6 +53,11 @@ MAKE="gmake"
 # ...Defaults
 INSTALL_TYPE="nco"
 
+if [[ "$(hostname)" == slogin? || "$(hostname)" == llogin? ]]; then # WCOSS Cray ]]
+  echo; echo "${SCRIPT_NAME}: ERROR - Dont use this script on WCOSS-Cray."
+  usage
+  exit ${FAILURE}
+fi
 
 # Parse the command line options
 while getopts :gh OPTVAL; do

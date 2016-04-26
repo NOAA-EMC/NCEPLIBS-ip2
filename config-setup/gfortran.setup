@@ -1,4 +1,4 @@
 export FC="gfortran"
-export FCFLAGS=" -O3 -fno-range-check -I."
+export FCFLAGS=" -O3 -I. -fopenmp -fno-range-check -fconvert=little-endian"
 export LDFLAGS=" "
 export LIBS=" "

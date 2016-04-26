@@ -38,7 +38,7 @@ clean:
 uninstall:
 	-rm -f $(DESTDIR)$(installdir)/ipxwafs*
 
-distclean: clean uninstall
+distclean:
 	-rm Makefile
 
 install:

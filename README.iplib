@@ -1,6 +1,8 @@
 Documentation of the general interpolation library iplib
 --------------------------------------------------------------------------------
 
+$Id$
+
 I. Introduction
 
 The NCEP general interpolation library (iplib) contains Fortran 90 subprograms
@@ -174,6 +176,7 @@ II. Entry point list
               Grid description section decoders
 
    GDSWZD                          GRID DESCRIPTION SECTION WIZARD
+   GDSWZD_C                        'C' WRAPPER FOR CALLING GDSWZD
    GDSWZD_EQUID_CYLIND             GDS WIZARD FOR EQUIDISTANT CYCLINDRICAL
    GDSWZD_MERCATOR                 GDS WIZARD FOR MERCATOR CYCLINDRICAL
    GDSWZD_LAMBERT_CONF             GDS WIZARD FOR LAMBERT CONFORMAL CONICAL

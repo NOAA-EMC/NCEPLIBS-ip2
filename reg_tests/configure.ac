@@ -1,8 +1,8 @@
 ## Put version control id tag in output configure script
-AC_REVISION($Id: configure.ac 25875 2013-02-19 15:45:31Z george.gayno@noaa.gov $)
+AC_REVISION($Id$)
 
 ## Initialise autoconf
-AC_INIT([ip regression test suite], [2.0.4], [ncep.list.emc.nceplibs.support@noaa.gov])
+AC_INIT([ip regression test suite], [3.0.0], [ncep.list.emc.nceplibs.support@noaa.gov])
 
 # Output info for user
 AC_MSG_NOTICE([ip AC_PACKAGE_VERSION])
