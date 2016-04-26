@@ -16,8 +16,8 @@
 
 int main()
 {
-  int kgds[200];
-  int iopt, npts, nret;
+  int *igdtmpl;
+  int igdtnum, igdtlen, iopt, npts, nret;
   double fill;
   double *xpts, *ypts, *rlon, *rlat;
   double *crot, *srot, *xlon, *xlat, *ylon, *ylat, *area;
@@ -25,22 +25,36 @@ int main()
   int im = 251;
   int jm = 201;
 
-  kgds[0]  = 205;
-  kgds[1]  = im;
-  kgds[2]  = jm;
-  kgds[3]  =   -7446;
-  kgds[4]  = -144139;
-  kgds[5]  = 8;
-  kgds[6]  =   54000;
-  kgds[7]  = -106000;
-  kgds[8]  = 0;
-  kgds[9]  = 0;
-  kgds[10] = 64;
-  kgds[11] =   44560;
-  kgds[12] =   14744;
+  igdtnum = 1;
+
+  igdtlen = 22;
+  igdtmpl = (int *) malloc(igdtlen * sizeof(int));
+
+  igdtmpl[0] = 6;
+  igdtmpl[1] = 255;
+  igdtmpl[2] = -1;
+  igdtmpl[3] = 255;
+  igdtmpl[4] = -1;
+  igdtmpl[5] = 255;
+  igdtmpl[6] = -1;
+  igdtmpl[7] = im;
+  igdtmpl[8] = jm;
+  igdtmpl[9] = 0;
+  igdtmpl[10] = -1;
+  igdtmpl[11] = -7446000;
+  igdtmpl[12] = 215861000;
+  igdtmpl[13] = 56;
+  igdtmpl[14] = 44560000;
+  igdtmpl[15] = 14744000;
+  igdtmpl[16] = 0;
+  igdtmpl[17] = 0;
+  igdtmpl[18] = 64;
+  igdtmpl[19] = -36000000;
+  igdtmpl[20] = 254000000;
+  igdtmpl[21] = 0;
 
   iopt = 1;
-  npts = kgds[1] * kgds[2];
+  npts = im * jm;
   fill = -9999.0;
 
   xpts = (double *) malloc(npts * sizeof(double));
@@ -65,9 +79,8 @@ int main()
 
   nret=0;
 
-  gdswzd(kgds, iopt, npts, fill,
-         xpts, ypts, rlon, rlat,
-         &nret,
+  gdswzd(igdtnum, igdtmpl, igdtlen, iopt, npts, fill,
+         xpts, ypts, rlon, rlat, &nret,
          crot, srot, xlon, xlat, ylon, ylat, area);
 
   printf(" Points returned from gdswzd = %d \n", nret);
@@ -97,6 +110,7 @@ int main()
   free(ylon);
   free(ylat);
   free(area);
+  free(igdtmpl);
 
   return 0;
 }
