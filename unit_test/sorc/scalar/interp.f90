@@ -12,8 +12,10 @@
 !    3 -  one-degree global lat/lon (ncep grid 3)
 !    8 -  mercator (ncep grid 8)
 !  127 -  t254 gaussian (ncep grid 127)
-!  203 -  rotated lat/lon e-staggered (number refers to gds octet 6)
-!  205 -  rotated lat/lon b-staggered (number refers to gds octet 6)
+!  203 -  rotated lat/lon e-staggered (number refers to the old
+!                                      grib 1 gds octet 6)
+!  205 -  rotated lat/lon b-staggered (number refers to the old
+!                                      gds octet 6)
 !  212 -  nh polar stereographic, spherical earth (number meaningless)
 !  218 -  lambert conformal (ncep grid 218)
 !
@@ -41,7 +43,7 @@
 
  character*1               :: interp_opt
  character*3               :: grid
- character*100             :: output_file
+ character*100             :: baseline_file
 
  integer(kind=4)           :: i1
  integer, allocatable      :: output_gdtmpl(:)
@@ -237,15 +239,19 @@
  enddo
  enddo
 
+ open (15, file="./output.bin", access="direct", err=38, recl=mo*4)
+ write (15, rec=1) real(output_data,4)
+ close (15)
+
  allocate (baseline_data(i_output,j_output))
 
  if (kind(output_data) == 8) then
-   output_file = "../baseline_data/scalar/8_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_8"
+   baseline_file = "../baseline_data/scalar/8_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_8"
  else
-   output_file = "../baseline_data/scalar/4_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_4"
+   baseline_file = "../baseline_data/scalar/4_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_4"
  endif
 
- open (12, file=output_file, access="direct", err=38, recl=mo*4)
+ open (12, file=baseline_file, access="direct", err=38, recl=mo*4)
  read (12, err=38, rec=1) baseline_data
  close (12)
 
