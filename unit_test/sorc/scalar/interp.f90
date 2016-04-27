@@ -239,10 +239,6 @@
  enddo
  enddo
 
- open (15, file="./output.bin", access="direct", err=38, recl=mo*4)
- write (15, rec=1) real(output_data,4)
- close (15)
-
  allocate (baseline_data(i_output,j_output))
 
  if (kind(output_data) == 8) then

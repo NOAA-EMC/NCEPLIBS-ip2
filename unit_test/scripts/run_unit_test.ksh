@@ -96,12 +96,8 @@ do
     echo
     $EXEC $grid $option
 
-    mv output.bin output.bin.$grid.$precision
-
   done
 done
-
-exit 
 
 rm -f ./fort.9
 
