@@ -5,18 +5,23 @@
 ! grid of albedo with no bitmap.
 !------------------------------------------------------------------------
 
- integer, public                :: input_kgds(200)
-
  integer, parameter, public     :: i_input = 360
  integer, parameter, public     :: j_input = 180
 
- logical*1, public :: input_bitmap(i_input,j_input)
+ integer, parameter, public     :: input_gdtnum=0
+ integer, parameter, public     :: input_gdtlen=19
+ integer, public                :: input_gdtmpl(input_gdtlen)
 
- real, public      :: input_data(i_input,j_input)
+ logical*1, public  :: input_bitmap(i_input,j_input)
 
- data input_kgds /0,  360,  180, -89500, -180000, 128,  &
-                  89500, 179000, 1000, 1000,  64,  0,   &
-                  6*-1, 0, 255, 180*-1/
+ real, public       :: input_data(i_input,j_input)
+
+ integer, parameter :: missing=b'11111111111111111111111111111111'
+
+ data input_gdtmpl /6, 255, missing, 255, missing, 255, missing, &
+                    360, 180, 0, missing, -89500000, -180000000, &
+                    48, 89500000, 179000000, 1000000, 1000000, 64/
+
  contains
 
  subroutine read_input_data
