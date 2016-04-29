@@ -6,7 +6,10 @@
 ! The data file is flat binary (little endian).
 !------------------------------------------------------------------------
 
- integer, public                :: input_kgds(200)
+ integer, parameter, public     :: input_gdtnum=0
+ integer, parameter, public     :: input_gdtlen=19
+ integer, public                :: input_gdtmpl(input_gdtlen)
+
  integer, public                :: i_input, j_input
 
  logical*1, allocatable, public :: input_bitmap(:,:)
@@ -14,9 +17,11 @@
  real, allocatable, public      :: input_u_data(:,:)
  real, allocatable, public      :: input_v_data(:,:)
 
- data input_kgds /0,  360,  181,  90000,   0,   128,   &
-                  -90000,  -1000,  1000,  1000,   0,   0,  &
-                  6*-1,   0,   255,  180*-1/
+ integer, parameter :: missing=b'11111111111111111111111111111111'
+
+ data input_gdtmpl /6, 255, missing, 255, missing, 255, missing, &
+                    360, 181, 0, missing, 90000000, 0, &
+                    48, -90000000, 359000000, 1000000, 1000000, 0/
 
  contains
 
@@ -31,8 +36,8 @@
 
  real(kind=4), allocatable :: dummy(:,:)
 
- i_input = input_kgds(2)
- j_input = input_kgds(3)
+ i_input = input_gdtmpl(8)
+ j_input = input_gdtmpl(9)
 
  input_file="./fort.9"
 !print*,"- OPEN AND READ FILE ", trim(input_file)

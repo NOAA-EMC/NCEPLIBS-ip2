@@ -12,8 +12,10 @@
 !    3 -  one-degree global lat/lon (ncep grid 3)
 !    8 -  mercator (ncep grid 8)
 !  127 -  t254 gaussian (ncep grid 127)
-!  203 -  rotated lat/lon e-staggered (number refers to gds octet 6)
-!  205 -  rotated lat/lon b-staggered (number refers to gds octet 6)
+!  203 -  rotated lat/lon e-staggered (number refers to the old
+!                                      gds octet 6)
+!  205 -  rotated lat/lon b-staggered (number refers to the old
+!                                      gds octet 6)
 !  212 -  nh polar stereographic, spherical earth (number meaningless)
 !  218 -  lambert conformal (ncep grid 218)
 !
@@ -31,21 +33,25 @@
 !-------------------------------------------------------------------------
 
  use get_input_data, only : input_u_data, input_v_data, &
-                            input_kgds, &
+                            input_gdtmpl, &
+                            input_gdtlen, &
+                            input_gdtnum, &
                             input_bitmap, &
                             i_input, j_input
 
  implicit none
 
+ character*100             :: baseline_file
  character*1               :: interp_opt
  character*3               :: grid
- character*100             :: output_file
 
+ integer, allocatable      :: output_gdtmpl(:)
  integer(kind=4)           :: i1
- integer                   :: ip, ipopt(20), output_kgds(200)
+ integer                   :: ip, ipopt(20), output_gdtlen, output_gdtnum
  integer                   :: km, ibi, mi, iret, i, j
  integer                   :: i_output, j_output, mo, no, ibo
  integer                   :: num_upts_diff, num_vpts_diff
+ integer     , parameter   :: missing=b'11111111111111111111111111111111'
 
  logical*1, allocatable    :: output_bitmap(:,:)
 
@@ -58,33 +64,47 @@
  real(kind=4), allocatable :: baseline_u_data(:,:)
  real(kind=4), allocatable :: baseline_v_data(:,:)
 
- integer :: grd3(200)    ! global one-degree lat/lon
- data grd3 / 0, 360, 181, 90000, 0, 128, -90000,  &
-            -1000, 1000, 1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen3 = 19  ! ncep grid3; one-degree lat/lon
+ integer                   :: gdtmpl3(gdtlen3)
+ data gdtmpl3 / 6, 255, missing, 255, missing, 255, missing, 360, 181, 0, missing, &
+                90000000, 0, 56, -90000000, 359000000, 1000000, 1000000, 0 /
 
- integer :: grd8(200)    ! mercator
- data grd8 / 1, 116, 44, -48670, 3104, 128, 61050,  &
-             0, 22500, 0, 64, 318830, 318830, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen8 = 19  ! ncep grid8; mercator
+ integer                   :: gdtmpl8(gdtlen8)
+ data gdtmpl8 / 6, 255, missing, 255, missing, 255, missing, 116, 44, &
+                -48670000, 3104000, 56, 22500000, 61050000, 0, 64, 0, &
+                 318830000, 318830000/
 
- integer :: grd127(200)  ! gaussian (t254)
- data grd127 /4, 768, 384, 89642, 0, 128, -89642,  &
-             -469, 469, 192, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen127=19  ! t254 gaussain
+ integer                   :: gdtmpl127(gdtlen127)
+ data gdtmpl127 /6, 255, missing, 255, missing, 255, missing, 768, 384, &
+                 0, missing, 89642000, 0, 48, -89642000, 359531000,  &
+                 469000, 192, 0/
 
- integer :: grd203(200)  ! nam 12km e-grid
- data grd203 /203, 669, 1165, -7450, -144140, 136, 54000,  &
-              -106000, 90, 77, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen203=22 ! 12km eta, v pts
+ integer                   :: gdtmpl203(gdtlen203)
+ data gdtmpl203/6, 255, missing, 255, missing, 255, missing, 669, 1165, &
+                0, missing, -7450000, 215860000, 56, 44560100, 14744800, &
+                179641, 77320, 72, -36000000, 254000000, 0 /
 
- integer :: grd205(200)  ! nam 12km b-grid
- data grd205 /205, 954, 835, -7491, -144134, 136, 54000,  &
-             -106000, 126, 90, 64, 44540, 14800, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen205=22 ! 12km nam, h pts
+ integer                   :: gdtmpl205(gdtlen205)
+ data gdtmpl205/6, 255, missing, 255, missing, 255, missing, 954, 835, &
+                0, missing, -7491200, 215866300, 56, 44539600, 14801500, &
+                126000, 108000, 64, -36000000, 254000000, 0 /
 
- integer :: grd212(200)  ! afwa nh polar, spherical earth
- data grd212 /5,2*512,-20826,145000,8,-80000,2*47625,0,  &
-              9*0,255,180*0/
+ integer, parameter        :: gdtlen212=18 ! nh polar, spherical earth
+ integer                   :: gdtmpl212(gdtlen212)
+ data gdtmpl212 /6, 255, missing, 255, missing, 255, missing, 512, 512, &
+                 -20826000, 145000000, 56, 60000000, 280000000, 47625000, 47625000, &
+                 0, 0/
 
- integer :: grd218(200)  ! lambert conformal (ncep grid 218) 
- data grd218 /3, 614, 428, 12190, -133459, 8, -95000,  &
-              12191, 12191, 0, 64, 25000, 25000, 0, 0, 0, 0, 0, 0, 255, 180*0/
+ integer, parameter        :: gdtlen218 = 22 ! ncep grid 218; lambert conf
+ integer                   :: gdtmpl218(gdtlen218)
+ data gdtmpl218 / 6, 255, missing, 255, missing, 255, missing, 614, 428, &
+                  12190000, 226541000, 56, 25000000, 265000000, &
+                  12191000, 12191000, 0, 64, 25000000, 25000000, -90000000, 0/
+
  i1=1
  call getarg(i1, grid)
  i1=2
@@ -92,38 +112,59 @@
 
  select case (trim(grid))
    case ('3')
-     output_kgds = grd3
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 0
+     output_gdtlen = gdtlen3
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl3
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('8')
-     output_kgds = grd8
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 10
+     output_gdtlen = gdtlen8
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl8
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('127')
-     output_kgds = grd127
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 40
+     output_gdtlen = gdtlen127
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl127
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('203')
-     output_kgds = grd203
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 1
+     output_gdtlen = gdtlen203
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl203
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('205')
-     output_kgds = grd205
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 1
+     output_gdtlen = gdtlen205
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl205
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('212')
-     output_kgds = grd212
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 20
+     output_gdtlen = gdtlen212
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl212
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case ('218')
-     output_kgds = grd218
-     i_output = output_kgds(2)
-     j_output = output_kgds(3)
+     output_gdtnum = 30
+     output_gdtlen = gdtlen218
+     allocate(output_gdtmpl(output_gdtlen))
+     output_gdtmpl=gdtmpl218
+     i_output = output_gdtmpl(8)
+     j_output = output_gdtmpl(9)
    case default
      print*,"ERROR: ENTER VALID GRID NUMBER."
      stop 55
  end select
- print*,"- CALL IPOLATES FOR GRID: ", grid
+ print*,"- CALL IPOLATEV FOR GRID: ", grid
 
  select case (interp_opt)
 ! bi-linear
@@ -177,24 +218,25 @@
  allocate (output_srot(i_output,j_output))
  allocate (output_crot(i_output,j_output))
 
- call ipolatev(ip, ipopt, input_kgds, output_kgds, mi, mo,   &
+ call ipolatev(ip, ipopt, input_gdtnum, input_gdtmpl, input_gdtlen, &
+               output_gdtnum, output_gdtmpl, output_gdtlen, mi, mo,   &
                km, ibi, input_bitmap, input_u_data, input_v_data,  &
                no, output_rlat, output_rlon, output_crot, output_srot, &
                ibo, output_bitmap, output_u_data, output_v_data, iret)
 
- deallocate(input_bitmap, input_u_data, input_v_data)
+ deallocate(input_bitmap, input_u_data, input_v_data, output_gdtmpl)
 
  if (iret /= 0) then
-   print*,'- BAD STATUS FROM IPOLATES: ', iret
+   print*,'- BAD STATUS FROM IPOLATEV: ', iret
    stop 6
  end if
 
  if (no /= mo) then
-   print*,'- ERROR: WRONG # OF POINTS RETURNED FROM IPOLATES'
+   print*,'- ERROR: WRONG # OF POINTS RETURNED FROM IPOLATEV'
    stop 7
  end if
 
-!print*,'- SUCCESSFULL CALL TO IPOLATES'
+!print*,'- SUCCESSFULL CALL TO IPOLATEV'
 
 !-------------------------------------------------------------------------
 ! polatev4 does not always initialize the ibo or output_bitmap variables,
@@ -214,21 +256,26 @@
    enddo
  endif
 
+ open (15, file="./output.bin", access="direct", err=38, recl=mo*4)
+ write (15, err=38, rec=1) real(output_u_data,4)
+ write (15, err=38, rec=2) real(output_v_data,4)
+ close (15)
+
 !-------------------------------------------------------------------------
 ! Compared data from ipolatev to its corresponding baseline
 ! data.  
 !-------------------------------------------------------------------------
 
  if (kind(output_u_data) == 8) then
-   output_file = "../baseline_data/vector/8_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_8"
+   baseline_file = "../baseline_data/vector/8_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_8"
  else
-   output_file = "../baseline_data/vector/4_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_4"
+   baseline_file = "../baseline_data/vector/4_byte_bin/grid" // trim(grid) // ".opt" // interp_opt // ".bin_4"
  endif
 
  allocate (baseline_u_data(i_output,j_output))
  allocate (baseline_v_data(i_output,j_output))
 
- open (12, file=output_file, access="direct", err=38, recl=mo*4)
+ open (12, file=baseline_file, access="direct", err=38, recl=mo*4)
  read (12, err=38, rec=1) baseline_u_data
  read (12, err=38, rec=2) baseline_v_data
  close (12)
