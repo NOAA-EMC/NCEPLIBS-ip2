@@ -3,6 +3,8 @@
                      XLON,XLAT,YLON,YLAT,AREA) BIND(C, NAME='gdswzd')
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
+! $Revision$
+!
 ! SUBPROGRAM:  GDSWZD_C     'C' WRAPPER FOR ROUTINE GDSWZD
 !   PRGMMR: JOVIC         ORG: W/NMC23       DATE: 2016-04-10
 !
