@@ -256,11 +256,6 @@
    enddo
  endif
 
- open (15, file="./output.bin", access="direct", err=38, recl=mo*4)
- write (15, err=38, rec=1) real(output_u_data,4)
- write (15, err=38, rec=2) real(output_v_data,4)
- close (15)
-
 !-------------------------------------------------------------------------
 ! Compared data from ipolatev to its corresponding baseline
 ! data.  
