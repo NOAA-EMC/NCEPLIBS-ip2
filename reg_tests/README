@@ -120,7 +120,8 @@ The following steps are required to setup and run the test suite:
     There is no official "8" byte integer/float version
     of G2.  A version exists on WCOSS under:
     /global/noscrub/George.Gayno/g2_lib.  On Theia, a copy
-    is here: /scratch4/NCEPDEV/da/noscrub/George.Gayno/g2_v2.5.0
+    is here: /scratch4/NCEPDEV/da/noscrub/George.Gayno/g2_v2.5.0.
+    On WCOSS-Cray here:/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib
 
     On WCOSS-Phase1/2, WCOSS-Cray, and Theia, these environment
     variables are set via modules in the build script.
@@ -143,8 +144,8 @@ The following steps are required to setup and run the test suite:
     By default, the Intel Fortran compiler is used.  The compiler,
     compiler flags and link flags are stored in ./config-setup/ifort.setup,
     which is sourced by the build script.  To use the "crayftn.setup" file
-    or your own setup file, you will need to manually edit the
-    build script.
+    (only on WCOSS-Cray) or your own setup file, you will need to manually
+    edit the build script.
 
     To build, type "make_reg_tests.ksh" (use "make_reg_tests_wcoss-cray.sh
                                          on WCOSS-Cray).
@@ -228,7 +229,7 @@ that exercised every routine.
       5) bicubic
       6) neighbor-budget
     This test is run twice, with 1 and 4 threads.
-4)  ipxetas - A fortran program that call routine ipxetas
+4)  ipxetas - A fortran program that calls routine ipxetas
     to transform between data on a staggered and unstaggered
     eta grid (rotated lat/lon with arakawa "e" staggering):
       1) Create staggered mass data from unstaggered data.

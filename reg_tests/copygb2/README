@@ -33,8 +33,9 @@ The executables (a total of six) are stored in the
 The regression test is run 'stand-alone' by invoking
 the proper driver script in the ./scripts subdirectory as follows:
 
-"cat run_wcoss.lsf | bsub"  (wcoss machine)
-"qsub run.theia.ksh"        (theia machine)
+"cat run.wcoss.lsf | bsub"       (wcoss phase 1/2 machine)
+"cat run.wcoss-cray.lsf | bsub"  (wcoss cray machine)
+"qsub run.theia.ksh"             (theia machine)
 
 This driver script calls the copygb2.ksh child script located in ./scripts.
 

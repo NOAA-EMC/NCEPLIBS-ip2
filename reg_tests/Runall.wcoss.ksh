@@ -2,7 +2,7 @@
 
 #------------------------------------------------------------------------
 # Run the entire suite of ipolates (or iplib) regression tests on 
-# the NCEP WCOSS machine.
+# the NCEP WCOSS phase 1/2 machine.
 #
 # $Id$
 #

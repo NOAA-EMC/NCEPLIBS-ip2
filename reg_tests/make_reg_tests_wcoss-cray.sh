@@ -19,8 +19,9 @@
 #set -x
 
 #-----------------------------------------------------------------------------
-# These regression tests depend on the NCEP BACIO, SP, and W3NCO libraries.
-# The path/name of these libraries are set thru modules.
+# These regression tests depend on the NCEP G2, BACIO, SP, PNG, JASPER,
+# Z and W3NCO libraries.  The path/name of these libraries are set
+# thru modules.
 #-----------------------------------------------------------------------------
 
 if [[ "$(hostname)" == slogin? || "$(hostname)" == llogin? ]]; then # WCOSS Cray
@@ -50,6 +51,12 @@ case $FC in
     module load bacio-intel
     module load w3nco-intel
     module load sp-intel
+    module load g2-intel
+    module load jasper-gnu-haswell
+    module load png-intel-haswell
+    module load zlib-intel-haswell
+    G2_LIB8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/libg2_v2.5.0_8.a
+    G2_INC8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/include/g2_v2.5.0_8
     R8FLAG="-r8"
     I8FLAG="-i8"
     ;;
@@ -59,6 +66,12 @@ case $FC in
     module load sp-cray-haswell
     module load bacio-cray-haswell
     module load w3nco-cray-haswell
+    module load g2-cray-haswell
+    module load jasper-gnu-haswell
+    module load png-gnu-haswell
+    module load zlib-cray-haswell
+    G2_LIB8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/libg2_v2.5.0_8.a
+    G2_INC8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/include/g2_v2.5.0_8
     R8FLAG="-s real64"
     I8FLAG="-s integer64"
     ;;
@@ -78,13 +91,23 @@ module list
 BACIO_LIB4=${BACIO_LIB4:?}  # Single precision libraries
 SP_LIB4=${SP_LIB4:?}
 W3NCO_LIB4=${W3NCO_LIB4:?}
+G2_LIB4=${G2_LIB4:?}
+G2_INC4=${G2_INC4:?}
 
 BACIO_LIB8=${BACIO_LIB8:?}  # Double precision libraries
 SP_LIB8=${SP_LIB8:?}
 W3NCO_LIB8=${W3NCO_LIB8:?}
+G2_LIB8=${G2_LIB8:?}
+G2_INC8=${G2_INC8:?}
 
 SP_LIBd=${SP_LIBd:?}        # Mixed precision libraries
 W3NCO_LIBd=${W3NCO_LIBd:?}
+G2_LIBd=${G2_LIBd:?}
+G2_INCd=${G2_INCd:?}
+
+JASPER_LIB=${JASPER_LIB:?}
+PNG_LIB=${PNG_LIB:?}
+Z_LIB=${Z_LIB:?}
 
 MAKE="gmake"
 
@@ -100,14 +123,20 @@ for WHICHIP in ctl test; do  # the 'control' or 'test' IPLIB
       4) SP_LIB=$SP_LIB4
          BACIO_LIB=$BACIO_LIB4
          W3NCO_LIB=$W3NCO_LIB4
+         G2_LIB=$G2_LIB4
+         G2_INC=$G2_INC4
          FCFLAGS_ALL=${FCFLAGS} ;;
       8) SP_LIB=$SP_LIB8
          BACIO_LIB=$BACIO_LIB8
          W3NCO_LIB=$W3NCO_LIB8
+         G2_LIB=$G2_LIB8
+         G2_INC=$G2_INC8
          FCFLAGS_ALL="${FCFLAGS} ${R8FLAG} ${I8FLAG}" ;;
       d) SP_LIB=$SP_LIBd
          BACIO_LIB=$BACIO_LIB4
          W3NCO_LIB=$W3NCO_LIBd
+         G2_LIB=$G2_LIBd
+         G2_INC=$G2_INCd
          FCFLAGS_ALL="${FCFLAGS} ${R8FLAG}" ;;
     esac
 
@@ -118,8 +147,9 @@ for WHICHIP in ctl test; do  # the 'control' or 'test' IPLIB
     echo; echo
 
     ./configure --prefix=${PWD} --enable-promote=${PRECISION} \
-      FC="ftn" FCFLAGS="${FCFLAGS_ALL} -I${PWD}/lib/incmod_${WHICHIP}_${PRECISION}" \
-      LIBS="${PWD}/lib/libip_${WHICHIP}_${PRECISION}.a ${SP_LIB} ${BACIO_LIB} ${W3NCO_LIB}"
+      FC="ftn" FCFLAGS="${FCFLAGS_ALL} -I${PWD}/lib/incmod_${WHICHIP}_${PRECISION} -I${G2_INC}" \
+      LIBS="${PWD}/lib/libip_${WHICHIP}_${PRECISION}.a ${G2_LIB} ${SP_LIB} ${BACIO_LIB} \
+            ${W3NCO_LIB} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}"
     if [ $? -ne 0 ]; then
       echo
       echo "$0: Error configuring for ${PRECISION}-byte ${WHICHIP} version build." >&2

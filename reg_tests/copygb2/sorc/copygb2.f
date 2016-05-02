@@ -649,6 +649,23 @@ C
 C$$$
       USE GRIB_MOD
 
+      interface
+      SUBROUTINE CPGB1(LG1,LX1,M1,
+     &                 MBUF,MF,MI,
+     &                 IGDTN,KGDTI,IP,IPOPT,JPDTN,JPDT,NUV,IUV,
+     &                 JPDSB,JB,JBK,LAB,AB,LAM,AM,
+     &                 IDS,IBS,NBS,
+     &                 LGB,LXB,MB,CBUFB,NLENB,NNUMB,MNUMB,
+     &                 LGM,LXM,MM,
+     &                 LG2,LXX,KS1,NO,IRET)
+      INTEGER,TARGET :: KGDTI(200)
+      INTEGER IPOPT(20), IUV(100)
+      INTEGER JPDT(200), JPDSB(100), IDS(255), IBS(255), NBS(255)
+      CHARACTER :: CBUFB(MBUF)
+      end subroutine CPGB1
+      end interface
+
+
       PARAMETER(MBUF=256*1024)
       CHARACTER CBUFB(MBUF)
       INTEGER JIDS(200),JPDT(200),JGDT(200)
