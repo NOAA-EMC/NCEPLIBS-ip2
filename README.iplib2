@@ -1,11 +1,11 @@
-Documentation of the general interpolation library iplib
+Documentation of the general interpolation library 2 - iplib2
 --------------------------------------------------------------------------------
 
 $Id$
 
 I. Introduction
 
-The NCEP general interpolation library (iplib) contains Fortran 90 subprograms
+The NCEP general interpolation library 2 (iplib2) contains Fortran 90 subprograms
 to be used for interpolating between nearly all grids used at NCEP.
 The library is particularly efficient when interpolating many fields at one time.
 The library has been extensively tested with AIX and Intel Fortran compilers.
@@ -23,7 +23,7 @@ created to locate invalid data where the output grid extends outside the domain
 of the input grid. 
 
 The driver routine for interpolating scalars is ipolates, while the routine
-for interpolating vectors is ipolatv.  The interpolation method is chosen
+for interpolating vectors is ipolatev.  The interpolation method is chosen
 via the first argument of these routines (variable IP).  Sub-options are
 set via the IPOPT array.
 
@@ -141,7 +141,7 @@ it ran successfully or how it failed.  Check nonzero return codes
 against the docblock of the respective subprogram.
 
 Developers are encouraged to create additional interpolation methods or
-to create additional map projection "wizards" for iplib.
+to create additional map projection "wizards" for iplib2.
 
 Questions may be directed to: NCEP.List.EMC.nceplibs.Developers@noaa.gov
 
@@ -192,7 +192,7 @@ II. Entry point list
 
    IPXWAFS/2/3  EXPAND OR CONTRACT WAFS GRIDS
 
-III. How to invoke iplib: examples
+III. How to invoke iplib2: examples
 
 ***********************************************************************
 Example 1.  Read a grib 2 file of scalar data on a global regular
