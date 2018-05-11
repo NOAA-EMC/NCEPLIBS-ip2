@@ -12,7 +12,7 @@
 
 #BSUB -oo unit_test.log
 #BSUB -eo unit_test.log
-#BSUB -q dev_shared
+#BSUB -q debug
 #BSUB -J ip_unit_test
 #BSUB -R rusage[mem=500]
 #BSUB -P GFS-T2O

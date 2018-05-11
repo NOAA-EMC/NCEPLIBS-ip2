@@ -1,8 +1,6 @@
 Documentation of the general interpolation library 2 - iplib2
 --------------------------------------------------------------------------------
 
-$Id$
-
 I. Introduction
 
 The NCEP general interpolation library 2 (iplib2) contains Fortran 90 subprograms

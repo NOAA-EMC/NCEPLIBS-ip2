@@ -48,15 +48,15 @@ case $FC in
   ifort)
     module load PrgEnv-intel
     module load craype-haswell
-    module load bacio-intel
-    module load w3nco-intel
-    module load sp-intel
-    module load g2-intel
-    module load jasper-gnu-haswell
-    module load png-intel-haswell
-    module load zlib-intel-haswell
-    G2_LIB8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/libg2_v2.5.0_8.a
-    G2_INC8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/include/g2_v2.5.0_8
+    module load bacio-intel/2.0.2
+    module load w3nco-intel/2.0.6
+    module load sp-intel/2.0.2
+    module load g2-intel/2.5.0
+    module load jasper-gnu-haswell/1.900.1
+    module load png-intel-haswell/1.2.44
+    module load zlib-intel-haswell/1.2.7
+    G2_LIB8=/gpfs/hps3/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/libg2_v2.5.0_8.a
+    G2_INC8=/gpfs/hps3/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/intel/include/g2_v2.5.0_8
     R8FLAG="-r8"
     I8FLAG="-i8"
     ;;
@@ -70,8 +70,8 @@ case $FC in
     module load jasper-gnu-haswell
     module load png-gnu-haswell
     module load zlib-cray-haswell
-    G2_LIB8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/libg2_v2.5.0_8.a
-    G2_INC8=/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/include/g2_v2.5.0_8
+    G2_LIB8=/gpfs/hps3/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/libg2_v2.5.0_8.a
+    G2_INC8=/gpfs/hps3/emc/global/noscrub/George.Gayno/g2_lib/v2.5.0/cray/include/g2_v2.5.0_8
     R8FLAG="-s real64"
     I8FLAG="-s integer64"
     ;;

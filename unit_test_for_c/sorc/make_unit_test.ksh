@@ -79,6 +79,10 @@ SP_LIB4=${SP_LIB4:?}        # Single precsion sp library
 SP_LIB8=${SP_LIB8:?}        # Double precision sp library
 SP_LIBd=${SP_LIBd:?}        # Mixed precision sp library
 
+if [[ ! -d ../exec ]];then
+  mkdir ../exec
+fi
+
 rm -f *.exe *.o
 rm -f ../exec/*.exe
 

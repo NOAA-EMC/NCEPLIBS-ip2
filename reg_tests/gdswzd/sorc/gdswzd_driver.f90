@@ -92,13 +92,13 @@
  integer, parameter :: igdtlen203h=22 ! 12km eta, h pts
  integer            :: igdtmpl203h(igdtlen203h)
  data igdtmpl203h/6, 255, missing, 255, missing, 255, missing, 669, 1165, &
-                  0, missing, -7446260, 215860330, 56, 44560150, 14744790, &
+                  0, missing, -45000000, 300000000, 56, 45000000, 60000000, &
                   179641, 77320, 68, -36000000, 254000000, 0 /
 
  integer, parameter :: igdtlen203v=22 ! 12km eta, v pts
  integer            :: igdtmpl203v(igdtlen203v)
  data igdtmpl203v/6, 255, missing, 255, missing, 255, missing, 669, 1165, &
-                  0, missing, -7446260, 215860330, 56, 44560150, 14744790, &
+                  0, missing, -45000000, 300000000, 56, 45000000, 60000000, &
                   179641, 77320, 72, -36000000, 254000000, 0 /
 
  integer, parameter :: igdtlen212=18 ! nh polar, spherical earth
@@ -122,13 +122,13 @@
  integer, parameter :: igdtlen205h=22 ! 12km nam, h pts
  integer            :: igdtmpl205h(igdtlen205h)
  data igdtmpl205h/6, 255, missing, 255, missing, 255, missing, 954, 835, &
-                  0, missing, -7491200, 215866300, 56, 44539600, 14801500, &
+                  0, missing, -45036000, 299961000, 56, 45036000, 60039000, &
                   126000, 108000, 64, -36000000, 254000000, 0 /
 
  integer, parameter :: igdtlen205v=22 ! 12km nam, v pts
  integer            :: igdtmpl205v(igdtlen205v)
  data igdtmpl205v/6, 255, missing, 255, missing, 255, missing, 954, 835, &
-                  0, missing, -7491200, 215866300, 56, 44539600, 14801500, &
+                  0, missing, -45036000, 299961000, 56, 45036000, 60039000, &
                   126000, 108000, 78, -36000000, 254000000, 0 /
 
  integer, parameter :: igdtlen218 = 22 ! ncep grid 218; lambert conf

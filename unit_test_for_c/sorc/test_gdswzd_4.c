@@ -41,11 +41,11 @@ int main()
   igdtmpl[8] = jm;
   igdtmpl[9] = 0;
   igdtmpl[10] = -1;
-  igdtmpl[11] = -7446000;
-  igdtmpl[12] = 215861000;
+  igdtmpl[11] = -45036000;
+  igdtmpl[12] = 299961000;
   igdtmpl[13] = 56;
-  igdtmpl[14] = 44560000;
-  igdtmpl[15] = 14744000;
+  igdtmpl[14] = 45036000;
+  igdtmpl[15] = 60039000;
   igdtmpl[16] = 0;
   igdtmpl[17] = 0;
   igdtmpl[18] = 64;
@@ -86,10 +86,10 @@ int main()
   printf(" Expected points returned    = 50451 \n\n");
 
   printf(" First corner point lat/lon = %f %f \n", rlat[0], rlon[0]-360);
-  printf(" Expected lat/lon           = -7.446 -144.139 \n\n");
+  printf(" Expected lat/lon           = -7.491 -144.134 \n\n");
 
   printf(" Last corner point lat/lon  = %f %f \n", rlat[nret-1], rlon[nret-1]);
-  printf(" Expected lat/lon           = 44.56 14.744 \n");
+  printf(" Expected lat/lon           = 44.539 14.802 \n");
 
 /*
   for (int n=0; n<nret; n++) {

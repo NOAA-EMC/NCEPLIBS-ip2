@@ -81,13 +81,13 @@
  integer, parameter        :: gdtlen203=22 ! 12km eta, h pts
  integer                   :: gdtmpl203(gdtlen203)
  data gdtmpl203/6, 255, missing, 255, missing, 255, missing, 669, 1165, &
-                0, missing, -7446260, 215860330, 56, 44560150, 14744790, &
+                0, missing, -45000000, 300000000, 56, 45000000, 60000000, &
                 179641, 77320, 68, -36000000, 254000000, 0 /
 
  integer, parameter        :: gdtlen205=22 ! 12km nam, h pts
  integer                   :: gdtmpl205(gdtlen205)
  data gdtmpl205/6, 255, missing, 255, missing, 255, missing, 954, 835, &
-                0, missing, -7491200, 215866300, 56, 44539600, 14801500, &
+                0, missing, -45036000, 299961000, 56, 45036000, 60039000, &
                 126000, 108000, 64, -36000000, 254000000, 0 /
 
  integer, parameter        :: gdtlen212=18 ! nh polar, spherical earth
@@ -267,7 +267,7 @@
    endif
  enddo
  enddo
- 
+
  print*,'- MAX/MIN OF DATA: ', maxval(output_data),minval(output_data)
  print*,'- NUMBER OF PTS DIFFERENT: ',num_pts_diff
  print*,'- PERCENT OF TOTAL: ',(float(num_pts_diff)/float(i_output*j_output))*100.

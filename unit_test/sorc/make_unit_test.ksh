@@ -2,8 +2,6 @@
 
 #-----------------------------------------------------------------------------
 # This script compiles the iplib unit test programs.
-# 
-# $Id$
 #
 # PLEASE READ THE "README" FILE IN THIS DIRECTORY FOR DETAILS ON HOW
 # TO RUN THIS SCRIPT.
