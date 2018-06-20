@@ -1,12 +1,10 @@
 #!/bin/sh
 ###############################################################################
 #
-# $Id$
-#
 # Script to iterate the configuration script over the set of precision
 # versions of the library on the WCOSS-Cray.
 #
-# SCRIPT ONLY WORKS ON WCOSS-Cray.  Use make_ip_lib.sh on other machines.
+# SCRIPT ONLY WORKS ON WCOSS-Cray.  Use make_ip2_lib.sh on other machines.
 #
 # The build configuration setup (compiler, compiler switched, libraries, etc)
 # is specified via files in the config-setup/ subdirectory that are sourced
@@ -150,7 +148,7 @@ module list
 
 # Build each precision version of library.
 
-for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IPLIB
+for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IP2LIB
 
   case $PRECISION in
     4) FCFLAGS_ALL=${FCFLAGS} 

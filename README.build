@@ -1,8 +1,6 @@
 Instructions for building and installing the
-ipolates library (iplib) on Unix.
+ipolates2 library (ip2lib) on Unix.
 ***************************************************
-
-$Id$
 
 nceplibs support email: ncep.list.emc.nceplibs.support@noaa.gov
 
@@ -25,11 +23,11 @@ nceplibs support email: ncep.list.emc.nceplibs.support@noaa.gov
 A. The easy (I hope) way...
 ===========================
 
-To build the single (_4), double (_8), and mixed (_d) precision ip
-libraries, you can use the "make_ip_lib.sh" script ("make_ip_lib_wcoss-cray.sh" 
+To build the single (_4), double (_8), and mixed (_d) precision ip2
+libraries, you can use the "make_ip2_lib.sh" script ("make_ip2_lib_wcoss-cray.sh" 
 on the WCOSS-Cray systems) specifying the build configuration. Type:
 
-  $ make_ip_lib.sh -h
+  $ make_ip2_lib.sh -h
 
 to get the usage information for the script.
 
@@ -44,7 +42,7 @@ The available build configurations to use are:
 The build configurations define the compiler name and compiler flags.  
 Those named with "debug" contain flags useful for debugging.
 
-So, on WCOSS Phase 1/2, to compile with intel, you would type:
+So, on WCOSS Phase 1/2/3, to compile with Intel, you would type:
 
   $ make_ip_lib.sh ifort.setup
 
@@ -52,7 +50,7 @@ On Theia you could do the same, or if you wanted to the PGI compiler,
 
   $ make_ip_lib.sh pgf95.setup
 
-On WCOSS-Cray/surge/luna if you wanted to use the Cray compiler,
+On WCOSS-Cray/Surge/Luna if you wanted to use the Cray compiler,
 
   $ make_ip_lib_wcoss-cray.sh crayftn.setup
 
@@ -68,8 +66,8 @@ Some additional points:
 - See section B.4 below for detailed information about the installation
   directory structure.
 
-You can tailor the build process using the "make_ip_lib.sh" and 
-"make_ip_lib_wcoss-cray.sh" scripts by modifying the relevant build
+You can tailor the build process using the "make_ip2_lib.sh" and 
+"make_ip2_lib_wcoss-cray.sh" scripts by modifying the relevant build
 configuration setup file in the "config-setup/" subdirectory.
 
 Or, if you are going to be testing library builds multiple times, you can
@@ -138,16 +136,16 @@ To start the library build for a particular configuration, simply type
 ----------------------
 
 A suite of regression tests is located in the ./reg_tests directory.
-These tests compare results from two different versions of iplib
+These tests compare results from two different versions of iplib2
 (typically the branch and trunk versions) to ensure developer
 modifications do not inadvertantly break existing functionality.
 See the README file in that directory for details on how to build
 and run it.  Library developers are expected to run these tests before any
-changes are moved to the IPLIB trunk.
+changes are moved to the IP2LIB trunk.
 
 A unit test is located on the ./unit_test directory.  It compares
-results from iplib against a baseline set of data.  This test is
-useful when porting iplib to a new platform to ensure it is
+results from ip2lib against a baseline set of data.  This test is
+useful when porting ip2lib to a new platform to ensure it is
 working correctly.  See the README in that directory for details
 on how to build and run it.
 
@@ -178,44 +176,44 @@ conventions on WCOSS Phase 2, type:
 Example: for a library version of v2.0.1 and the default precision (_4), the
 directory tree will look as follows:
 
-  ip/
+  ip2/
    |
    `--v2.0.1/
          |
-         `--libip_v2.0.1_4.a
+         `--libip2_v2.0.1_4.a
          |
          `--include/
                |
-               `--ip_v2.0.1_4/
+               `--ip2_v2.0.1_4/
 
 If you then create the double precsion (_8) and mixed precision (_d) libraries and
 invoke "make nco_install", the directory tree will look like:
 
-  ip/
+  ip2/
    |
    `--v2.0.1/
          |
-         |--libip_v2.0.1_4.a
-         |--libip_v2.0.1_d.a
-         `--libip_v2.0.1_8.a
+         |--libip2_v2.0.1_4.a
+         |--libip2_v2.0.1_d.a
+         `--libip2_v2.0.1_8.a
          |
          `--include/
                |
-               `--ip_v2.0.1_4/
-               `--ip_v2.0.1_d/
-               `--ip_v2.0.1_8/
+               `--ip2_v2.0.1_4/
+               `--ip2_v2.0.1_d/
+               `--ip2_v2.0.1_8/
 
 The contents of the "v2.0.1" directory can then be moved into the official
-/nwprod/lib/ip location as needed.
+location as needed.
 
 Let's assume the above install was moved into "/usrx/local/nceplibs". To use the
 4-byte library in this structure in your own application, the usual environment variables
 would be modified something like:
 
-  libroot="/usrx/local/nceplibs/ip/v2.0.1"
+  libroot="/usrx/local/nceplibs/ip2/v2.0.1"
   LDFLAGS="-L${libroot} ${LDFLAGS}"
-  LIBS="-lip_v2.0.1_4"
-  FCFLAGS="... -I${libroot}/include/ip_v2.0.1_4 ..."
+  LIBS="-lip2_v2.0.1_4"
+  FCFLAGS="... -I${libroot}/include/ip2_v2.0.1_4 ..."
 
 
 NCO Install as on WCOSS-Cray/Surge/Luna
@@ -229,19 +227,19 @@ conventions on WCOSS-Cray/Surge/Luna, type:
 If you create all precision versions of the library and invoke
 "make nco_cray_install", the directory tree will look like:
 
-  ip/
+  ip2/
    |
    `--v2.0.1/${COMPILER}/
                    |
-                   |--libip_v2.0.1_4.a
-                   |--libip_v2.0.1_d.a
-                   `--libip_v2.0.1_8.a
+                   |--libip2_v2.0.1_4.a
+                   |--libip2_v2.0.1_d.a
+                   `--libip2_v2.0.1_8.a
                    |
                    `--include/
                          |
-                         `--ip_v2.0.1_4/
-                         `--ip_v2.0.1_d/
-                         `--ip_v2.0.1_8/
+                         `--ip2_v2.0.1_4/
+                         `--ip2_v2.0.1_d/
+                         `--ip2_v2.0.1_8/
 
 Here $COMPILER is the name of the Fortran compiler used.  For example, if at
 the configure step you did "FC=ftn", then $COMPILER will be "ftn".  This
@@ -255,28 +253,28 @@ may be changed at the configure step by "--enable-wcoss_cray_dir=${your_name}" a
 
 which would result in the following directory tree:
 
-  ip/
+  ip2/
    |
    `--v2.0.1/intel/
                 |
-                |--libip_v2.0.1_4.a
-                |--libip_v2.0.1_d.a
-                `--libip_v2.0.1_8.a
+                |--libip2_v2.0.1_4.a
+                |--libip2_v2.0.1_d.a
+                `--libip2_v2.0.1_8.a
                 |
                 `--include/
                       |
-                      `--ip_v2.0.1_4/
-                      `--ip_v2.0.1_d/
-                      `--ip_v2.0.1_8/
+                      `--ip2_v2.0.1_4/
+                      `--ip2_v2.0.1_d/
+                      `--ip2_v2.0.1_8/
 
 Let's assume the above install was moved into "/usrx/local/nceplibs", to use the
 single precision library in this structure in your own application, the usual
 environment variables would be modified something like:
 
-  libroot="/usrx/local/nceplibs/ip/v2.0.1/intel"
-  FCFLAGS="-I${libroot}/include/ip_v2.0.1_4 ${FCFLAGS}"
+  libroot="/usrx/local/nceplibs/ip2/v2.0.1/intel"
+  FCFLAGS="-I${libroot}/include/ip2_v2.0.1_4 ${FCFLAGS}"
   LDFLAGS="-L${libroot} ${LDFLAGS}"
-  LIBS="-lip_v2.0.1_4"
+  LIBS="-lip2_v2.0.1_4"
 
 GNU Install
 ...........
@@ -292,7 +290,7 @@ a directory called "ip_v2.0.1_4". That directory structure is shown below:
     |
     `--lib/
     |    |
-    |    `--libip.a
+    |    `--libip2.a
     |
     `--include/
 
@@ -302,27 +300,27 @@ NOTE: The only version identifier in this type of install is the name of the
 Building the remaining precision versions (_8) and (_d) and installing would 
 create the following directory trees:
 
-  ip_v2.0.1_4/
+  ip2_v2.0.1_4/
     |
     `--lib/
     |    |
-    |    `--libip.a
+    |    `--libip2.a
     |
     `--include/
 
-  ip_v2.0.1_8/
+  ip2_v2.0.1_8/
     |
     `--lib/
     |    |
-    |    `--libip.a
+    |    `--libip2.a
     |
     `--include/
 
-  ip_v2.0.1_d/
+  ip2_v2.0.1_d/
     |
     `--lib/
     |    |
-    |    `--libip.a
+    |    `--libip2.a
     |
     `--include/
 
@@ -331,9 +329,9 @@ single precison (_4) library in this structure in your own application, the usua
 variables would be modified something like:
 
   libroot="/usrx/local/nceplibs"
-  LDFLAGS="-L${libroot}/ip_v2.0.1_4/lib ${LDFLAGS}"
-  LIBS="-lip"
-  FCFLAGS="... -I${libroot}/ip_v2.0.1_4/include ..."
+  LDFLAGS="-L${libroot}/ip2_v2.0.1_4/lib ${LDFLAGS}"
+  LIBS="-lip2"
+  FCFLAGS="... -I${libroot}/ip2_v2.0.1_4/include ..."
 
 
 
@@ -352,7 +350,7 @@ something like...
 
   $ ./configure --prefix=${PWD} ...other command line arguments...
 
-then the "nco_uninstall" target will delete the "${PWD}/ip/v2.0.1" directory.
+then the "nco_uninstall" target will delete the "${PWD}/ip2/v2.0.1" directory.
 
 
 Uninstalling the library after an NCO WCOSS-Cray/Surge/Luna install
@@ -370,7 +368,7 @@ something like...
   $ ./configure --prefix=${PWD} \
     --enable-wcoss_cray_dir=intel  ...other command line arguments...
 
-then the "nco_cray_uninstall" target will delete the "${PWD}/ip/v2.0.1/intel" directory.
+then the "nco_cray_uninstall" target will delete the "${PWD}/ip2/v2.0.1/intel" directory.
 
 
 Uninstalling the library (after a GNU install)
@@ -384,7 +382,7 @@ This will delete the created installation directory.
 
 Ex: for a library version of v2.0.1, a default precision of (_4),
 and using "--prefix=${PWD}" during the configure, the
-"${PWD}/ip_v2.0.1_4" installation directory will be deleted.
+"${PWD}/ip2_v2.0.1_4" installation directory will be deleted.
 
 
 

@@ -4,7 +4,7 @@
 # Script to build the 'c' unit test.
 #
 # After compilation, the executables reside in ../exec.  There is
-# one executable for each precision version of iplib.
+# one executable for each precision version of ip2lib.
 #
 # For details on how to use, please see the ../README.build file.
 #-----------------------------------------------------------------------
@@ -24,7 +24,7 @@ if [[ "$(hostname -f)" == g????.ncep.noaa.gov || \
   case $compiler in
     intel)
       module purge
-      module load ics
+      module load ics/15.0.6
       module load sp ;;
     gnu)
       module purge
@@ -34,6 +34,15 @@ if [[ "$(hostname -f)" == g????.ncep.noaa.gov || \
       SP_LIB4="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_4.a"
       SP_LIB8="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_8.a"
       SP_LIBd="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_d.a" ;;
+  esac
+elif [[ "$(hostname -f)" == v????.ncep.noaa.gov || \
+      "$(hostname -f)" == m????.ncep.noaa.gov ]]; then  #WCOSS Phase 3 Dell
+  case $compiler in
+    intel)
+      module purge
+      module load EnvVars/1.0.2
+      module load ips/18.0.1.163
+      module load sp/2.0.2 ;;
   esac
 elif [[ "$(hostname)" == slogin? || "$(hostname)" == llogin? ]]; then # WCOSS Cray ]]
   . /opt/modules/3.2.6.7/init/ksh
@@ -100,7 +109,7 @@ do
     d) SP_LIB=$SP_LIBd ;;
   esac
   $CCOMP $CFLAGS -c -I../lib/incmod_${precision} test_gdswzd_${precision}.c
-  $CCOMP test_gdswzd_${precision}.o ../lib/libip_${precision}.a ${SP_LIB} ${LIBS} -o test_gdswzd_${precision}.exe
+  $CCOMP test_gdswzd_${precision}.o ../lib/libip2_${precision}.a ${SP_LIB} ${LIBS} -o test_gdswzd_${precision}.exe
   if [ $? -ne 0 ]; then
     echo 
     echo "** ERROR building precision ${precision} version. EXIT." >&2

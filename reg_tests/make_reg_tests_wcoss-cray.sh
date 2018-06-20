@@ -4,8 +4,6 @@
 # This script compiles all regression tests on the WCOSS-Cray machine only!
 # DO NOT USE THIS SCRIPT ON OTHER MACHINES.
 #
-# $Id$
-#
 # To compile with the Intel compiler, uncomment the following line below:
 #   . ./config-setup/ifort.setup
 #
@@ -113,11 +111,11 @@ MAKE="gmake"
 
 #-----------------------------------------------------------------------------
 # Make regression test executables for all three precision versions of
-# the 'control' and 'test IPLIB.
+# the 'control' and 'test libraries.
 #-----------------------------------------------------------------------------
 
-for WHICHIP in ctl test; do  # the 'control' or 'test' IPLIB
-  for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IPLIB
+for WHICHIP in ctl test; do  # the 'control' or 'test' IP2LIB
+  for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IP2LIB
 
     case $PRECISION in
       4) SP_LIB=$SP_LIB4
@@ -174,7 +172,7 @@ for WHICHIP in ctl test; do  # the 'control' or 'test' IPLIB
     mv config.log config_${WHICHIP}_${PRECISION}.log
 
   done  # library precision
-done  # 'ctl' or 'test' IPLIB
+done  # 'ctl' or 'test' IP2LIB
 
 echo; echo
 echo "-------------------------------------------------------"

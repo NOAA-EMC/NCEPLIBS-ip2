@@ -3,7 +3,7 @@ AC_REVISION($Id$)
 
 
 # Initialise autoconf
-AC_INIT([nceplibs ip], [v3.0.0], [ncep.list.emc.nceplibs.support@noaa.gov], [ip])
+AC_INIT([nceplibs ip2], [v3.0.0], [ncep.list.emc.nceplibs.support@noaa.gov], [ip2])
 
 
 # Output info for user

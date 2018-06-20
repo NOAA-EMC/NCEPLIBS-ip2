@@ -1,7 +1,7 @@
 Release Notes
 -------------
 
-Library: iplib (ipolates)
+Library: ip2lib (ipolates2)
 Version: 3.0.0
 Purpose: Performs interpolation between nearly all NCEP grids.
 Developed by: NCEP/EMC
@@ -26,8 +26,8 @@ Implementation Instructions on WCOSS-Phase 1/2
 ----------------------------------------------
  - cd to appropriate build directory
  - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/ip/tags/version_3.0.0
- - type "make_ip_lib.sh ifort.setup" to build library with the Intel compiler.
- - the librares and include modules will be placed under ./ip/v3.0.0.
+ - type "make_ip2_lib.sh ifort.setup" to build library with the Intel compiler.
+ - the librares and include modules will be placed under ./ip2/v3.0.0.
  - see README.build for more details.
 
 
@@ -35,8 +35,8 @@ Implementation Instructions on WCOSS-Cray
 -----------------------------------------
  - cd to appropriate build directory
  - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/ip/tags/version_3.0.0
- - type "make_ip_lib_wcoss-cray.sh ifort.setup" to build library with the Intel compiler.
- - the librares and include modules will be placed under ./ip/v3.0.0/intel
- - type "make_ip_lib_wcoss-cray.sh crayftn.setup" to build library with the Cray compiler.
- - the librares and include modules will be placed under ./ip/v3.0.0/cray
+ - type "make_ip2_lib_wcoss-cray.sh ifort.setup" to build library with the Intel compiler.
+ - the librares and include modules will be placed under ./ip2/v3.0.0/intel
+ - type "make_ip2_lib_wcoss-cray.sh crayftn.setup" to build library with the Cray compiler.
+ - the librares and include modules will be placed under ./ip2/v3.0.0/cray
  - see README.build for more details.

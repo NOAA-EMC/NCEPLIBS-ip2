@@ -1,7 +1,7 @@
 #!/bin/ksh --login
 
 #-----------------------------------------------------------------------------
-# This script compiles the iplib unit test programs.
+# This script compiles the ip2lib unit test programs.
 #
 # PLEASE READ THE "README" FILE IN THIS DIRECTORY FOR DETAILS ON HOW
 # TO RUN THIS SCRIPT.
@@ -45,7 +45,7 @@ fi
 
 #-----------------------------------------------------------------------------
 # The unit tests depend on the NCEP SP library.  Its path/name is set thru
-# environment variables.  On Theia and WCOSS-Phase 1/2, the Intel
+# environment variables.  On Theia and WCOSS-Phase 1/2/3, the Intel
 # version of SP is found thru modules.  On other machines, or when using
 # a compiler other than Intel, the environment variables must be set
 # manually.
@@ -56,7 +56,7 @@ if [[ "$(hostname -f)" == tfe?? ]]; then # Theia
     ifort)
       module purge
       module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
-      module load intel
+      module load intel/15.6.233
       module load sp ;;
   esac
 elif [[ "$(hostname -f)" == g????.ncep.noaa.gov || \
@@ -64,8 +64,17 @@ elif [[ "$(hostname -f)" == g????.ncep.noaa.gov || \
   case $FC in
     ifort)
       module purge
-      module load ics
+      module load ics/15.0.6
       module load sp ;;
+  esac
+elif [[ "$(hostname -f)" == v????.ncep.noaa.gov || \
+        "$(hostname -f)" == m????.ncep.noaa.gov ]]; then  #WCOSS Phase 3/Dell
+  case $FC in
+    ifort)
+      module purge
+      module load EnvVars/1.0.2
+      module load ips/18.0.1.163
+      module load sp/2.0.2 ;;
   esac
 elif [[ "$(hostname -f)" == slogin? || \
         "$(hostname -f)" == llogin? ]]; then  #WCOSS-Cray.
@@ -91,10 +100,10 @@ MAKE="gmake"
 root="$PWD/.."
 
 #-----------------------------------------------------------------------------
-# Make unit test executables for all three precision versions of IPLIB.
+# Make unit test executables for all three precision versions of IP2LIB.
 #-----------------------------------------------------------------------------
 
-for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IPLIB
+for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IP2LIB
 
   case $PRECISION in
     4) SP_LIB=$SP_LIB4 ;;
@@ -104,7 +113,7 @@ for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison
 
   ./configure --prefix=${root} --enable-promote=${PRECISION} \
     FC="${FC}" FCFLAGS="${FCFLAGS} -I${root}/lib/incmod_${PRECISION}" \
-    LIBS="${root}/lib/libip_${PRECISION}.a ${SP_LIB}"
+    LIBS="${root}/lib/libip2_${PRECISION}.a ${SP_LIB}"
   if [ $? -ne 0 ]; then
     set +x
     echo "$0: Error configuring for ${PRECISION}-byte build." >&2

@@ -1,8 +1,6 @@
 #!/bin/sh
 ###############################################################################
 #
-# $Id$
-#
 # Script to iterate the configuration script over the set of precision
 # versions of the library.
 #
@@ -17,7 +15,7 @@
 usage()
 {
   echo
-  echo " Usage: make_ip_lib.sh [-g|-h] setup-file"
+  echo " Usage: make_ip2_lib.sh [-g|-h] setup-file"
   echo
   echo "   Script to iterate the configuration script over the set of precision"
   echo "   versions of the library."

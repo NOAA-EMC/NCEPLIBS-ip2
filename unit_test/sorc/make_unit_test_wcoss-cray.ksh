@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 #-----------------------------------------------------------------------------
-# This script compiles the iplib unit test programs on the WCOSS-Cray
+# This script compiles the ip2lib unit test programs on the WCOSS-Cray
 # system ONLY.  On all other machines, use "make_unit_test.ksh".
 #
 # PLEASE READ THE "README" FILE IN THIS DIRECTORY FOR DETAILS ON HOW
@@ -100,10 +100,10 @@ MAKE="gmake"
 root="$PWD/.."
 
 #-----------------------------------------------------------------------------
-# Make unit test executables for all three precision versions of IPLIB.
+# Make unit test executables for all three precision versions of IP2LIB.
 #-----------------------------------------------------------------------------
 
-for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IPLIB
+for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison IP2LIB
 
   case $PRECISION in
     4) SP_LIB=$SP_LIB4 
@@ -116,7 +116,7 @@ for PRECISION in 4 8 d; do  # single ("4"), double ("8") or mixed ("d") precison
 
   ./configure --prefix=${root} --enable-promote=${PRECISION} \
     FC="${FC}" FCFLAGS="${FCFLAGS_ALL} -I${root}/lib/incmod_${PRECISION}" \
-    LIBS="${root}/lib/libip_${PRECISION}.a ${SP_LIB}"
+    LIBS="${root}/lib/libip2_${PRECISION}.a ${SP_LIB}"
   if [ $? -ne 0 ]; then
     set +x
     echo "$0: Error configuring for ${PRECISION}-byte build." >&2

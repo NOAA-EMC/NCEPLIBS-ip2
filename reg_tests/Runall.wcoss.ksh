@@ -1,10 +1,8 @@
 #!/bin/ksh 
 
 #------------------------------------------------------------------------
-# Run the entire suite of ipolates (or iplib) regression tests on 
+# Run the entire suite of ipolates2 (or ip2lib) regression tests on 
 # the NCEP WCOSS phase 1/2 machine.
-#
-# $Id$
 #
 # See the README file for information on setting up and compiling
 # the test suite.
@@ -21,7 +19,7 @@
 set -x
 
 . /usrx/local/Modules/default/init/ksh
-module load ics/12.1
+module load ics/15.0.6
 module load lsf/9.1 
 
 export REG_DIR=$(pwd)

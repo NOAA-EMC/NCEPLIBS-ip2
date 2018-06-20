@@ -1,9 +1,7 @@
 #!/bin/ksh --login
 
 #----------------------------------------------------------------------------
-# Run the entire suite of IPOLATES (or IPLIB) regression tests on Theia.
-#
-# $Id$
+# Run the entire suite of IPOLATES2 (or IP2LIB) regression tests on Theia.
 #
 # See the README file for information on setting up and compiling
 # the test suite.
@@ -23,7 +21,7 @@
 #----------------------------------------------------------------------------
 
 # The project that will be charged when running these jobs.
-PROJECT_CODE=${PROJECT_CODE:-rm}
+PROJECT_CODE=${PROJECT_CODE:-"fv3-cpu"}
 
 # Location of the regression test directory.
 export REG_DIR=$(pwd)
@@ -42,45 +40,45 @@ module load intel
 
 export OMP_NUM_THREADS=1
 
-GDSWZD=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:10:00 -A $PROJECT_CODE -N iptest_gdswzd -o $LOG_FILE -e $LOG_FILE \
+GDSWZD=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:10:00 -A $PROJECT_CODE -N ip2test_gdswzd -o $LOG_FILE -e $LOG_FILE \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gdswzd/scripts/runall.ksh)
 
-IPXETAS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N iptest_ipxetas -o $LOG_FILE -e $LOG_FILE \
+IPXETAS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N ip2test_ipxetas -o $LOG_FILE -e $LOG_FILE \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$GDSWZD $REG_DIR/ipxetas/scripts/runall.ksh)
 
-IPXWAFS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N iptest_ipxwafs -o $LOG_FILE -e $LOG_FILE \
+IPXWAFS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N ip2test_ipxwafs -o $LOG_FILE -e $LOG_FILE \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPXETAS $REG_DIR/ipxwafs/scripts/runall.ksh)
 
-IPOLATES_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N iptest_ipolates1 -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N ip2test_ipolates1 -o $LOG_FILE -e $LOG_FILE \
       -F "1" -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPXWAFS $REG_DIR/ipolates/scripts/runall.ksh)
 
 export OMP_NUM_THREADS=4
 
-IPOLATES_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N iptest_ipolates4 -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolates4 -o $LOG_FILE -e $LOG_FILE \
       -F "4" -W depend=afterok:$IPOLATES_1 \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolates/scripts/runall.ksh)
 
 export OMP_NUM_THREADS=1
 
-IPOLATES_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N iptest_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N ip2test_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
       -v WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATES_4 $REG_DIR/ipolates/scripts/compare.ksh)
 
-IPOLATEV_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N iptest_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N ip2test_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
       -F "1" -W depend=afterok:$IPOLATES_CMP \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh)
 
 export OMP_NUM_THREADS=4
 
-IPOLATEV_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N iptest_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
       -F "4" -W depend=afterok:$IPOLATEV_1 \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh)
 
 export OMP_NUM_THREADS=1
 
-IPOLATEV_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N iptest_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N ip2test_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
       -v WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATEV_4 $REG_DIR/ipolatev/scripts/compare.ksh)
 
-SUMMARY=$(echo "grep '<<<' $LOG_FILE > $SUM_FILE" | qsub -l procs=1 -l vmem=500M -l walltime=0:01:00 -A $PROJECT_CODE -N iptest_summary \
+SUMMARY=$(echo "grep '<<<' $LOG_FILE > $SUM_FILE" | qsub -l procs=1 -l vmem=500M -l walltime=0:01:00 -A $PROJECT_CODE -N ip2test_summary \
       -o $LOG_FILE -e $LOG_FILE  -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATEV_CMP)
 
 exit 0

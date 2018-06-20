@@ -13,7 +13,7 @@
 #BSUB -oo unit_test.log
 #BSUB -eo unit_test.log
 #BSUB -q dev_shared
-#BSUB -J ip_unit_test
+#BSUB -J ip2_unit_test
 #BSUB -R affinity[core]
 #BSUB -R rusage[mem=500]
 #BSUB -P GFS-T2O
