@@ -17,8 +17,8 @@ module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load lsf/10.1
 
-bsub -oo unit_test.log -eo unit_test.log -q dev_shared -J ip_unit_test \
-     -R "affinity[core(1)]" -R rusage[mem=100] -P GFS-T2O -W 0:01 -cwd $(pwd) \
-     "run_unit_test.ksh"
+bsub -oo unit_test.log -eo unit_test.log -q dev -J ip_unit_test \
+     -n 1 -R span[ptile=1] \
+     -P GFS-T2O -W 0:01 -cwd $(pwd) "export OMP_NUM_THREADS=1; run_unit_test.ksh"
 
 exit 0

@@ -1,8 +1,6 @@
  SUBROUTINE POLFIXV(NM,NX,KM,RLAT,RLON,IB,LO,UO,VO)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
-! $Revision$
-!
 ! SUBPROGRAM:  POLFIXV    MAKE MULTIPLE POLE VECTOR VALUES CONSISTENT
 !   PRGMMR: IREDELL       ORG: W/NMC23       DATE: 96-04-10
 !
@@ -55,10 +53,12 @@
  REAL                        :: TNP, UNP, VNP, WNP
  REAL                        :: TSP, USP, VSP, WSP
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
  DO N=1,NM
    CLON(N)=COS(RLON(N)/DPR)
    SLON(N)=SIN(RLON(N)/DPR)
  ENDDO
+!$OMP END PARALLEL DO
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  DO K=1,KM
    WNP=0.
@@ -70,6 +70,7 @@
    VSP=0.
    TSP=0.
 !  AVERAGE MULTIPLE POLE VALUES
+!$OMP PARALLEL DO PRIVATE(N) REDUCTION(+:WNP,UNP,VNP,TNP,WSP,USP,VSP,TSP) SCHEDULE(STATIC)
    DO N=1,NM
      IF(RLAT(N).GE.RLATNP) THEN
        WNP=WNP+1
@@ -87,6 +88,7 @@
        ENDIF
      ENDIF
    ENDDO
+!$OMP END PARALLEL DO
 !  DISTRIBUTE AVERAGE VALUES BACK TO MULTIPLE POLES
    IF(WNP.GT.1) THEN
      IF(TNP.GE.WNP/2) THEN
@@ -96,6 +98,7 @@
        UNP=0.
        VNP=0.
      ENDIF
+!$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
      DO N=1,NM
        IF(RLAT(N).GE.RLATNP) THEN
          IF(IB(K).NE.0) LO(N,K)=TNP.GE.WNP/2
@@ -103,6 +106,7 @@
          VO(N,K)=-SLON(N)*UNP+CLON(N)*VNP
        ENDIF
      ENDDO
+!$OMP END PARALLEL DO
    ENDIF
    IF(WSP.GT.1) THEN
      IF(TSP.GE.WSP/2) THEN
@@ -112,6 +116,7 @@
        USP=0.
        VSP=0.
      ENDIF
+!$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
      DO N=1,NM
        IF(RLAT(N).LE.RLATSP) THEN
          IF(IB(K).NE.0) LO(N,K)=TSP.GE.WSP/2
@@ -119,6 +124,7 @@
          VO(N,K)=SLON(N)*USP+CLON(N)*VSP
        ENDIF
      ENDDO
+!$OMP END PARALLEL DO
    ENDIF
  ENDDO
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -4,8 +4,6 @@
                      NO,RLAT,RLON,IBO,LO,GO,IRET)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
-! $Revision$
-!
 ! SUBPROGRAM:  POLATES3   INTERPOLATE SCALAR FIELDS (BUDGET)
 !   PRGMMR: IREDELL       ORG: W/NMC23       DATE: 96-04-10
 !
@@ -250,13 +248,16 @@
      WB=IPOPT(2+LB)
    ENDIF
    IF(WB.NE.0) THEN
+!$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
      DO N=1,NO
        XPTB(N)=XPTS(N)+IB*RB2
        YPTB(N)=YPTS(N)+JB*RB2
      ENDDO
+!$OMP END PARALLEL DO
      CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
      CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
      IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
+!$OMP PARALLEL DO PRIVATE(N,XI,YI,I1,I2,J1,J2,XF,YF) SCHEDULE(STATIC)
      DO N=1,NO
        XI=XPTB(N)
        YI=YPTB(N)
@@ -289,8 +290,10 @@
          N22(N)=0
        ENDIF
      ENDDO
+!$OMP END PARALLEL DO
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  INTERPOLATE WITH OR WITHOUT BITMAPS
+!$OMP PARALLEL DO PRIVATE(K,N,GB) SCHEDULE(STATIC)
      DO K=1,KM
        DO N=1,NO
          IF(N11(N).GT.0) THEN
@@ -320,12 +323,15 @@
          ENDIF
        ENDDO
      ENDDO
+!$OMP END PARALLEL DO
    ENDIF
  ENDDO   ! sub-grid points
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE OUTPUT BITMAPS AND FIELDS
+! KM is often 1 .. do not do OMP PARALLEL DO here
  KM_LOOP : DO K=1,KM
    IBO(K)=IBI(K)
+!$OMP PARALLEL DO PRIVATE(N,LAT,LON,XXX,YYY,NV,XX,YY,IXS,JXS,MX,KXS,KXT,IX,JX,NX) SCHEDULE(STATIC)
    N_LOOP : DO N=1,NO
      LO(N,K)=WO(N,K).GE.PMP*NB4
      IF(LO(N,K)) THEN
@@ -363,7 +369,7 @@
              IF(LI(NX,K).OR.IBI(K).EQ.0) THEN
                GO(N,K)=GI(NX,K)
                LO(N,K)=.TRUE.
-               CYCLE N_LOOP
+               GOTO 99              
              ENDIF
            ENDIF
          ENDDO SPIRAL_LOOP
@@ -377,7 +383,9 @@
        IBO(K)=1
        GO(N,K)=0.
      ENDIF
+ 99  CONTINUE 
    ENDDO N_LOOP
+!$OMP END PARALLEL DO
  ENDDO KM_LOOP
  IF(IGDTNUMO.EQ.0) CALL POLFIXS(NO,MO,KM,RLAT,IBO,LO,GO)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

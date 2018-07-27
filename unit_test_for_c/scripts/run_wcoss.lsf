@@ -14,8 +14,11 @@
 #BSUB -eo unit_test.log
 #BSUB -q dev_shared
 #BSUB -J ip2_c_unit_test
-#BSUB -R affinity[core]
+#BSUB -R affinity[core(1)]
 #BSUB -R rusage[mem=100]
+#BSUB -a openmp
+#BSUB -n 1
+#BSUB -R span[ptile=1]
 #BSUB -P GFS-T2O
 #BSUB -W 0:01
 

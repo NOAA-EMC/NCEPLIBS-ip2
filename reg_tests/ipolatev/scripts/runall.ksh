@@ -76,6 +76,13 @@ else
   exit 99
 fi
 
+machine=${machine:-null}
+if [ $machine = "cray" ]; then
+  APRUN="aprun -j 1 -n 1 -d ${OMP_NUM_THREADS} "
+else
+  APRUN=" "
+fi
+
 WORK_DIR=${WORK_DIR:-/stmpp1/$LOGNAME/regression}
 
 REG_DIR=${REG_DIR:-../..}
@@ -117,7 +124,7 @@ do
       echo TEST ${bytesize}-BYTE VERSION FOR GRID $grids AND INTERP OPTION $option
 
       cd $WORK_CTL
-      ipolatev_ctl_${bytesize}.exe "$grids" "$option" > ctl.log
+      $APRUN ipolatev_ctl_${bytesize}.exe "$grids" "$option" > ctl.log
       status=$?
       if ((status != 0));then
         echo "** CONTROL RUN FAILED"
@@ -126,7 +133,7 @@ do
       fi
 
       cd $WORK_TEST
-      ipolatev_test_${bytesize}.exe "$grids" "$option" > test.log
+      $APRUN ipolatev_test_${bytesize}.exe "$grids" "$option" > test.log
       status=$?
       if ((status != 0));then
         echo "** TEST RUN FAILED"

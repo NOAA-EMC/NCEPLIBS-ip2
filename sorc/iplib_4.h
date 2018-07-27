@@ -1,5 +1,3 @@
-/* $Revision$ */
-
 #ifndef IPLIB
 #define IPLIB
 

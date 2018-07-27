@@ -39,6 +39,7 @@
 ! grid${gridnum}.iopt${0 or m1}.bin
 !------------------------------------------------------------------
 
+ use omp_lib
  use gdswzd_mod
 
  implicit none
@@ -51,6 +52,7 @@
  integer   :: nret, iopt, npts, imdl, jmdl
  integer   :: i, j, n, iret, kgds(200), nscan, kscan, is1, nm
  integer   :: ii, jj, iii, jjj, badpts, i_offset_odd
+ integer   :: nthreads, myid
 
  real :: diff, fill, maxdiffx, maxdiffy
  real, allocatable :: xpts(:,:), ypts(:,:)
@@ -223,6 +225,14 @@
      print*,"ENTER GRID NUMBER TO TEST"
      stop
  end select
+
+!$omp parallel private (nthreads, myid)
+ myid = omp_get_thread_num()
+ if (myid == 0) then
+   nthreads = omp_get_num_threads()
+   print*,"RUNNING WITH ", nthreads, " THREADS."
+ endif
+!$omp end parallel
 
  print*,"PROCESS GRID ", grid
 

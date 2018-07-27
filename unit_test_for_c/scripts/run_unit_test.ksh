@@ -3,8 +3,6 @@
 #---------------------------------------------------------------------------------
 # Driver script to run the IPOLATES (iplib) 'C' wrapper unit test.
 #
-# $Id$
-#
 # This script calls a 'C' program which calls iplib routine 'gdswzd' to
 # compute the grid specs for a rotated lat/lon 'B'-grid.  The output is 
 # sent to standard output.
@@ -24,6 +22,8 @@
 
 #set -x
 
+APRUN=${APRUN:-" "}
+
 for  precision in "4" "d" "8"  # test all three precision versions of ipolates
 do
 
@@ -35,7 +35,7 @@ do
 
   EXEC="../exec/test_gdswzd_${precision}.exe"
 
-  $EXEC
+  $APRUN $EXEC
 
 done
 

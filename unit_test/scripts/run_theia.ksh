@@ -8,11 +8,12 @@
 # Output is put in "unit_test.log"
 #------------------------------------------------------------
 
-#PBS -l procs=1
-#PBS -l vmem=1000M
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=5000M
 #PBS -l walltime=0:15:00
 #PBS -A fv3-cpu
 #PBS -N ip2_unit_test
+#PBS -q debug
 #PBS -o unit_test.log
 #PBS -e unit_test.log
 

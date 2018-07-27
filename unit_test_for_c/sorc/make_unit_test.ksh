@@ -29,8 +29,8 @@ if [[ "$(hostname -f)" == g????.ncep.noaa.gov || \
     gnu)
       module purge
       CCOMP="gcc"
-      CFLAGS="-std=c99"
-      LIBS="-lgfortran" 
+      CFLAGS="-fopenmp -std=c99"
+      LIBS="-fopenmp -lgfortran -lm" 
       SP_LIB4="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_4.a"
       SP_LIB8="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_8.a"
       SP_LIBd="/global/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_d.a" ;;
@@ -42,7 +42,9 @@ elif [[ "$(hostname -f)" == v????.ncep.noaa.gov || \
       module purge
       module load EnvVars/1.0.2
       module load ips/18.0.1.163
-      module load sp/2.0.2 ;;
+      module load sp/2.0.2
+      CFLAGS="-qopenmp -std=c99"
+      LIBS="-qopenmp -lifcore" ;;
   esac
 elif [[ "$(hostname)" == slogin? || "$(hostname)" == llogin? ]]; then # WCOSS Cray ]]
   . /opt/modules/3.2.6.7/init/ksh
@@ -51,9 +53,7 @@ elif [[ "$(hostname)" == slogin? || "$(hostname)" == llogin? ]]; then # WCOSS Cr
            module load PrgEnv-intel
            module load craype-sandybridge
            module load sp-intel/2.0.2 
-           CCOMP="cc"
-           CFLAGS="-std=c99" 
-           LIBS="-lifcore" ;; 
+           CCOMP="cc" ;;
     cray)  module purge
            module load PrgEnv-cray
            module load craype-haswell
@@ -72,8 +72,8 @@ elif [[ "$(hostname -f)" == tfe?? ]]; then # Theia
     gnu)
       module purge
       CCOMP="gcc"
-      CFLAGS="-std=c99"
-      LIBS="-lgfortran" 
+      CFLAGS="-fopenmp -std=c99"
+      LIBS="-fopenmp -lgfortran -lm" 
       SP_LIB4="/scratch4/NCEPDEV/da/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_4.a"
       SP_LIB8="/scratch4/NCEPDEV/da/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_8.a"
       SP_LIBd="/scratch4/NCEPDEV/da/noscrub/George.Gayno/sp_v2.0.2/gfortran/libsp_v2.0.2_d.a" ;;
@@ -81,8 +81,8 @@ elif [[ "$(hostname -f)" == tfe?? ]]; then # Theia
 fi
 
 CCOMP=${CCOMP:-icc}
-CFLAGS=${CFLAGS:-"-std=c99"}
-LIBS=${LIBS:-"-lifcore"}
+CFLAGS=${CFLAGS:-"-openmp -std=c99"}
+LIBS=${LIBS:-"-openmp -lifcore"}
 
 SP_LIB4=${SP_LIB4:?}        # Single precsion sp library
 SP_LIB8=${SP_LIB8:?}        # Double precision sp library

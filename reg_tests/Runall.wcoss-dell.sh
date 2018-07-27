@@ -32,8 +32,8 @@ mkdir -p $WORK_DIR
 LOG_FILE=${WORK_DIR}/regression.log
 SUM_FILE=${WORK_DIR}/summary.log
 
-bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
-     -J "gdswzd" -R "affinity[core(1)]" -R "rusage[mem=300]" -W 0:05 -cwd $(pwd) $REG_DIR/gdswzd/scripts/runall.ksh 
+bsub -e $LOG_FILE -o $LOG_FILE -q "dev" -P "GFS-T2O" -n 1 -R "span[ptile=1]" \
+     -J "gdswzd" -W 0:05 -cwd $(pwd) "export OMP_NUM_THREADS=1; $REG_DIR/gdswzd/scripts/runall.ksh"
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
      -J "ipxetas" -R "affinity[core(1)]" -R "rusage[mem=100]" -W 0:05 -w 'ended(gdswzd)' $REG_DIR/ipxetas/scripts/runall.ksh
@@ -42,22 +42,22 @@ bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
      -J "ipxwafs" -R "affinity[core(1)]" -R "rusage[mem=100]" -W 0:05 -w 'ended(ipxetas)' -cwd $(pwd) $REG_DIR/ipxwafs/scripts/runall.ksh 
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev" -P "GFS-T2O" \
-     -J "ipolates1" -R "rusage[mem=500]" -n 1 -R span[ptile=1] \
+     -J "ipolates1" -n 1 -R span[ptile=1] \
      -W 0:30 -w 'ended(ipxwafs)' -cwd $(pwd) "export OMP_NUM_THREADS=1; $REG_DIR/ipolates/scripts/runall.ksh 1"
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev" -P "GFS-T2O"  \
-     -J "ipolates4" -R "rusage[mem=300]" -n 4 -R span[ptile=4] \
+     -J "ipolates4" -n 4 -R span[ptile=4] \
      -W 0:30 -w 'ended(ipolates1)' -cwd $(pwd) "export OMP_NUM_THREADS=4; $REG_DIR/ipolates/scripts/runall.ksh 4"
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
      -J "compares" -R "affinity[core(1)]" -R "rusage[mem=100]" -W 0:10 -w 'ended(ipolates4)' -cwd $(pwd) $REG_DIR/ipolates/scripts/compare.ksh
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev" -P "GFS-T2O" \
-     -J "ipolatev1" -R "rusage[mem=500]" -n 1 -R span[ptile=1] \
+     -J "ipolatev1" -n 1 -R span[ptile=1] \
      -W 1:00 -w 'ended(compares)' -cwd $(pwd) "export OMP_NUM_THREADS=1; $REG_DIR/ipolatev/scripts/runall.ksh 1"
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev" -P "GFS-T2O" \
-     -J "ipolatev4" -R "rusage[mem=300]" -n 4 -R span[ptile=4] \
+     -J "ipolatev4" -n 4 -R span[ptile=4] \
      -W 1:00 -w 'ended(ipolatev1)' -cwd $(pwd) "export OMP_NUM_THREADS=4; $REG_DIR/ipolatev/scripts/runall.ksh 4"
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \

@@ -54,7 +54,7 @@ IPOLATES_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE 
 
 export OMP_NUM_THREADS=4
 
-IPOLATES_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolates4 -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_4=$(qsub -l nodes=1:ppn=1 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolates4 -o $LOG_FILE -e $LOG_FILE \
       -F "4" -W depend=afterok:$IPOLATES_1 \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolates/scripts/runall.ksh)
 
@@ -69,7 +69,7 @@ IPOLATEV_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE 
 
 export OMP_NUM_THREADS=4
 
-IPOLATEV_4=$(qsub -l nodes=1:ppn=24 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_4=$(qsub -l nodes=1:ppn=1 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
       -F "4" -W depend=afterok:$IPOLATEV_1 \
       -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh)
 

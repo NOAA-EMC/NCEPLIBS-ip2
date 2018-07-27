@@ -9,17 +9,21 @@
 
 #BSUB -oo copygb2.log
 #BSUB -eo copygb2.log
-#BSUB -q dev_shared
+#BSUB -q debug
 #BSUB -J copygb2
-#BSUB -R rusage[mem=400]
 #BSUB -P GFS-T2O
+#BSUB -M 500
+#BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 0:15
 
 set -x
 
-module list
+export NODES=1
+export OMP_NUM_THREADS=4
 
-export OMP_NUM_THREADS=1
+export APRUN="aprun -j 1 -n 1 -d ${OMP_NUM_THREADS} "
+
+module list
 
 export REG_DIR=${LS_SUBCWD}/../..
 

@@ -60,6 +60,8 @@
 
 #set -x
 
+APRUN=${APRUN:-" "}
+
 if [[ ! -d ../work ]]; then
   mkdir -p ../work
 fi
@@ -97,7 +99,7 @@ do
     esac
 
     echo
-    $EXEC $grid $option
+    $APRUN $EXEC $grid $option
 
   done
 done
@@ -136,7 +138,7 @@ do
     esac
 
     echo
-    $EXEC $grid $option
+    $APRUN $EXEC $grid $option
 
   done
 done

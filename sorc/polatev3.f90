@@ -4,8 +4,6 @@
                      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
-! $Revision$
-!
 ! SUBPROGRAM:  POLATEV3   INTERPOLATE VECTOR FIELDS (BUDGET)
 !   PRGMMR: IREDELL       ORG: W/NMC23       DATE: 96-04-10
 !
@@ -282,15 +280,19 @@
      WB=IPOPT(2+LB)
    ENDIF
    IF(WB.NE.0) THEN
+!$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
      DO N=1,NO
        XPTB(N)=XPTS(N)+IB*RB2
        YPTB(N)=YPTS(N)+JB*RB2
      ENDDO
+!$OMP END PARALLEL DO
      CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB, &
                  RLOB,RLAB,NV)
      CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB, &
                  RLOB,RLAB,NV)
      IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
+!$OMP PARALLEL DO PRIVATE(N,XI,YI,I1,I2,WI1,WI2,J1,J2,WJ1,WJ2,CM11,CM21,CM12,CM22,SM11,SM21,SM12,SM22) &
+!$OMP SCHEDULE(STATIC)
      DO N=1,NO
        XI=XPTB(N)
        YI=YPTB(N)
@@ -337,9 +339,12 @@
          N22(N)=0
        ENDIF
      ENDDO
+!$OMP END PARALLEL DO 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  INTERPOLATE WITH OR WITHOUT BITMAPS
+!  KM IS OFTEN 1 .. DO NO PUT OMP PARALLEL DO HERE
      DO K=1,KM
+!$OMP PARALLEL DO PRIVATE(N,U11,U12,U21,U22,UB,V11,V12,V21,V22,VB) SCHEDULE(STATIC)
        DO N=1,NO
          IF(N11(N).GT.0) THEN
            IF(IBI(K).EQ.0) THEN
@@ -388,13 +393,16 @@
            ENDIF
          ENDIF
        ENDDO
+!$OMP END PARALLEL DO
      ENDDO
    ENDIF
  ENDDO
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE OUTPUT BITMAPS AND FIELDS
+! KM is often 1, do not put OMP PARALLEL here
  DO K=1,KM
    IBO(K)=IBI(K)
+!$OMP PARALLEL DO PRIVATE(N,UROT,VROT) SCHEDULE(STATIC)
    DO N=1,NO
      LO(N,K)=WO(N,K).GE.PMP*NB4
      IF(LO(N,K)) THEN
@@ -410,6 +418,7 @@
        VO(N,K)=0.
      ENDIF
    ENDDO
+!$OMP END PARALLEL DO
  ENDDO
  IF(IGDTNUMO.EQ.0) CALL POLFIXV(NO,MO,KM,RLAT,RLON,IBO,LO,UO,VO)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

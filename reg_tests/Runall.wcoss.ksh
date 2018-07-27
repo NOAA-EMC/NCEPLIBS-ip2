@@ -31,8 +31,8 @@ mkdir -p $WORK_DIR
 LOG_FILE=${WORK_DIR}/regression.log
 SUM_FILE=${WORK_DIR}/summary.log
 
-bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
-     -J "gdswzd" -R affinity[core] -R "rusage[mem=300]" -W 0:05 $REG_DIR/gdswzd/scripts/runall.ksh 
+bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" -J "gdswzd" -a openmp -n 1 \
+     -R affinity[core] -R "rusage[mem=300]" -R span[ptile=1] -W 0:05 $REG_DIR/gdswzd/scripts/runall.ksh 
 
 bsub -e $LOG_FILE -o $LOG_FILE -q "dev_shared" -P "GFS-T2O" \
      -J "ipxetas" -R affinity[core] -R "rusage[mem=100]" -W 0:05 -w 'ended(gdswzd)' $REG_DIR/ipxetas/scripts/runall.ksh 
