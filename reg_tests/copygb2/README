@@ -35,7 +35,8 @@ the proper driver script in the ./scripts subdirectory as follows:
 
 "cat run.wcoss.lsf | bsub"       (wcoss phase 1/2 machine)
 "cat run.wcoss-cray.lsf | bsub"  (wcoss cray machine)
-"qsub run.theia.ksh"             (theia machine)
+"cat run.wcoss-dell.lsf | bsub"  (wcoss phase 3/Dell machine)
+"sbatch run.theia.ksh"           (theia machine)
 
 This driver script calls the copygb2.ksh child script located in ./scripts.
 

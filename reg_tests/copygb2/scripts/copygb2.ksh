@@ -145,7 +145,7 @@ do
         test_failed=0
         OUTPUT_FILE=grid${gridnum}.opt${opt}.${int_type}.${bytesize}byte.grb2
         cd $WORK_CTL
-        $APRUN copygb2_ctl_${bytesize} -g "${grid[gridnum]}" -i"${option}" -x $INPUT_FILE $OUTPUT_FILE
+        $APRUN ./copygb2_ctl_${bytesize} -g "${grid[gridnum]}" -i"${option}" -x $INPUT_FILE $OUTPUT_FILE
         status=$?
         if ((status != 0)); then
           echo "** PROBLEM WITH CONTROL RUN."
@@ -158,7 +158,7 @@ do
           ctl_failed=1
         fi
         cd $WORK_TEST
-        $APRUN copygb2_test_${bytesize} -g "${grid[gridnum]}" -i"${option}" -x $INPUT_FILE $OUTPUT_FILE
+        $APRUN ./copygb2_test_${bytesize} -g "${grid[gridnum]}" -i"${option}" -x $INPUT_FILE $OUTPUT_FILE
         status=$?
         if ((status != 0)); then
           echo "** PROBLEM WITH TEST RUN."

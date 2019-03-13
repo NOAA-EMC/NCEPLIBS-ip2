@@ -1,25 +1,26 @@
-#!/bin/ksh --login
+#!/bin/sh --login
 #
 #-----------------------------------------------------------------------------
 # Script to run the copygb2 regression test on Theia.
 #
-# Invoke script by typing its name on the command line: "qsub run.theia.ksh"
+# Invoke script by typing its name on the command line: "sbatch $script".
 #-----------------------------------------------------------------------------
 #
-#PBS -l procs=1
-#PBS -l vmem=2500M
-#PBS -l walltime=2:30:00
-#PBS -A fv3-cpu
-#PBS -N iptest_copygb2
-#PBS -o ./regression.log
-#PBS -e ./regression.log
+#SBATCH -p shared
+#SBATCH --mem=2500M
+#SBATCH -t 1:00:00
+#SBATCH -A fv3-cpu
+#SBATCH -J iptest_copygb2
+#SBATCH -q batch
+#SBATCH -o ./regression.log
+#SBATCH -e ./regression.log
 
 set -x
 
 module purge
 module load intel
 
-export REG_DIR=$PBS_O_WORKDIR/../../
+export REG_DIR=${SLURM_SUBMIT_DIR}/../../
 
 export WORK_DIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/regression
 mkdir -p $WORK_DIR

@@ -124,7 +124,7 @@ do
       echo TEST ${bytesize}-BYTE VERSION FOR GRID $grids AND INTERP OPTION $option
 
       cd $WORK_CTL
-      $APRUN ipolatev_ctl_${bytesize}.exe "$grids" "$option" > ctl.log
+      $APRUN ./ipolatev_ctl_${bytesize}.exe "$grids" "$option" > ctl.log
       status=$?
       if ((status != 0));then
         echo "** CONTROL RUN FAILED"
@@ -133,7 +133,7 @@ do
       fi
 
       cd $WORK_TEST
-      $APRUN ipolatev_test_${bytesize}.exe "$grids" "$option" > test.log
+      $APRUN ./ipolatev_test_${bytesize}.exe "$grids" "$option" > test.log
       status=$?
       if ((status != 0));then
         echo "** TEST RUN FAILED"

@@ -43,11 +43,6 @@ in the ./scripts subdirectory.  The runall.ksh script
 is run by the Runall.${machine}.ksh driver script located
 in ../reg_tests.
 
-The regression test may be run 'stand-alone' on zeus with the
-runzeus.1.thread.ksh or runzeus.4.threads.ksh for 1/4 threads.
-On ccs, use runccs.1.thread.ksh or runccs.4.threads.ksh
-These scripts are in the ./scripts subdirectory.
-
 The interpolated wind data is written to binary files.
 If the files from the 'control' and 'test' ip libraries
 are not bit identical, the regression test is considered

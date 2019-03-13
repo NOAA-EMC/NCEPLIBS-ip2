@@ -177,7 +177,7 @@ invoke these driver scripts as follows:
  $ cat run_wcoss.lsf | bsub      (WCOSS Phase 1/2)
  $ cat run_wcoss-cray.lsf | bsub (WCOSS-Cray)
  $ run_wcoss-dell.sh             (WCOSS Phase 3-Dell)
- $ qsub run_theia.ksh            (Theia)
+ $ sbatch run_theia.ksh          (Theia)
 
 In this case, output is sent to "unit_test.log".
 

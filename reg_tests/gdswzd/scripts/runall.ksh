@@ -102,7 +102,7 @@ do
 
     cd $WORK_CTL
     CTL_LOG=ctl.${bytesize}byte.grid${grids}.log
-    $APRUN gdswzd_ctl_${bytesize}.exe "$grids" > $CTL_LOG
+    $APRUN ./gdswzd_ctl_${bytesize}.exe "$grids" > $CTL_LOG
     status=$?
 # did 'control' executable run without error?
     if ((status != 0));then
@@ -113,7 +113,7 @@ do
 
     cd $WORK_TEST
     TEST_LOG=test.${bytesize}byte.grid${grids}.log
-    $APRUN gdswzd_test_${bytesize}.exe "$grids" > $TEST_LOG
+    $APRUN ./gdswzd_test_${bytesize}.exe "$grids" > $TEST_LOG
     status=$?
 # did 'test' executable run without error?
     if ((status != 0));then

@@ -12,7 +12,7 @@
 #
 # To run, type:  "Runall.theia.ksh". A series of "daisy-chained"
 # job steps will be submitted.  To check the queue, type:
-# "showq -n -v -u USERNAME"
+# "squeue -u USERNAME"
 #
 # The run output is stored in $WORK_DIR.  Log output from the test suite
 # will be in "regression.log"  To monitor as the suite is running,
@@ -37,48 +37,52 @@ SUM_FILE=${WORK_DIR}/summary.log
 
 module purge
 module load intel
+module load slurm
 
 export OMP_NUM_THREADS=1
 
-GDSWZD=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:10:00 -A $PROJECT_CODE -N ip2test_gdswzd -o $LOG_FILE -e $LOG_FILE \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gdswzd/scripts/runall.ksh)
+GDSWZD=$(sbatch --parsable -p shared --mem=2000M -t 0:10:00 -A $PROJECT_CODE -J ip2test_gdswzd -o $LOG_FILE -e $LOG_FILE \
+      -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gdswzd/scripts/runall.ksh)
 
-IPXETAS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N ip2test_ipxetas -o $LOG_FILE -e $LOG_FILE \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$GDSWZD $REG_DIR/ipxetas/scripts/runall.ksh)
+IPXETAS=$(sbatch --parsable -p shared --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxetas -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$GDSWZD $REG_DIR/ipxetas/scripts/runall.ksh)
 
-IPXWAFS=$(qsub -l procs=1 -l vmem=500M -l walltime=0:02:00 -A $PROJECT_CODE -N ip2test_ipxwafs -o $LOG_FILE -e $LOG_FILE \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPXETAS $REG_DIR/ipxwafs/scripts/runall.ksh)
+IPXWAFS=$(sbatch --parsable -p shared --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxwafs -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$IPXETAS $REG_DIR/ipxwafs/scripts/runall.ksh)
 
-IPOLATES_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N ip2test_ipolates1 -o $LOG_FILE -e $LOG_FILE \
-      -F "1" -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPXWAFS $REG_DIR/ipolates/scripts/runall.ksh)
+IPOLATES_1=$(sbatch --parsable -p shared --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolates1 -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$IPXWAFS $REG_DIR/ipolates/scripts/runall.ksh "1")
 
 export OMP_NUM_THREADS=4
 
-IPOLATES_4=$(qsub -l nodes=1:ppn=1 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolates4 -o $LOG_FILE -e $LOG_FILE \
-      -F "4" -W depend=afterok:$IPOLATES_1 \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolates/scripts/runall.ksh)
+IPOLATES_4=$(sbatch --parsable -N 1 -t 0:15:00 -A $PROJECT_CODE -J ip2test_ipolates4 -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch -d afterok:$IPOLATES_1 \
+      --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolates/scripts/runall.ksh "4")
 
 export OMP_NUM_THREADS=1
 
-IPOLATES_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N ip2test_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
-      -v WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATES_4 $REG_DIR/ipolates/scripts/compare.ksh)
+IPOLATES_CMP=$(sbatch --parsable -p shared --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch --export WORK_DIR,OMP_NUM_THREADS -d afterok:$IPOLATES_4 $REG_DIR/ipolates/scripts/compare.ksh)
 
-IPOLATEV_1=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:20:00 -A $PROJECT_CODE -N ip2test_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
-      -F "1" -W depend=afterok:$IPOLATES_CMP \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh)
+IPOLATEV_1=$(sbatch --parsable -p shared --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch -d afterok:$IPOLATES_CMP \
+      --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh "1")
 
 export OMP_NUM_THREADS=4
 
-IPOLATEV_4=$(qsub -l nodes=1:ppn=1 -l walltime=0:15:00 -A $PROJECT_CODE -N ip2test_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
-      -F "4" -W depend=afterok:$IPOLATEV_1 \
-      -v REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh)
+IPOLATEV_4=$(sbatch --parsable -N 1 -t 0:15:00 -A $PROJECT_CODE -J ip2test_ipolatev4 -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch -d afterok:$IPOLATEV_1 \
+      --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh "4")
 
 export OMP_NUM_THREADS=1
 
-IPOLATEV_CMP=$(qsub -l procs=1 -l vmem=2000M -l walltime=0:05:00 -A $PROJECT_CODE -N ip2test_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
-      -v WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATEV_4 $REG_DIR/ipolatev/scripts/compare.ksh)
+IPOLATEV_CMP=$(sbatch --parsable -p shared --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch --export WORK_DIR,OMP_NUM_THREADS -d afterok:$IPOLATEV_4 $REG_DIR/ipolatev/scripts/compare.ksh)
 
-SUMMARY=$(echo "grep '<<<' $LOG_FILE > $SUM_FILE" | qsub -l procs=1 -l vmem=500M -l walltime=0:01:00 -A $PROJECT_CODE -N ip2test_summary \
-      -o $LOG_FILE -e $LOG_FILE  -v REG_DIR,WORK_DIR,OMP_NUM_THREADS -W depend=afterok:$IPOLATEV_CMP)
+sbatch -p shared --mem=100M -t 0:01:00 -A $PROJECT_CODE -J iptest_summary -o $LOG_FILE -e $LOG_FILE \
+      --open-mode=append -q batch -d afterok:$IPOLATEV_CMP << EOF
+#!/bin/sh
+grep '<<<' $LOG_FILE > $SUM_FILE
+EOF
 
 exit 0

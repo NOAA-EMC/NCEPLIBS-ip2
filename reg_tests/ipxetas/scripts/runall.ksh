@@ -102,7 +102,7 @@ do
 
     cd $WORK_CTL
     CTL_LOG=${cases}.${bytesize}byte.log
-    ipxetas_ctl_${bytesize}.exe $IDIR > $CTL_LOG
+    ./ipxetas_ctl_${bytesize}.exe $IDIR > $CTL_LOG
     status=$?
     if ((status != 0)); then
       echo "** CONTROL RUN FAILED."
@@ -115,7 +115,7 @@ do
 
     cd $WORK_TEST
     TEST_LOG=${cases}.${bytesize}byte.log
-    ipxetas_test_${bytesize}.exe $IDIR > $TEST_LOG
+    ./ipxetas_test_${bytesize}.exe $IDIR > $TEST_LOG
     status=$?
     if ((status != 0)); then
       echo "** TEST RUN FAILED."

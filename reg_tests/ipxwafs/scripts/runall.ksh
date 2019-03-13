@@ -121,7 +121,7 @@ do
       test_failed=0
 
       cd $WORK_TEST
-      ipxwafs_test_${bytesize} ${opt} > log
+      ./ipxwafs_test_${bytesize} ${opt} > log
       status=$?
       if ((status != 0))
       then
@@ -132,7 +132,7 @@ do
       fi
 
       cd $WORK_CTL
-      ipxwafs_ctl_${bytesize} ${opt} > log
+      ./ipxwafs_ctl_${bytesize} ${opt} > log
       status=$?
       if ((status != 0))
       then
@@ -209,7 +209,7 @@ do
       test_failed=0
 
       cd $WORK_TEST
-      ipxwafs_test_${bytesize} ${opt} > log
+      ./ipxwafs_test_${bytesize} ${opt} > log
       status=$?
       if ((status != 0))
       then
@@ -220,7 +220,7 @@ do
       fi
 
       cd $WORK_CTL
-      ipxwafs_ctl_${bytesize} ${opt} > log
+      ./ipxwafs_ctl_${bytesize} ${opt} > log
       status=$?
       if ((status != 0))
       then
