@@ -11,7 +11,7 @@ does the following:
    grid to a rotated lat/lon unstaggerd "full" grid.
 
 The program is compiled with all byte versions of the 'control'
-and 'test' iplibs by invoking the make_reg_tests.ksh script
+and 'test' libraries by invoking the make_reg_tests.ksh script
 located in the /reg_tests directory.  See the
 /reg_tests/README file for more information.
 
@@ -28,15 +28,15 @@ The input data (grib 2 format) is in ./data.
 
 Output from the program is written to grib 2 files.
 
-The output grib 2 files from the 'control' and 'test' ip libraries
+The output grib 2 files from the 'control' and 'test' ip2 libraries
 are expected to be bit identical for the regression test to pass.
 
 This regression test is run by the runall.ksh script
 in the ./scripts subdirectory.  The runall.ksh script
-is run by the Runall.${machine}.ksh driver script located
+is run by the "Runall.${machine}" driver script located
 in /reg_tests.
 
-List of iplib modules or routines tested:
+List of modules or routines tested:
 
 earth_radius
 gdswzd_mod

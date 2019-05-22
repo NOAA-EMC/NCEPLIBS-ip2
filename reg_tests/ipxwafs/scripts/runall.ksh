@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 #-------------------------------------------------------------------------------
-# Test ip routines ipxwafs, ipxwafs2 and ipxwafs3 by transforming between
+# Test ip2 routines ipxwafs, ipxwafs2 and ipxwafs3 by transforming between
 # full and thinned WAFS grids.  The full grids have the same number of
 # points in each row.  In the thinned grids, the number of points in each
 # row decrease toward the pole. These transforms are performed using a
@@ -16,7 +16,7 @@
 #
 # The program executables are located under the ./exec subdirectory.
 # There is one executable for all three byte versions of the
-# 'control' and 'test' ip library:
+# 'control' and 'test' ip2 library:
 #
 # The three byte versions of the library are:
 #  > 4 byte integer/4 byte float  ($bytesize=4)
@@ -38,7 +38,7 @@
 # The 'control' and 'test' executables run in their own working directories:
 # $WORK_CTL and $WORK_TEST.
 #
-# If the output files (grib 2 format) from the control and test ip libraries
+# If the output files (grib 2 format) from the control and test libraries
 # are not bit identical, then the regression test has failed.  When this
 # happens, the log and output files are saved in the working directories
 # with the following naming convention:
@@ -51,7 +51,7 @@
 # where: $wafs_grid is "37" or "44"
 # where: $bytesize is the library byte size: "4" "8" "d"
 #
-# This script is run by the Runall.${machine}.ksh driver script located
+# This script is run by the "Runall.${machine}" driver script located
 # in /reg_tests.
 #-------------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ cp $EXEC_DIR/ipxwafs_test* $WORK_TEST
 reg_test_failed=0
 
 echo CONVERT FROM THINNED WAFS GRIDS TO FULL GRIDS
-for bytesize in "4" "8" "d"  # test all byte versions of iplib
+for bytesize in "4" "8" "d"  # test all byte versions of library
 do
 
   echo
@@ -170,7 +170,7 @@ done
 echo
 echo CONVERT FROM FULL WAFS GRIDS TO THINNED GRIDS
 
-for bytesize in "4" "8" "d"  # test all byte versions of iplib
+for bytesize in "4" "8" "d"  # test all byte versions of library
 do
 
   echo

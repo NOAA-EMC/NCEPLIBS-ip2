@@ -6,7 +6,7 @@
 # Invoke script by typing its name on the command line: "sbatch $script".
 #-----------------------------------------------------------------------------
 #
-#SBATCH -p shared
+#SBATCH --ntasks=1
 #SBATCH --mem=2500M
 #SBATCH -t 1:00:00
 #SBATCH -A fv3-cpu

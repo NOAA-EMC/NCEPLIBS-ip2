@@ -5,7 +5,7 @@
 # of routines.  These routines are exercised by a Fortran program.
 #
 # The program is compiled with all three byte versions
-# of the 'control' and 'test' ip library.  The executables are located
+# of the 'control' and 'test' ip2 library.  The executables are located
 # in the ./exec subdirectory (there are six).
 #
 # The three byte versions of the library are:
@@ -38,7 +38,7 @@
 #    4 - spectral
 #    6 - budget-neighbor
 #
-# This script is run by the Runall.${machine}.ksh driver
+# This script is run by the "Runall.${machine}" driver
 # script located in /reg_tests.
 #
 # The ipolates suite of routines contain threads.  Therefore, this 
@@ -46,7 +46,7 @@
 # threads is passed in as an argument.  This is only used to
 # name the work directory, and does not cause the regression test to
 # run with that number of threads. The number of threads is set
-# from the /reg_tests/Runall.${machine}.ksh driver script.  
+# from the /reg_tests/Runall.${machine} driver script.  
 #
 # The interpolated temperature data is output to direct access
 # binary files under WORK_DIR.  These files may be viewed in Grads
@@ -55,7 +55,7 @@
 #   grid${grid_num}.opt${interp_opt_num}.${bytesize}byte.bin
 #
 # Binary files of the interpolated data from the control and test
-# iplibs are checked for bit-identicalness.  If not identical, the test
+# libraries are checked for bit-identicalness.  If not identical, the test
 # is considered failed and the script will save the file in a
 # working sub-directory with a "failed" extension.
 #

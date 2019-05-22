@@ -1,11 +1,8 @@
-## Put version control id tag in output configure script
-AC_REVISION($Id$)
-
 ## Initialise autoconf
-AC_INIT([ip regression test suite], [3.0.0], [ncep.list.emc.nceplibs.support@noaa.gov])
+AC_INIT([ip2 regression test suite], [1.0.0], [ncep.list.emc.nceplibs.support@noaa.gov])
 
 # Output info for user
-AC_MSG_NOTICE([ip AC_PACKAGE_VERSION])
+AC_MSG_NOTICE([ip2 AC_PACKAGE_VERSION])
 
 # Check for existence of unique file before proceeding
 # Can only check for one file.  Not a file in each

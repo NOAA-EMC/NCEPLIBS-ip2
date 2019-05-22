@@ -146,7 +146,7 @@ for WHICHIP in ctl test; do  # the 'control' or 'test' IP2LIB
 
     ./configure --prefix=${PWD} --enable-promote=${PRECISION} \
       FC="ftn" FCFLAGS="${FCFLAGS_ALL} -I${PWD}/lib/incmod_${WHICHIP}_${PRECISION} -I${G2_INC}" \
-      LIBS="${PWD}/lib/libip_${WHICHIP}_${PRECISION}.a ${G2_LIB} ${SP_LIB} ${BACIO_LIB} \
+      LIBS="${PWD}/lib/libip2_${WHICHIP}_${PRECISION}.a ${G2_LIB} ${SP_LIB} ${BACIO_LIB} \
             ${W3NCO_LIB} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}"
     if [ $? -ne 0 ]; then
       echo

@@ -5,7 +5,7 @@ neighbor, bilinear, bicubic, spectral, budget, budget-neighbor -
 are invoked.  A simple Fortran program is used.
 
 The program is compiled with all byte versions of the 'control'
-and 'test' iplibs by invoking the make_reg_tests.ksh script
+and 'test' ip2 libraries by invoking the make_reg_tests.ksh script
 located in the /reg_tests directory.  See the
 /reg_tests/README file for more information.
 
@@ -40,13 +40,13 @@ grid #       description
 
 This regression test is run by the runall.ksh script
 in the ./scripts subdirectory.  The runall.ksh script
-is run by the Runall.${machine}.ksh driver script located
+is run by the "Runall.${machine}" driver script located
 in ../reg_tests.
 
 The interpolated wind data is written to binary files.
-If the files from the 'control' and 'test' ip libraries
+If the files from the 'control' and 'test' ip2 libraries
 are not bit identical, the regression test is considered
-failed.  Also, the files from the 1 and 4 thread 'test' iplib are compared.
+failed.  Also, the files from the 1 and 4 thread 'test' libraries are compared.
 If not bit identical, the regression test fails.  This comparison
 is done by the ./scripts/compare.ksh script.
 

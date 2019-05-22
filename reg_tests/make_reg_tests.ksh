@@ -6,7 +6,6 @@
 #
 # DO NOT USE THIS SCRIPT ON THE NCEP WCOSS-Cray machine.  Instead, 
 # use the "make_reg_tests_wcoss-cray.sh" script.
-# 
 #
 # PLEASE READ THE "README" FILE IN THIS DIRECTORY FOR DETAILS ON HOW
 # TO RUN THIS SCRIPT.
@@ -139,7 +138,7 @@ for WHICHIP in ctl test; do  # the 'control' or 'test' IP2LIB
 
     ./configure --prefix=${PWD} --enable-promote=${PRECISION} \
       FCFLAGS="${FCFLAGS} -I${G2_INC} -I${PWD}/lib/incmod_${WHICHIP}_${PRECISION}" \
-      LIBS="${PWD}/lib/libip_${WHICHIP}_${PRECISION}.a ${G2_LIB} ${SP_LIB} \
+      LIBS="${PWD}/lib/libip2_${WHICHIP}_${PRECISION}.a ${G2_LIB} ${SP_LIB} \
             ${BACIO_LIB} ${W3NCO_LIB} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}"
     if [ $? -ne 0 ]; then
       echo

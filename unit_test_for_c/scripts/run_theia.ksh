@@ -8,12 +8,12 @@
 # Output is put in "unit_test.log"
 #------------------------------------------------------------
 
-#SBATCH -p shared
+#SBATCH --ntasks=1
 #SBATCH --mem=100M
 #SBATCH -t 0:01:00
 #SBATCH -A fv3-cpu
 #SBATCH -q debug
-#SBATCH -J ip2_unit_test
+#SBATCH -J ip2_unit_test_c
 #SBATCH -o unit_test.log
 #SBATCH -e unit_test.log
 

@@ -3,25 +3,25 @@ HOW TO RUN THE REGRESSION TEST SUITE
 ---------------------------------------------------------------
 
 The regression test suite consists of six Fortran programs
-that invoke a subset of IPOLATES (or IPLIB) routines.  IPOLATES
-developers are required to run this test suite to ensure their
+that invoke a subset of IPOLATES2 (or IP2LIB) routines.  
+Developers are required to run this test suite to ensure their
 branch changes perform as expected before they are merged to 
-the trunk.
+the master.
 
 The following steps are required to setup and run the test suite:
 
-(1) Compile the 'test' and 'control' IPOLATES libraries.
+(1) Compile the 'test' and 'control' IPOLATES2 libraries.
 
-   The suite tests all three precision versions of IPOLATES:
+   The suite tests all three precision versions of IPOLATES2:
 
    -4 byte integer/4 byte float ("_4")
    -4 byte integer/8 byte float ("_d")
    -8 byte integer/8 byte float ("_8")
 
    The 'test' libraries are your branch copies, while 
-   the 'control' libaries are the head of the trunk.
+   the 'control' libaries are the head of master.
 
-(2) Link the 'test' and 'control' IPOLATES libraries and 
+(2) Link the 'test' and 'control' IPOLATES2 libraries and 
     their include directories (which contain their Fortran
     module files) to the ./reg_tests/lib directory
     in your branch.  
@@ -30,12 +30,12 @@ The following steps are required to setup and run the test suite:
     libraries and include directories in the ./reg_tests/lib 
     directory with the following names:
 
-    libip_ctl_4.a  (4 byte integer/4 byte float library, control)
-    libip_ctl_8.a  (8 byte integer/8 byte float library, control)
-    libip_ctl_d.a  (4 byte integer/8 byte float library, control)
-    libip_test_4.a  (4 byte integer/4 byte float library, test)
-    libip_test_8.a  (8 byte integer/8 byte float library, test)
-    libip_test_d.a  (4 byte integer/8 byte float library, test)
+    libip2_ctl_4.a  (4 byte integer/4 byte float library, control)
+    libip2_ctl_8.a  (8 byte integer/8 byte float library, control)
+    libip2_ctl_d.a  (4 byte integer/8 byte float library, control)
+    libip2_test_4.a  (4 byte integer/4 byte float library, test)
+    libip2_test_8.a  (8 byte integer/8 byte float library, test)
+    libip2_test_d.a  (4 byte integer/8 byte float library, test)
 
     incmod_ctl_4  (4 byte integer/4 byte float include dir, control)
     incmod_ctl_8  (8 byte integer/8 byte float include dir, control)
@@ -55,19 +55,19 @@ The following steps are required to setup and run the test suite:
     Then, link each library and include directory to the 
     name expected by the regression test build:
     
-    "ln -s /trunk/ip/vX.Y.Z/libip_vX.Y.Z_4.a  ./libip_ctl_4.a"
-    "ln -s /trunk/ip/vX.Y.Z/libip_vX.Y.Z_8.a  ./libip_ctl_8.a"
-    "ln -s /trunk/ip/vX.Y.Z/libip_vX.Y.Z_d.a  ./libip_ctl_d.a"
-    "ln -s /branch/ip/vX.Y.Z/libip_vX.Y.Z_4.a ./libip_test_4.a"
-    "ln -s /branch/ip/vX.Y.Z/libip_vX.Y.Z_8.a ./libip_test_8.a"
-    "ln -s /branch/ip/vX.Y.Z/libip_vX.Y.Z_d.a ./libip_test_d.a"
+    "ln -s /master/ip2/vX.Y.Z/libip2_vX.Y.Z_4.a  ./libip2_ctl_4.a"
+    "ln -s /master/ip2/vX.Y.Z/libip2_vX.Y.Z_8.a  ./libip2_ctl_8.a"
+    "ln -s /master/ip2/vX.Y.Z/libip2_vX.Y.Z_d.a  ./libip2_ctl_d.a"
+    "ln -s /branch/ip2/vX.Y.Z/libip2_vX.Y.Z_4.a  ./libip2_test_4.a"
+    "ln -s /branch/ip2/vX.Y.Z/libip2_vX.Y.Z_8.a  ./libip2_test_8.a"
+    "ln -s /branch/ip2/vX.Y.Z/libip2_vX.Y.Z_d.a  ./libip2_test_d.a"
 
-    "ln -s /trunk/ip/vX.Y.Z/include/ip_vX.Y.Z_4  ./incmod_ctl_4"
-    "ln -s /trunk/ip/vX.Y.Z/include/ip_vX.Y.Z_8  ./incmod_ctl_8"
-    "ln -s /trunk/ip/vX.Y.Z/include/ip_vX.Y.Z_d  ./incmod_ctl_d"
-    "ln -s /branch/ip/vX.Y.Z/include/ip_vX.Y.Z_4 ./incmod_test_4"
-    "ln -s /branch/ip/vX.Y.Z/include/ip_vX.Y.Z_8 ./incmod_test_8"
-    "ln -s /branch/ip/vX.Y.Z/include/ip_vX.Y.Z_d ./incmod_test_d"
+    "ln -s /master/ip2/vX.Y.Z/include/ip2_vX.Y.Z_4  ./incmod_ctl_4"
+    "ln -s /master/ip2/vX.Y.Z/include/ip2_vX.Y.Z_8  ./incmod_ctl_8"
+    "ln -s /master/ip2/vX.Y.Z/include/ip2_vX.Y.Z_d  ./incmod_ctl_d"
+    "ln -s /branch/ip2/vX.Y.Z/include/ip2_vX.Y.Z_4  ./incmod_test_4"
+    "ln -s /branch/ip2/vX.Y.Z/include/ip2_vX.Y.Z_8  ./incmod_test_8"
+    "ln -s /branch/ip2/vX.Y.Z/include/ip2_vX.Y.Z_d  ./incmod_test_d"
 
 (3) Check the ./reg_tests/config-setup/*.setup files in your branch.
 
@@ -75,8 +75,8 @@ The following steps are required to setup and run the test suite:
     used to compile the regression test suite.  There is one file
     for the Intel Fortran compiler (ifort.setup) and one for the
     Cray compiler (crayftn.setup).  The regression suite has
-    been run with both compilers on WCOSS-Cray.  On WCOSS-
-    Phase 1/2 and Theia, only the Intel compiler has been used.
+    been run with both compilers on WCOSS-Cray.  On WCOSS-Phase 1/2,
+    WCOSS Dell (Phase 3) and Theia, only the Intel compiler has been used.
     You should not need to change the settings in these files.
     To use a different compiler, you will need to create
     your own "setup" file and point to it in the build script
@@ -116,12 +116,13 @@ The following steps are required to setup and run the test suite:
     There is no mixed precision ("_d") version of BACIO.
 
     There is no official "8" byte integer/float version
-    of G2.  A version exists on WCOSS under:
+    of G2.  A version exists on WCOSS Phase 1/2 under:
     /global/noscrub/George.Gayno/g2_lib.  On Theia, a copy
     is here: /scratch4/NCEPDEV/da/noscrub/George.Gayno/g2_v2.5.0.
-    On WCOSS-Cray here:/gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib
+    On WCOSS-Cray: /gpfs/hps/emc/global/noscrub/George.Gayno/g2_lib
+    On WCOSS-Dell: /gpfs/dell2/emc/modeling/noscrub/George.Gayno/ip2lib.git/g2_lib
 
-    On WCOSS-Phase1/2, WCOSS-Cray, and Theia, these environment
+    On WCOSS-Phase1/2, WCOSS-Cray, WCOSS-Dell and Theia, these environment
     variables are set via modules in the build script.
     These settings may be overidden or set (if running
     on a machine other than WCOSS or Theia) by manually
@@ -168,6 +169,10 @@ The following steps are required to setup and run the test suite:
     script on the command line.   A series of  "daisy-chained" jobs steps
     will be submitted.  To check the job queue type "bjobs".
 
+    On WCOSS-Dell (Phase 3), invoke the "Runall.wcoss-dell.sh" script 
+    with no arguments.  A series of "daisy-chained" jobs will be submitted.
+    To check the job queue, type "bjobs".
+
     On Theia, the "Runall.theia.ksh" script is used.  Before running, 
     set the project code that will be charged when running the test
     suite.  The project code is script variable $PROJECT_CODE. The
@@ -184,6 +189,7 @@ The following steps are required to setup and run the test suite:
 
     On WCOSS-Phase1/2, the default run directory is /stmpp1/${LOGNAME}/regression
     On WCOSS-Cray, the default run directory is /gpfs/hps/stmp/${LOGNAME}/regression
+    On WCOSS-Dell, the default run directory is /gpfs/dell1/stmp/${LOGNAME}/regression
     On Theia, the default run directory is /scratch3/NCEPDEV/stmp1/$LOGNAME/regression
     (The run directory is variable $WORK_DIR in the driver script).
 
@@ -198,7 +204,7 @@ DETAILS ON EACH INDIVIDUAL REGRESSION TEST
 ---------------------------------------------------------------
 
 The tests in the following subdirectories are designed to test 
-a subset of IPLIB.  It was too difficult to create a single test
+a subset of IP2LIB.  It was too difficult to create a single test
 that exercised every routine.  
 
 1)  gdswzd - A fortran program that calls gdswzd
@@ -234,7 +240,7 @@ that exercised every routine.
       2) Create staggered velocity data from unstaggered data.
       3) Create unstaggered data from staggered mass data.
       4) Create unstaggered data from staggered velocity data.
-5)  ipxwafs - Test ip routines ipxwafs, ipxwafs2 and ipxwafs3 by 
+5)  ipxwafs - Test routines ipxwafs, ipxwafs2 and ipxwafs3 by 
     transforming data between 'full' and 'thinned' WAFS grids 37 and 44.
     Routine ixpwafs does not handle bitmapped data, so a field of
     600mb temperature is transformed when testing this routine.  
@@ -271,7 +277,7 @@ used to sanity check the data.  So when viewing, do a 'set mproj off'.
 More detailed information about each test is described in a README file in that
 test's subdirectory.
 
-Below is a table of a routine or module in iplib and which regression test(s) invoke it.
+Below is a table of a routine or module and which regression test(s) invoke it.
 
 subroutine or
 module name                      regression test

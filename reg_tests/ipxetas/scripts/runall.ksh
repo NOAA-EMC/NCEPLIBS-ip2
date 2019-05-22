@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 #------------------------------------------------------------------------
-# Run a Fortran program to test iplib routine ipxetas as follows: 
+# Run a Fortran program to test ip2lib routine ipxetas as follows: 
 #
 # 1) Convert land/sea mask on a rotated lat/lon "e"-staggered "h" point 
 #    grid to a rotated lat/lon unstaggerd "full" grid. 
@@ -13,7 +13,7 @@
 #    to a rotated lat/lon "e"-staggered "v" point grid. 
 #
 # The Fortran program is compiled with all three byte versions
-# of the 'control' and 'test' ip library.
+# of the 'control' and 'test' ip2 library.
 #
 # The three byte versions of the library are:
 #  > 4 byte integer/4 byte float  ($bytesize=4)
@@ -26,7 +26,7 @@
 # The input files are in the ../data directory.  They are grib 2 format.
 #
 # Output files from the program are in grib 2 format.  If the files from
-# the 'test' and 'control' ip libraries are not bit identical the 
+# the 'test' and 'control' libraries are not bit identical the 
 # the test has "failed".  And the output grib 2 files are saved in the
 # working directory and named as:
 #
@@ -39,7 +39,7 @@
 #
 #   ${cases}.${bytesize}byte.log.failed
 #
-# This script is run by the Runall.${machine}.ksh driver script located
+# This script is run by the "Runall.${machine}" driver script located
 # in /reg_tests.
 #------------------------------------------------------------------------
 

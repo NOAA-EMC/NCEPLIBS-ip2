@@ -8,7 +8,7 @@
 # Output is put in "unit_test.log"
 #------------------------------------------------------------
 
-#SBATCH -p shared
+#SBATCH --ntasks=1
 #SBATCH --mem=5000M
 #SBATCH -t 0:15:00
 #SBATCH -A fv3-cpu

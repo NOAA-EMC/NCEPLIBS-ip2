@@ -5,7 +5,7 @@
 # program.
 #
 # The program is compiled with all three byte versions
-# of the 'control' and 'test' ip library.
+# of the 'control' and 'test' ip2 library.
 #
 # The three byte versions of the library are:
 #  > 4 byte integer/4 byte float  ($bytesize=4)
@@ -28,7 +28,7 @@
 #
 # All fields computed from each call to gdswzd are output to a binary file.
 # The file naming convention is: grid${gridnum}.iopt${0/m1}.bin.
-# The files from the 'control' and 'test' ip libraries are compared
+# The files from the 'control' and 'test' ip2 libraries are compared
 # and if not bit identical, the regression test fails.
 #
 # The grids tested are:
@@ -53,7 +53,7 @@
 # any binary files will be stored in a "failed" sub-directory under
 # working directory, $WORK_DIR.
 #
-# This script is run by the Runall.${machine}.ksh driver script located
+# This script is run by the "Runall.${machine}" driver script located
 # in ../reg_tests.
 #--------------------------------------------------------------------
 

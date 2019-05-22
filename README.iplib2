@@ -1,9 +1,9 @@
-Documentation of the general interpolation library 2 - iplib2
+Documentation of the general interpolation library 2 - ip2lib
 --------------------------------------------------------------------------------
 
 I. Introduction
 
-The NCEP general interpolation library 2 (iplib2) contains Fortran 90 subprograms
+The NCEP general interpolation library 2 (ip2lib) contains Fortran 90 subprograms
 to be used for interpolating between nearly all grids used at NCEP.
 The library is particularly efficient when interpolating many fields at one time.
 The library has been extensively tested with AIX and Intel Fortran compilers.
@@ -139,7 +139,7 @@ it ran successfully or how it failed.  Check nonzero return codes
 against the docblock of the respective subprogram.
 
 Developers are encouraged to create additional interpolation methods or
-to create additional map projection "wizards" for iplib2.
+to create additional map projection "wizards" for ip2lib.
 
 Questions may be directed to: NCEP.List.EMC.nceplibs.Developers@noaa.gov
 
@@ -190,7 +190,7 @@ II. Entry point list
 
    IPXWAFS/2/3  EXPAND OR CONTRACT WAFS GRIDS
 
-III. How to invoke iplib2: examples
+III. How to invoke ip2lib: examples
 
 ***********************************************************************
 Example 1.  Read a grib 2 file of scalar data on a global regular
@@ -454,7 +454,7 @@ Example 2.  Read a grib 2 file of u/v wind data on a global regular
 !---------------------------------------------------------------------------
 
  iunit=9
- input_file="/global/save/George.Gayno/iplib_branches/ip_grib2/reg_tests/copygb2/data/uv_wind.grb2"
+ input_file="./reg_tests/copygb2/data/uv_wind.grb2"
  call baopenr (iunit, input_file, iret)
 
 !---------------------------------------------------------------------------

@@ -1,11 +1,11 @@
-Unit test for the NCEP IPOLATES2 library (IPLIB2).
+Unit test for the NCEP IPOLATES2 library (IP2LIB).
 
 ABSTRACT:
 ---------
 
 This test invokes IPOLATES2 to interpolate scalar and
 vector data to several grids of various map projections
-using all IPOLATES2 interpolation options.  The output 
+using all interpolation options.  The output 
 is compared to baseline data and a summary of differences is
 sent to standard output.
 
@@ -20,13 +20,13 @@ using all IPOLATES2 interpolation options.  Likewise, the vector program
 calls routine 'ipolatev' to interpolate a global field of 500mb u/w wind.
 The specific tests are:
 
-  - grid 3 (global one-deg lat/lon) using bilinear (IP2 option "0")
-  - grid 8 (mercator) using bicubic (IP2 option "1")
-  - grid 127 (gaussian lat/lon) using neighbor (IP2 option "2")
-  - grid 203 (rotated lat/lon "E") using budget (IP2 option "3")
-  - grid 205 (rotated lat/lon "B") using spectral (IP2 option "4")
-  - grid 212 (polar stereographic) using neighbor-budget (IP2 option "6")
-  - grid 218 (lambert conformal) using bilinear (IP2 option "0")
+  - grid 3 (global one-deg lat/lon) using bilinear (option "0")
+  - grid 8 (mercator) using bicubic (option "1")
+  - grid 127 (gaussian lat/lon) using neighbor (option "2")
+  - grid 203 (rotated lat/lon "E") using budget (option "3")
+  - grid 205 (rotated lat/lon "B") using spectral (option "4")
+  - grid 212 (polar stereographic) using neighbor-budget (option "6")
+  - grid 218 (lambert conformal) using bilinear (option "0")
 
 Some grid numbers refer to an NCEP grib 1 standard grid.  Others
 refer to the grib 1 data representation type.
@@ -56,7 +56,7 @@ DIRECTORY LAYOUT:
 
 ./exec - Contains the unit test executables.  There is one executable
          for the single ("4"), double ("8") and mixed ("d") precision
-         versions of the IPOLATES2 library:
+         versions of the library:
 
          scalar_4.exe  scalar_8.exe  scalar_d.exe
          vector_4.exe  vector_8.exe  vector_d.exe

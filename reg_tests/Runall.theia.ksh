@@ -37,20 +37,19 @@ SUM_FILE=${WORK_DIR}/summary.log
 
 module purge
 module load intel
-module load slurm
 
 export OMP_NUM_THREADS=1
 
-GDSWZD=$(sbatch --parsable -p shared --mem=2000M -t 0:10:00 -A $PROJECT_CODE -J ip2test_gdswzd -o $LOG_FILE -e $LOG_FILE \
+GDSWZD=$(sbatch --parsable --ntasks=1 --mem=2000M -t 0:10:00 -A $PROJECT_CODE -J ip2test_gdswzd -o $LOG_FILE -e $LOG_FILE \
       -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/gdswzd/scripts/runall.ksh)
 
-IPXETAS=$(sbatch --parsable -p shared --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxetas -o $LOG_FILE -e $LOG_FILE \
+IPXETAS=$(sbatch --parsable --ntasks=1 --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxetas -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$GDSWZD $REG_DIR/ipxetas/scripts/runall.ksh)
 
-IPXWAFS=$(sbatch --parsable -p shared --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxwafs -o $LOG_FILE -e $LOG_FILE \
+IPXWAFS=$(sbatch --parsable --ntasks=1 --mem=500M -t 0:02:00 -A $PROJECT_CODE -J ip2test_ipxwafs -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$IPXETAS $REG_DIR/ipxwafs/scripts/runall.ksh)
 
-IPOLATES_1=$(sbatch --parsable -p shared --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolates1 -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_1=$(sbatch --parsable --ntasks=1 --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolates1 -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch --export REG_DIR,WORK_DIR,OMP_NUM_THREADS -d afterok:$IPXWAFS $REG_DIR/ipolates/scripts/runall.ksh "1")
 
 export OMP_NUM_THREADS=4
@@ -61,10 +60,10 @@ IPOLATES_4=$(sbatch --parsable -N 1 -t 0:15:00 -A $PROJECT_CODE -J ip2test_ipola
 
 export OMP_NUM_THREADS=1
 
-IPOLATES_CMP=$(sbatch --parsable -p shared --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
+IPOLATES_CMP=$(sbatch --parsable --ntasks=1 --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolates_cmp -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch --export WORK_DIR,OMP_NUM_THREADS -d afterok:$IPOLATES_4 $REG_DIR/ipolates/scripts/compare.ksh)
 
-IPOLATEV_1=$(sbatch --parsable -p shared --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_1=$(sbatch --parsable --ntasks=1 --mem=2000M -t 0:20:00 -A $PROJECT_CODE -J ip2test_ipolatev1 -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch -d afterok:$IPOLATES_CMP \
       --export REG_DIR,WORK_DIR,OMP_NUM_THREADS $REG_DIR/ipolatev/scripts/runall.ksh "1")
 
@@ -76,10 +75,10 @@ IPOLATEV_4=$(sbatch --parsable -N 1 -t 0:15:00 -A $PROJECT_CODE -J ip2test_ipola
 
 export OMP_NUM_THREADS=1
 
-IPOLATEV_CMP=$(sbatch --parsable -p shared --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
+IPOLATEV_CMP=$(sbatch --parsable --ntasks=1 --mem=200M -t 0:05:00 -A $PROJECT_CODE -J ip2test_ipolatev_cmp -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch --export WORK_DIR,OMP_NUM_THREADS -d afterok:$IPOLATEV_4 $REG_DIR/ipolatev/scripts/compare.ksh)
 
-sbatch -p shared --mem=100M -t 0:01:00 -A $PROJECT_CODE -J iptest_summary -o $LOG_FILE -e $LOG_FILE \
+sbatch --ntasks=1 --mem=100M -t 0:01:00 -A $PROJECT_CODE -J ip2test_summary -o $LOG_FILE -e $LOG_FILE \
       --open-mode=append -q batch -d afterok:$IPOLATEV_CMP << EOF
 #!/bin/sh
 grep '<<<' $LOG_FILE > $SUM_FILE

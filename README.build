@@ -44,15 +44,15 @@ Those named with "debug" contain flags useful for debugging.
 
 So, on WCOSS Phase 1/2/3, to compile with Intel, you would type:
 
-  $ make_ip_lib.sh ifort.setup
+  $ make_ip2_lib.sh ifort.setup
 
 On Theia you could do the same, or if you wanted to the PGI compiler,
 
-  $ make_ip_lib.sh pgf95.setup
+  $ make_ip2_lib.sh pgf95.setup
 
 On WCOSS-Cray/Surge/Luna if you wanted to use the Cray compiler,
 
-  $ make_ip_lib_wcoss-cray.sh crayftn.setup
+  $ make_ip2_lib_wcoss-cray.sh crayftn.setup
 
 This script iterates over the single (_4), double (_8), and mixed (_d) precision
 build configurations setting the appropriate default real and integer precision
@@ -136,7 +136,7 @@ To start the library build for a particular configuration, simply type
 ----------------------
 
 A suite of regression tests is located in the ./reg_tests directory.
-These tests compare results from two different versions of iplib2
+These tests compare results from two different versions of ip2lib
 (typically the branch and trunk versions) to ensure developer
 modifications do not inadvertantly break existing functionality.
 See the README file in that directory for details on how to build
@@ -286,7 +286,7 @@ To perform a GNU-type install, type:
 For a library version (say, v2.0.1) and the default precision (_4), this will create
 a directory called "ip_v2.0.1_4". That directory structure is shown below:
 
-  ip_v2.0.1_4/
+  ip2_v2.0.1_4/
     |
     `--lib/
     |    |

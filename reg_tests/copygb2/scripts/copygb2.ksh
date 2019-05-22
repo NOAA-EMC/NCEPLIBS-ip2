@@ -32,7 +32,7 @@
 # land only (i.e., bitmapped) data.
 #
 # copygb2 is compiled with all three byte versions
-# of the 'control' and 'test' ip library:
+# of the 'control' and 'test' ip2 library:
 #  > 4 byte integer/4 byte float  
 #  > 8 byte integer/8 byte float 
 #  > 8 byte float/4 byte integer  
@@ -41,11 +41,11 @@
 # ./exec subdirectory.
 #
 # The interpolated output from copygb2 is a grib 2 file.
-# If the output grib 2 files from the 'test' and 'control' iplibs
+# If the output grib 2 files from the 'test' and 'control' ip2libs
 # are not bit identical, the regression test fails.
 #
 # Some script variable defintions:
-#   $bytesize - iplib byte precision: 
+#   $bytesize - ip2lib byte precision: 
 #               "4" is 4 byte integer/4 byte float
 #               "8" is 8 byte integer/8 byte float
 #               "d" is 8 byte float/4 byte integer
