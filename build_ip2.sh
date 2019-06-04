@@ -1,14 +1,14 @@
 #!/bin/bash
 
  (( $# == 0 )) && {
-   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]"
+   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]" >&2
    exit 1
  }
 
  sys=${1,,}
  [[ $sys == wcoss || $sys == dell || $sys == cray ||\
     $sys == theia || $sys == intel_general || $sys == gnu_general ]] || {
-   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]"
+   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]" >&2
    exit 1
  }
  debg=false
@@ -45,8 +45,12 @@
  else
    source ./Conf/Ip2_intel_${sys^}.sh
  fi
+ $CC --version &> /dev/null || {
+   echo "??? IP2: compilers not set." >&2
+   exit 1
+ }
  [[ -z $IP2_VER || -z $IP2_LIB4 ]] && {
-   echo "??? IP2: module/environment not set."
+   echo "??? IP2: module/environment not set." >&2
    exit 1
  }
 
