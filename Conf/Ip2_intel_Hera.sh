@@ -1,4 +1,8 @@
-# *** for Theia (intel) ***
+# *** for Hera (intel) ***
+ $rinst && {
+   grep -E "(^|:|/)ip2/" <<< "$LOADEDMODULES" &> /dev/null \
+    || module load ip2/1.0.0
+ }
 
  export CC=icc
  export FC=ifort
@@ -11,7 +15,7 @@
  export DEBUG="-g -traceback -O0"
  export CFLAGS="-g -O3 -ftz -traceback -xHOST -axcore-avx512 -fPIC"
  export FFLAGS="-g -O3 -ftz -traceback -fpe0 -xHOST -axcore-avx512 -fp-model strict -ip -convert little_endian -assume byterecl -fPIC"
- export FPPCPP="-cpp"
+ export FPPCPP="-cpp" 
  export FREEFORM="-free"
  export CPPFLAGS="-P -traditional-cpp"
  export MPICFLAGS="-g -O3 -ftz -traceback -xHOST -axcore-avx512 -fPIC"
@@ -25,6 +29,6 @@
  export CFLAGSDEFS="-DUNDERSCORE -DLINUX"
  export FFLAGSDEFS=""
 
- export USECC=""
+ export USECC="YES"
  export USEFC="YES"
  export DEPS=""

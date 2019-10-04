@@ -5,23 +5,8 @@
  ${USERMODE} && {
     echo "Environment set by user"
 # On theia/cray, user can load environment
-#   module load intel/18.0.1.163
-# Or set environment on specific platform
-    intel_version=2018.1.163
-    intel_topdir=/apps/intel/compilers_and_libraries_$intel_version
-    source $intel_topdir/linux/bin/compilervars.sh intel64
+    module load intel/18.0.1.163
  }
-
- ANCHORDIR=..
- export COMP=ips
- export IP2_VER=v1.0.0
- export IP2_SRC=
- export IP2_INC4=$ANCHORDIR/include/ip2_${IP2_VER}_4
- export IP2_INC8=$ANCHORDIR/include/ip2_${IP2_VER}_8
- export IP2_INCd=$ANCHORDIR/include/ip2_${IP2_VER}_d
- export IP2_LIB4=$ANCHORDIR/libip2_${IP2_VER}_4.a
- export IP2_LIB8=$ANCHORDIR/libip2_${IP2_VER}_8.a
- export IP2_LIBd=$ANCHORDIR/libip2_${IP2_VER}_d.a
 
  export CC=icc
  export FC=ifort
