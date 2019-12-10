@@ -1,3 +1,7 @@
+Code manager: George Gayno
+libver=ip2_v1.0.0
+
+-------------
 Release Notes
 -------------
 
