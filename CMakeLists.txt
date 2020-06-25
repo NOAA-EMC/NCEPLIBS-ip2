@@ -23,7 +23,7 @@ if(OPENMP)
   find_package(OpenMP REQUIRED COMPONENTS Fortran)
 endif()
 
-find_package(sp CONFIG REQUIRED)
+find_package(sp REQUIRED)
 
 add_subdirectory(src)
 
