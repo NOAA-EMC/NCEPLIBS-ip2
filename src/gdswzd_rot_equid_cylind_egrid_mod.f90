@@ -1,4 +1,4 @@
- MODULE GDSWZD_ROT_EQUID_CYLIND_EGRID_MOD
+  MODULE GDSWZD_ROT_EQUID_CYLIND_EGRID_MOD
 !$$$  MODULE DOCUMENTATION BLOCK
 !
 ! MODULE:  GDSWZD_ROT_EQUID_CYLIND_EGRID_MOD  GDS WIZARD MODULE 
@@ -26,24 +26,16 @@
 !$$$
 !
  IMPLICIT NONE
-
  PRIVATE
-
  PUBLIC                          :: GDSWZD_ROT_EQUID_CYLIND_EGRID
-
  INTEGER,         PARAMETER      :: KD=SELECTED_REAL_KIND(15,45)
-
  REAL(KIND=KD),   PARAMETER      :: PI=3.14159265358979_KD
  REAL(KIND=KD),   PARAMETER      :: DPR=180._KD/PI
-
  INTEGER                         :: IROT
-
  REAL(KIND=KD)                   :: CLAT, CLAT0, CLATR
  REAL(KIND=KD)                   :: CLON, DLATS, DLONS, RERTH
  REAL(KIND=KD)                   :: RLON0, SLAT, SLAT0, SLATR
-
  CONTAINS
-
  SUBROUTINE GDSWZD_ROT_EQUID_CYLIND_EGRID(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,&
                                           FILL,XPTS,YPTS,RLON,RLAT,NRET, &
                                           CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
@@ -118,21 +110,25 @@
 !                       OCTETS 27-30
 !                 (8):  NUMBER OF POINTS ALONG A PARALLEL, OCTS 31-34
 !                 (9):  NUMBER OF POINTS ALONG A MERIDIAN, OCTS 35-38
-!                 (10): BASIC ANGLE OF INITIAL PRODUCTION DOMAIN,
-!                       OCTETS 39-42
-!                 (11): SUBDIVISIONS OF BASIC ANGLE, OCTETS 43-46
-!                 (12): LATITUDE OF FIRST GRID POINT IN X/Y SPACE
-!                       (BEFORE ROTATION), OCTETS 47-50
-!                 (13): LONGITUDE OF FIRST GRID POINT IN X/Y
-!                       SPACE (BEFORE ROTATION), OCTETS 51-54
-!                 (14): RESOLUTION AND COMPONENT FLAGS, OCTET 55
-!                 (15): LATITUDE OF LAST GRID POINT IN X/Y SPACE
-!                       (BEFORE ROTATION), OCTETS 56-59
-!                 (16): LONGITUDE OF LAST GRID POINT IN X/Y
-!                       SPACE (BEFORE ROTATION), OCTETS 60-63
-!                 (17): I-DIRECTION INCREMENT, OCTETS 64-67
-!                 (18): J-DIRECTION INCREMENT, OCTETS 68-71
-!                 (19): SCANNING MODE, OCTET 72
+ !                 (10): BASIC ANGLE OF INITIAL PRODUCTION DOMAIN,
+ !                       OCTETS 39-42
+ !                 (11): SUBDIVISIONS OF BASIC ANGLE, OCTETS 43-46
+ !                 (12): LATITUDE OF FIRST GRID POINT IN X/Y SPACE
+ !                       (BEFORE ROTATION), OCTETS 47-50
+ !                 (13): LONGITUDE OF FIRST GRID POINT IN X/Y
+ !                       SPACE (BEFORE ROTATION), OCTETS 51-54
+ !                 (12): LATITUDE OF FIRST GRID POINT, OCTETS 47-50
+ !                 (13): LONGITUDE OF FIRST GRID POINT, OCTETS 51-54
+ !                 (14): RESOLUTION AND COMPONENT FLAGS, OCTET 55
+ !                 (15): LATITUDE OF LAST GRID POINT IN X/Y SPACE
+ !                       (BEFORE ROTATION), OCTETS 56-59
+ !                 (16): LONGITUDE OF LAST GRID POINT IN X/Y
+ !                       SPACE (BEFORE ROTATION), OCTETS 60-63
+ !                 (15): LATITUDE OF LAST GRID POINT, OCTETS 56-59
+ !                 (16): LONGITUDE OF LAST GRID POINT, OCTETS 60-63
+ !                 (17): I-DIRECTION INCREMENT, OCTETS 64-67
+ !                 (18): J-DIRECTION INCREMENT, OCTETS 68-71
+ !                 (19): SCANNING MODE, OCTET 72
 !                 (20): LATITUDE OF SOUTHERN POLE OF PROJECTION, 
 !                       OCTETS 73-76
 !                 (21): LONGITUDE OF SOUTHERN POLE OF PROJECTION,
@@ -192,13 +188,14 @@
  INTEGER                        :: ISCALE, ISCAN, KSCAN
  INTEGER                        :: I_OFFSET_ODD, I_OFFSET_EVEN
 !
- LOGICAL                        :: LROT, LMAP, LAREA
-!
- REAL(KIND=KD)                  :: RLAT0, RLAT1, RLON1
- REAL(KIND=KD)                  :: CLONR
- REAL(KIND=KD)                  :: RLATR, RLONR, SBD, WBD, HS
- REAL                           :: DUM1, DUM2, HI
- REAL                           :: XMAX, XMIN, YMAX, YMIN, XPTF, YPTF
+  LOGICAL                        :: LROT, LMAP, LAREA
+ !
+  REAL(KIND=KD)                  :: RLAT0, RLAT1, RLON1
+  REAL(KIND=KD)                  :: CLONR
+  REAL(KIND=KD)                  :: CLAT1, CLON1, CLONR, SLAT1
+  REAL(KIND=KD)                  :: RLATR, RLONR, SBD, WBD, HS
+  REAL                           :: DUM1, DUM2, HI
+  REAL                           :: XMAX, XMIN, YMAX, YMIN, XPTF, YPTF
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  IF(PRESENT(CROT)) CROT=FILL
  IF(PRESENT(SROT)) SROT=FILL
@@ -248,12 +245,21 @@
  ISCAN=MOD(IGDTMPL(19)/128,2)
  HI=(-1.)**ISCAN
  SLAT0=SIN(RLAT0/DPR)
- CLAT0=COS(RLAT0/DPR)
- RLAT1=FLOAT(IGDTMPL(12))/FLOAT(ISCALE)
- RLON1=FLOAT(IGDTMPL(13))/FLOAT(ISCALE)
- SBD=RLAT1
- WBD=RLON1
- IF (WBD > 180.0) WBD = WBD - 360.0
+  CLAT0=COS(RLAT0/DPR)
+  RLAT1=FLOAT(IGDTMPL(12))/FLOAT(ISCALE)
+  RLON1=FLOAT(IGDTMPL(13))/FLOAT(ISCALE)
+  SBD=RLAT1
+  WBD=RLON1
+  IF (WBD > 180.0) WBD = WBD - 360.0
+  SLAT1=SIN(RLAT1/DPR)
+  CLAT1=COS(RLAT1/DPR)
+  CLON1=COS((RLON1-RLON0)/DPR)
+  SLATR=CLAT0*SLAT1-SLAT0*CLAT1*CLON1
+  CLATR=SQRT(1-SLATR**2)
+  CLONR=(CLAT0*CLAT1*CLON1+SLAT0*SLAT1)/CLATR
+  HS=SIGN(1._KD,MOD(RLON1-RLON0+180+3600,360._KD)-180)
+  SBD=DPR*ASIN(SLATR)
+  WBD=HS*DPR*ACOS(CLONR)
  IF(KSCAN.EQ.0) THEN
    IS1=(JM+1)/2
  ELSE
