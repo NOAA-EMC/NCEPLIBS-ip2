@@ -41,6 +41,7 @@ foreach(kind ${kinds})
   list(APPEND LIB_TARGETS ${lib_name})
   
   install(DIRECTORY ${module_dir} DESTINATION ${CMAKE_INSTALL_PREFIX})
+  install(FILES iplib_${kind}.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include_${kind} RENAME iplib.h)
 endforeach()
 
 install(
