@@ -11,9 +11,9 @@ set(fortran_src
   gdswzd_rot_equid_cylind_mod.f90
   ijkgds0.f90
   ijkgds1.f90
-  iplib_4.h
-  iplib_8.h
-  iplib_d.h
+  ip2lib_4.h
+  ip2lib_8.h
+  ip2lib_d.h
   ipolates.f90
   ipolatev.f90
   ipxetas.f90
