@@ -2,7 +2,7 @@ include("list_of_files.cmake")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
   set(CMAKE_Fortran_FLAGS "-g -auto -convert big_endian -assume byterecl -fp-model strict -fpp")
-  set(fortran_d_flags "-i4 -r8")
+  set(fortran_d_flags "-r8")
   set(fortran_8_flags "-i8 -r8")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
   set(CMAKE_Fortran_FLAGS "-g -fconvert=big-endian -cpp")
