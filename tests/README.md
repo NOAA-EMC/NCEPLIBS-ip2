@@ -5,7 +5,7 @@ Please refer to README.md in the main directory for how to run tests using PFUni
 
 This file is kept temporarily for historical purposes until all unit tests are converted to use pfunit.
 
-ABSTRACT:
+##ABSTRACT:
 ---------
 
 This test invokes IPOLATES to interpolate scalar and
@@ -15,7 +15,7 @@ is compared to baseline data and a summary of differences is
 sent to standard output.
 
 
-HOW THE TEST WORKS:
+##HOW THE TEST WORKS:
 -------------------
 
 There are two separate programs to test the scalar and vector interpolation.
@@ -43,7 +43,7 @@ the baseline data are computed and sent to standard output. For this
 unit test to pass the differences should be "small".
 
 
-DIRECTORY LAYOUT:
+##DIRECTORY LAYOUT:
 -----------------
 
 ./sorc - Contains the files and scripts needed to build the
@@ -100,7 +100,7 @@ DIRECTORY LAYOUT:
                   
 
 
-HOW TO RUN THE TEST:
+##HOW TO RUN THE TEST:
 --------------------
 
 1) Build the IPOLATES library.  Go to $root and read the
@@ -198,7 +198,7 @@ invoke these driver scripts as follows:
 In this case, output is sent to "unit_test.log".
 
 
-QUESTIONS:
+##QUESTIONS:
 ----------
 
 Contact: george.gayno@noaa.gov
