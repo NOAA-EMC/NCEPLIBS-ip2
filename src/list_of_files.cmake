@@ -1,4 +1,13 @@
 set(fortran_src
+  gausslat.f90
+  gdswzd00_mod.f90
+  gdswzd01_mod.f90
+  gdswzd03_mod.f90
+  gdswzd04_mod.f90
+  gdswzd05_mod.f90
+  gdswzd_mod.f90
+  gdswzdcb_mod.f90
+  gdswzdcd_mod.f90
   earth_radius.f90
   gdswzd_c.F90
   gdswzd_equid_cylind_mod.f90
@@ -20,6 +29,7 @@ set(fortran_src
   ipxwafs.f90
   ipxwafs2.f90
   ipxwafs3.f90
+  makgds.f90
   movect.f90
   polates0.f90
   polates1.f90
