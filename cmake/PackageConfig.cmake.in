@@ -11,7 +11,7 @@ include(CMakeFindDependencyMacro)
 
 # ON/OFF implies ip was compiled with/without OPENMP
 if(@OPENMP@)
-  find_dependency(OpenMP)
+  find_dependency(OpenMP COMPONENTS Fortran)
 endif()
 
 find_dependency(sp CONFIG)
