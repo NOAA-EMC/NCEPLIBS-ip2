@@ -20,8 +20,6 @@ library:
 - spectral
 - neighbor-budget
 
-For more detailed documentation see https://noaa-emc.github.io/NCEPLIBS-ip2/.
-
 ### Authors
 
 * NCEP/EMC Developers
