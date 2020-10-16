@@ -1,7 +1,7 @@
 #list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 
 execute_process(COMMAND cmake -E create_symlink
-  "${CMAKE_SOURCE_DIR}/test/data"
+  "${CMAKE_CURRENT_SOURCE_DIR}/data"
   "${CMAKE_CURRENT_BINARY_DIR}/data" # New name
   )
 
