@@ -1,7 +1,6 @@
-Documentation of the general interpolation library 2 - ip2lib
---------------------------------------------------------------------------------
+# Documentation of the general interpolation library 2 - ip2lib
 
-I. Introduction
+## Introduction
 
 The NCEP general interpolation library 2 (ip2lib) contains Fortran 90 subprograms
 to be used for interpolating between nearly all grids used at NCEP.
@@ -54,17 +53,17 @@ box extends halfway to its neighboring grid point in each direction.
 The method actually averages bilinearly interpolated values in a square array
 of points distributed within each output grid box.  This method can
 interpolate data with bitmaps.  There are several sub-options:
-  (1) The number of points in the radius of the square array may be set.
+-  (1) The number of points in the radius of the square array may be set.
    The default is 2, meaning that 25 sample points will be averaged
    for each output value.  
-  (2) The respective averaging weights for the radius points are adjustable.
+-  (2) The respective averaging weights for the radius points are adjustable.
    The default is for all weights equal to 1, giving an unweighted average.
-  (3) Optionally, one may assume the boxes stretch nearly all the way to each of 
+-  (3) Optionally, one may assume the boxes stretch nearly all the way to each of 
    the neighboring grid points and the weights are the adjoint of the bilinear 
    interpolation weights.
-  (4) The percent of valid input data required to make output data is
+-  (4) The percent of valid input data required to make output data is
    adjustable.  The default is 50%.
-  (5) In cases where there is no or insufficient valid input data,
+-  (5) In cases where there is no or insufficient valid input data,
    a spiral search may be invoked to search for the nearest valid data.
    search square (scalar interpolation only). 
 
@@ -82,12 +81,12 @@ centered around each output grid point and stretching nearly halfway
 to each of the neighboring grid points. The main difference with 
 the budget interpolation (IP=3) is neighbor vs bilinear interpolation
 of the square box of points.  There are the following sub-options:
-  (1) The number of points in the radius of the square array may be set.
+-  (1) The number of points in the radius of the square array may be set.
    The default is 2, meaning that 25 sample points will be averaged
    for each output value.  
-  (2) The respective averaging weights for the radius points are adjustable.
+-  (2) The respective averaging weights for the radius points are adjustable.
    The default is for all weights equal to 1, giving an unweighted average.
-  (3) The percent of valid input data required to make output data is
+-  (3) The percent of valid input data required to make output data is
    adjustable.  The default is 50%.
 
 The library can handle two-dimensional vector fields as well as scalar fields.
@@ -105,14 +104,14 @@ The input and output grids are defined by their respective GRIB2 grid definition
 template and template number as decoced by the NCEP G2 library.  There
 are six map projections recognized by the library:
 
-Grid def. template #     Map projection
---------------------     ---------------------------------
-       00                Equidistant cyclindrical
-       01                Rotated equidistant cylindrical
-       10                Mercator cyclindrical
-       20                Polar stereographic azimuthal
-       30                Lambert conformal conical
-       40                Gaussian equidistant cyclindrical
+Grid def. template #    | Map projection
+--------------------    | ---------------------------------
+       00               | Equidistant cyclindrical
+       01               | Rotated equidistant cylindrical
+       10               | Mercator cyclindrical
+       20               | Polar stereographic azimuthal
+       30               | Lambert conformal conical
+       40               | Gaussian equidistant cyclindrical
 
 If the output grid definition template number is negative, then the
 output data may be just a set of station points.  In this case, the user must pass
@@ -143,55 +142,59 @@ to create additional map projection "wizards" for ip2lib.
 
 Questions may be directed to: NCEP.List.EMC.nceplibs.Developers@noaa.gov
 
-II. Entry point list
+## Entry point list
 
-   Name       Function
-   ----       ------------------------------------------------------------------
+Scalar field interpolation subprograms
 
-              Scalar field interpolation subprograms
+   Name       |Function
+   ----       |------------------------------------------------------------------
+   IPOLATES   |IREDELL'S POLATE FOR SCALAR FIELDS
+   POLATES0   |INTERPOLATE SCALAR FIELDS (BILINEAR)
+   POLATES1   |INTERPOLATE SCALAR FIELDS (BICUBIC)
+   POLATES2   |INTERPOLATE SCALAR FIELDS (NEIGHBOR)
+   POLATES3   |INTERPOLATE SCALAR FIELDS (BUDGET)
+   POLATES4   |INTERPOLATE SCALAR FIELDS (SPECTRAL)
+   POLATES6   |INTERPOLATE SCALAR FIELDS (NEIGHBOR-BUDGET)
+   POLFIXS    |MAKE MULTIPLE POLE SCALAR VALUES CONSISTENT
 
-   IPOLATES   IREDELL'S POLATE FOR SCALAR FIELDS
-   POLATES0   INTERPOLATE SCALAR FIELDS (BILINEAR)
-   POLATES1   INTERPOLATE SCALAR FIELDS (BICUBIC)
-   POLATES2   INTERPOLATE SCALAR FIELDS (NEIGHBOR)
-   POLATES3   INTERPOLATE SCALAR FIELDS (BUDGET)
-   POLATES4   INTERPOLATE SCALAR FIELDS (SPECTRAL)
-   POLATES6   INTERPOLATE SCALAR FIELDS (NEIGHBOR-BUDGET)
-   POLFIXS    MAKE MULTIPLE POLE SCALAR VALUES CONSISTENT
+Vector field interpolation subprograms
 
-              Vector field interpolation subprograms
+   Name       |Function
+   ----       |------------------------------------------------------------------
+   IPOLATEV   |IREDELL'S POLATE FOR VECTOR FIELDS
+   POLATEV0   |INTERPOLATE VECTOR FIELDS (BILINEAR)
+   POLATEV1   |INTERPOLATE VECTOR FIELDS (BICUBIC)
+   POLATEV2   |INTERPOLATE VECTOR FIELDS (NEIGHBOR)
+   POLATEV3   |INTERPOLATE VECTOR FIELDS (BUDGET)
+   POLATEV4   |INTERPOLATE VECTOR FIELDS (SPECTRAL)
+   POLATEV6   |INTERPOLATE VECTOR FIELDS (NEIGHBOR-BUDGET)
+   MOVECT     |MOVE A VECTOR ALONG A GREAT CIRCLE
+   POLFIXV    |MAKE MULTIPLE POLE VECTOR VALUES CONSISTENT
 
-   IPOLATEV   IREDELL'S POLATE FOR VECTOR FIELDS
-   POLATEV0   INTERPOLATE VECTOR FIELDS (BILINEAR)
-   POLATEV1   INTERPOLATE VECTOR FIELDS (BICUBIC)
-   POLATEV2   INTERPOLATE VECTOR FIELDS (NEIGHBOR)
-   POLATEV3   INTERPOLATE VECTOR FIELDS (BUDGET)
-   POLATEV4   INTERPOLATE VECTOR FIELDS (SPECTRAL)
-   POLATEV6   INTERPOLATE VECTOR FIELDS (NEIGHBOR-BUDGET)
-   MOVECT     MOVE A VECTOR ALONG A GREAT CIRCLE
-   POLFIXV    MAKE MULTIPLE POLE VECTOR VALUES CONSISTENT
+Grid description section decoders
 
-              Grid description section decoders
+   Name       |Function
+   ----       |------------------------------------------------------------------
+   GDSWZD                          |GRID DESCRIPTION SECTION WIZARD
+   GDSWZD_C                        |'C' WRAPPER FOR CALLING GDSWZD
+   GDSWZD_EQUID_CYLIND             |GDS WIZARD FOR EQUIDISTANT CYCLINDRICAL
+   GDSWZD_MERCATOR                 |GDS WIZARD FOR MERCATOR CYCLINDRICAL
+   GDSWZD_LAMBERT_CONF             |GDS WIZARD FOR LAMBERT CONFORMAL CONICAL
+   GDSWZD_GAUSSIAN                 |GDS WIZARD FOR GAUSSIAN CYCLINDRICAL
+   GDSWZD_POLAR_STEREO             |GDS WIZARD FOR POLAR STEREOGRAPHIC
+   GDSWZD_ROT_EQUID_CYLIND_EGRID   |GDS WIZARD FOR ROTATED EQUIDISTANT CYCLINDRICAL "E" STAGGER.
+   GDSWZD_ROT_EQUID_CYLIND         |GDS WIZARD FOR ROTATED EQUIDISTANT CYCLINDRICAL NON "E" STAGGER.
+   IJKGDS0/1                       |RETURN FIELD POSITION FOR A GIVEN GRID POINT
+   
+Transform subprograms for special irregular grids
 
-   GDSWZD                          GRID DESCRIPTION SECTION WIZARD
-   GDSWZD_C                        'C' WRAPPER FOR CALLING GDSWZD
-   GDSWZD_EQUID_CYLIND             GDS WIZARD FOR EQUIDISTANT CYCLINDRICAL
-   GDSWZD_MERCATOR                 GDS WIZARD FOR MERCATOR CYCLINDRICAL
-   GDSWZD_LAMBERT_CONF             GDS WIZARD FOR LAMBERT CONFORMAL CONICAL
-   GDSWZD_GAUSSIAN                 GDS WIZARD FOR GAUSSIAN CYCLINDRICAL
-   GDSWZD_POLAR_STEREO             GDS WIZARD FOR POLAR STEREOGRAPHIC
-   GDSWZD_ROT_EQUID_CYLIND_EGRID   GDS WIZARD FOR ROTATED EQUIDISTANT CYCLINDRICAL
-                                   "E" STAGGER.
-   GDSWZD_ROT_EQUID_CYLIND         GDS WIZARD FOR ROTATED EQUIDISTANT CYCLINDRICAL
-                                   NON "E" STAGGER.
-   IJKGDS0/1                       RETURN FIELD POSITION FOR A GIVEN GRID POINT
+   Name       |Function
+   ----       |------------------------------------------------------------------
+   IPXWAFS/2/3 |  EXPAND OR CONTRACT WAFS GRIDS
 
-              Transform subprograms for special irregular grids
+## How to invoke ip2lib: examples
 
-   IPXWAFS/2/3  EXPAND OR CONTRACT WAFS GRIDS
-
-III. How to invoke ip2lib: examples
-
+<pre>
 ***********************************************************************
 Example 1.  Read a grib 2 file of scalar data on a global regular
             1-deg lat/lon grid and call ipolates to interpolate
@@ -597,3 +600,4 @@ Example 2.  Read a grib 2 file of u/v wind data on a global regular
  enddo
 
  end program example_2
+</pre>
