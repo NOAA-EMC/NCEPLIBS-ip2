@@ -5,7 +5,7 @@ file(STRINGS "VERSION" pVersion)
 project(
   ip2
   VERSION ${pVersion}
-  LANGUAGES Fortran)
+  LANGUAGES C Fortran)
 
 option(OPENMP "use OpenMP threading" OFF)
 option(ENABLE_TESTS "Build pfunit tests?" OFF)
@@ -28,8 +28,7 @@ find_package(sp REQUIRED)
 
 add_subdirectory(src)
 
-if (ENABLE_TESTS)
-  find_package(PFUNIT REQUIRED)
-  enable_testing()
-  add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(test)
 endif()
