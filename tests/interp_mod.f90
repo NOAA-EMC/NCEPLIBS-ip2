@@ -329,7 +329,7 @@ contains
     !-------------------------------------------------------------------------
 
     use input_data_mod, only : input_u_data, input_v_data, &
-         input_gdtmpl, &
+         vector_input_gdtmpl, &
          input_gdtlen, &
          input_gdtnum, &
          input_bitmap, &
@@ -509,7 +509,7 @@ contains
     allocate (output_srot(i_output,j_output))
     allocate (output_crot(i_output,j_output))
 
-    call ipolatev(ip, ipopt, input_gdtnum, input_gdtmpl, input_gdtlen, &
+    call ipolatev(ip, ipopt, input_gdtnum, vector_input_gdtmpl, input_gdtlen, &
          output_gdtnum, output_gdtmpl, output_gdtlen, mi, mo,   &
          km, ibi, input_bitmap, input_u_data, input_v_data,  &
          no, output_rlat, output_rlon, output_crot, output_srot, &
