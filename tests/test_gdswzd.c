@@ -12,6 +12,7 @@
   Tests the mixed precision version of gdswzd.
 **************************************************************/
 
+
 int main()
 {
   int *igdtmpl;
