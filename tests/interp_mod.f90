@@ -1,4 +1,5 @@
 module interp_mod
+  use ip_mod
   implicit none
 
 contains
@@ -52,8 +53,8 @@ contains
     integer(kind=4)           :: i1
     integer, allocatable      :: output_gdtmpl(:)
     integer                   :: ip, ipopt(20), output_gdtlen, output_gdtnum
-    integer                   :: km, ibi, mi, iret, i, j
-    integer                   :: i_output, j_output, mo, no, ibo
+    integer                   :: km, ibi(1), mi, iret, i, j
+    integer                   :: i_output, j_output, mo, no, ibo(1)
     integer                   :: num_pts_diff
     integer     , parameter   :: missing=b'11111111111111111111111111111111'
 
@@ -344,8 +345,8 @@ contains
     integer, allocatable      :: output_gdtmpl(:)
     integer(kind=4)           :: i1
     integer                   :: ip, ipopt(20), output_gdtlen, output_gdtnum
-    integer                   :: km, ibi, mi, iret, i, j
-    integer                   :: i_output, j_output, mo, no, ibo
+    integer                   :: km, ibi(1), mi, iret, i, j
+    integer                   :: i_output, j_output, mo, no, ibo(1)
     integer                   :: num_upts_diff, num_vpts_diff
     integer     , parameter   :: missing=b'11111111111111111111111111111111'
 
