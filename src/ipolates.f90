@@ -1,6 +1,16 @@
 module ip_mod
   use ip_grid_descriptor_mod
+  use polates0_mod
+  use polates1_mod
+  use polates2_mod
+  use polates3_mod
+  use polates4_mod
+  use polates6_mod
+  
   implicit none
+
+  private
+  public :: ipolates
 
 contains
 
@@ -312,36 +322,37 @@ contains
     type(grib2_descriptor) :: g2_input_desc, g2_output_desc
 
     g2_input_desc = init_grib2_descriptor(igdtnumi, igdtleni, igdtmpli)
+    g2_output_desc = init_grib2_descriptor(igdtnumo, igdtleno, igdtmplo)
 
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  BILINEAR INTERPOLATION
     IF(IP.EQ.0) THEN
-       CALL POLATES0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES0(ipopt, g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
+       !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       ! BICUBIC INTERPOLATION
     ELSEIF(IP.EQ.1) THEN
-       CALL POLATES1(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES1(IPOPT,g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
     ELSEIF(IP.EQ.2) THEN
-       CALL POLATES2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES2(IPOPT,g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
-       CALL POLATES3(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES3(IPOPT,g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  SPECTRAL INTERPOLATION
     ELSEIF(IP.EQ.4) THEN
-       CALL POLATES4(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES4(IPOPT,g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
-       CALL POLATES6(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       CALL POLATES6(IPOPT,g2_input_desc, g2_output_desc, &
             MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD

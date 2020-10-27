@@ -8,6 +8,7 @@ module ip_grid_descriptor_mod
 
   type, abstract :: ip_grid_descriptor
      integer :: grid_number
+     integer :: im, jm
   end type ip_grid_descriptor
 
   type, extends(ip_grid_descriptor) :: grib1_descriptor

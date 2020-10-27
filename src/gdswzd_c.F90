@@ -199,6 +199,7 @@
  USE, INTRINSIC :: ISO_C_BINDING
 
  USE GDSWZD_MOD
+ use ip_grid_descriptor_mod
 
  IMPLICIT NONE
  
@@ -226,7 +227,10 @@
  REAL(KIND=C_FLOAT), INTENT(OUT)          :: YLON(NPTS),YLAT(NPTS),AREA(NPTS)
 #endif
 
- CALL GDSWZD(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,FILL, &
+ type(grib2_descriptor) :: grid_desc
+ grid_desc = init_grib2_descriptor(igdtnum, igdtlen, igdtmpl)
+
+ CALL GDSWZD(grid_desc,IOPT,NPTS,FILL, &
              XPTS,YPTS,RLON,RLAT,NRET, &
              CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
