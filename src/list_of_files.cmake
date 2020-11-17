@@ -15,6 +15,7 @@ set(fortran_src
   ip2lib_8.h
   ip2lib_d.h
   ipolates.f90
+  ipolatev.f90
   ipxetas.f90
   ipxwafs.f90
   ipxwafs2.f90
@@ -26,7 +27,14 @@ set(fortran_src
   polates3.f90
   polates4.f90
   polates6.f90
+  polatev0.f90
+  polatev1.f90
+  polatev2.f90
+  polatev3.f90
+  polatev4.f90
+  polatev6.f90
   polfixs.f90
   polfixv.f90
   ip_grid_descriptor_mod.f90
+  ip_mod.f90
   )
