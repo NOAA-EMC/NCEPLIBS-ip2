@@ -1,4 +1,4 @@
-module ip_mod
+module ipolates_mod
   use ip_grid_descriptor_mod
   use polates0_mod
   use polates1_mod
@@ -369,4 +369,4 @@ contains
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE IPOLATES
-end module ip_mod
+end module ipolates_mod
