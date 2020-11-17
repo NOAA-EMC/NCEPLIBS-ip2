@@ -1,7 +1,7 @@
 include("list_of_files.cmake")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "-g -auto -convert big_endian -debug -assume byterecl -fp-model strict -O0 -traceback -check all -warn all -fpp ${CMAKE_Fortran_FLAGS}")
+  set(CMAKE_Fortran_FLAGS "-g -auto -convert big_endian -debug -assume byterecl -fp-model strict -fpp ${CMAKE_Fortran_FLAGS}")
   set(fortran_d_flags "-r8")
   set(fortran_8_flags "-i8 -r8")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU)$")
