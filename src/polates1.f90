@@ -318,8 +318,7 @@ contains
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE POLATES1
 
-  SUBROUTINE CHECK_GRIDS1(input_grid, output_grid, &
-       SAME_GRIDI,SAME_GRIDO) 
+  SUBROUTINE CHECK_GRIDS1(input_desc, output_desc, SAME_GRIDI,SAME_GRIDO) 
     !$$$  SUBPROGRAM DOCUMENTATION BLOCK
     !
     ! SUBPROGRAM:  CHECK_GRIDS0   CHECK GRID INFORMATION
@@ -364,7 +363,7 @@ contains
     !$$$
     IMPLICIT NONE
     !
-    class(ip_grid_descriptor), intent(in) :: input_grid, output_grid
+    class(ip_grid_descriptor), intent(in) :: input_desc, output_desc
     !
     LOGICAL,        INTENT(  OUT) :: SAME_GRIDI, SAME_GRIDO
     !
@@ -377,12 +376,12 @@ contains
 
     INTEGER,SAVE                  :: KGDSIX(200)=-1,KGDSOX(200)=-1
 
-    select type(input_grid)
+    select type(input_desc)
     type is(grib1_descriptor)
 
     type is(grib2_descriptor)
-       associate(igdtnumi => input_grid%gdt_num, igdtleni => input_grid%gdt_len, &
-            igdtmpli => input_grid%gdt_tmpl)
+       associate(igdtnumi => input_desc%gdt_num, igdtleni => input_desc%gdt_len, &
+            igdtmpli => input_desc%gdt_tmpl)
          SAME_GRIDI=.FALSE.
          IF(IGDTNUMI==IGDTNUMI_SAVE)THEN
             IF(IGDTLENI==IGDTLENI_SAVE)THEN
@@ -404,11 +403,11 @@ contains
 
 
 
-    select type(output_grid)
+    select type(output_desc)
     type is(grib1_descriptor)
     type is(grib2_descriptor)
-       associate(igdtnumo => output_grid%gdt_num, igdtleno => output_grid%gdt_len, &
-            igdtmplo => output_grid%gdt_tmpl)
+       associate(igdtnumo => output_desc%gdt_num, igdtleno => output_desc%gdt_len, &
+            igdtmplo => output_desc%gdt_tmpl)
          SAME_GRIDO=.FALSE.
          IF(IGDTNUMO==IGDTNUMO_SAVE)THEN
             IF(IGDTLENO==IGDTLENO_SAVE)THEN

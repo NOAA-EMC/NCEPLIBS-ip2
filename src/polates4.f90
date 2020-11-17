@@ -360,8 +360,10 @@ contains
                   ENDDO
                ENDDO
             ENDIF
-            ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           end associate
+       class default
+          print *, "unknown descriptor class"
+          error stop
        end select
        class default
        print *, "unknown descriptor class"
