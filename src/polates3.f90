@@ -188,6 +188,8 @@ contains
     REAL                          :: WO(MO,KM), XF, YF, XI, YI, XX, YY
     REAL                          :: XPTS(MO),YPTS(MO),XPTB(MO),YPTB(MO)
     REAL                          :: XXX(1), YYY(1)
+
+    class(ip_grid_descriptor), allocatable :: output_desc2
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     !  DO SUBSECTION OF GRID IF KGDSO(1) IS SUBTRACTED FROM 255.
@@ -196,10 +198,10 @@ contains
        CALL GDSWZD(output_desc,0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
-       !FIXME
-       ! IGDTNUMO2=255+IGDTNUMO
-       ! CALL GDSWZD(IGDTNUMO2,IGDTMPLO,IGDTLENO,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
-       ! IF(NO.EQ.0) IRET=3
+       allocate(output_desc2, source = output_desc)
+       output_desc2%grid_number = 255 + output_desc%grid_number
+       CALL GDSWZD(output_desc2,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       IF(NO.EQ.0) IRET=3
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SET PARAMETERS
