@@ -35,18 +35,100 @@ MODULE GDSWZD_MOD
   IMPLICIT NONE
 
   PRIVATE
+  public :: gdswzd
 
   INTERFACE GDSWZD
-     MODULE PROCEDURE GDSWZD_1D_ARRAY
-     MODULE PROCEDURE GDSWZD_2D_ARRAY
-     MODULE PROCEDURE GDSWZD_SCALAR
+     ! grib_descriptor interface
+     MODULE PROCEDURE GDSWZD_1D_ARRAY_desc
+     MODULE PROCEDURE GDSWZD_2D_ARRAY_desc
+     MODULE PROCEDURE GDSWZD_SCALAR_desc
+
+     !grib2 interface for backwards compatibility
+     MODULE PROCEDURE GDSWZD_1D_ARRAY_grib2
+     MODULE PROCEDURE GDSWZD_2D_ARRAY_grib2
+     MODULE PROCEDURE GDSWZD_SCALAR_grib2
   END INTERFACE GDSWZD
 
-  PUBLIC                       :: GDSWZD
 
 CONTAINS
 
-  SUBROUTINE GDSWZD_SCALAR(grid_desc,IOPT,NPTS,FILL, &
+  SUBROUTINE GDSWZD_SCALAR_grib2(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,FILL, &
+       XPTS,YPTS,RLON,RLAT,NRET, &
+       CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+
+    INTEGER,        INTENT(IN   ) :: IGDTNUM, IGDTLEN
+    INTEGER,        INTENT(IN   ) :: IGDTMPL(IGDTLEN)
+    INTEGER,        INTENT(IN   ) :: IOPT, NPTS
+    INTEGER,        INTENT(  OUT) :: NRET
+    !
+    REAL,           INTENT(IN   ) :: FILL
+    REAL,           INTENT(INOUT) :: RLON, RLAT
+    REAL,           INTENT(INOUT) :: XPTS, YPTS
+    REAL, OPTIONAL, INTENT(  OUT) :: CROT, SROT
+    REAL, OPTIONAL, INTENT(  OUT) :: XLON, XLAT
+    REAL, OPTIONAL, INTENT(  OUT) :: YLON, YLAT, AREA
+
+
+    type(grib2_descriptor) :: desc
+
+    desc = init_grib2_descriptor(igdtnum, igdtlen, igdtmpl)
+    call GDSWZD_SCALAR_desc(desc, iopt, npts, fill, xpts, ypts, rlon, rlat, &
+         nret, crot, srot, xlon, xlat, ylon, ylat, area)
+
+  end subroutine GDSWZD_SCALAR_grib2
+
+  SUBROUTINE GDSWZD_2D_ARRAY_grib2(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,FILL, &
+       XPTS,YPTS,RLON,RLAT,NRET, &
+       CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+
+    IMPLICIT NONE
+    !
+    INTEGER,        INTENT(IN   ) :: IGDTNUM, IGDTLEN
+    INTEGER,        INTENT(IN   ) :: IGDTMPL(IGDTLEN)
+    INTEGER,        INTENT(IN   ) :: IOPT, NPTS
+    INTEGER,        INTENT(  OUT) :: NRET
+    !
+    REAL,           INTENT(IN   ) :: FILL
+    REAL,           INTENT(INOUT) :: RLON(:,:),RLAT(:,:)
+    REAL,           INTENT(INOUT) :: XPTS(:,:),YPTS(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: CROT(:,:),SROT(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: XLON(:,:),XLAT(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: YLON(:,:),YLAT(:,:),AREA(:,:)
+
+    type(grib2_descriptor) :: desc
+    desc = init_grib2_descriptor(igdtnum, igdtlen, igdtmpl)
+
+    call GDSWZD_2D_ARRAY_desc(desc, iopt, npts, fill, xpts, ypts, rlon, rlat, &
+         nret, crot, srot, xlon, xlat, ylon, ylat, area)
+
+  end subroutine GDSWZD_2D_ARRAY_grib2
+
+  SUBROUTINE GDSWZD_1D_ARRAY_grib2(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,FILL, &
+       XPTS,YPTS,RLON,RLAT,NRET, &
+       CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+
+    INTEGER,        INTENT(IN   ) :: IGDTNUM, IGDTLEN
+    INTEGER,        INTENT(IN   ) :: IGDTMPL(IGDTLEN)
+    INTEGER,        INTENT(IN   ) :: IOPT, NPTS
+    INTEGER,        INTENT(  OUT) :: NRET
+    !
+    REAL,           INTENT(IN   ) :: FILL
+    REAL,           INTENT(INOUT) :: RLON(NPTS),RLAT(NPTS)
+    REAL,           INTENT(INOUT) :: XPTS(NPTS),YPTS(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: CROT(NPTS),SROT(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: XLON(NPTS),XLAT(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: YLON(NPTS),YLAT(NPTS),AREA(NPTS)
+
+    type(grib2_descriptor) :: desc
+    desc = init_grib2_descriptor(igdtnum, igdtlen, igdtmpl)
+
+    call GDSWZD_1D_ARRAY_desc(desc, iopt, npts, fill, xpts, ypts, rlon, rlat, &
+         nret, crot, srot, xlon, xlat, ylon, ylat, area)
+    
+  end subroutine GDSWZD_1D_ARRAY_grib2
+
+
+  SUBROUTINE GDSWZD_SCALAR_desc(grid_desc,IOPT,NPTS,FILL, &
        XPTS,YPTS,RLON,RLAT,NRET, &
        CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
@@ -85,7 +167,7 @@ CONTAINS
          .NOT. PRESENT(YLAT) .AND. &
          .NOT. PRESENT(AREA) ) THEN
 
-       CALL GDSWZD_1D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+       CALL GDSWZD_1D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
             XPTSA,YPTSA,RLONA,RLATA,NRET)
 
        RLON = RLONA(1)
@@ -105,7 +187,7 @@ CONTAINS
          .NOT. PRESENT(YLAT) .AND. &
          .NOT. PRESENT(AREA) ) THEN
 
-       CALL GDSWZD_1D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+       CALL GDSWZD_1D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
             XPTSA,YPTSA,RLONA,RLATA,NRET,CROTA,SROTA)
 
        RLON = RLONA(1)
@@ -127,7 +209,7 @@ CONTAINS
          PRESENT(YLAT) .AND. &
          PRESENT(AREA) ) THEN
 
-       CALL GDSWZD_1D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+       CALL GDSWZD_1D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
             XPTSA,YPTSA,RLONA,RLATA,NRET, &
             CROTA,SROTA,XLONA,XLATA,YLONA,YLATA,AREAA)
 
@@ -147,9 +229,9 @@ CONTAINS
 
     RETURN
 
-  END SUBROUTINE GDSWZD_SCALAR
+  END SUBROUTINE GDSWZD_SCALAR_desc
 
-  SUBROUTINE GDSWZD_2D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+  SUBROUTINE GDSWZD_2D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
        XPTS,YPTS,RLON,RLAT,NRET, &
        CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
@@ -166,13 +248,13 @@ CONTAINS
     REAL, OPTIONAL, INTENT(  OUT) :: XLON(:,:),XLAT(:,:)
     REAL, OPTIONAL, INTENT(  OUT) :: YLON(:,:),YLAT(:,:),AREA(:,:)
 
-    CALL GDSWZD_1D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+    CALL GDSWZD_1D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
          XPTS,YPTS,RLON,RLAT,NRET, &
          CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
-  END SUBROUTINE GDSWZD_2D_ARRAY
+  END SUBROUTINE GDSWZD_2D_ARRAY_desc
 
-  SUBROUTINE GDSWZD_1D_ARRAY(grid_desc,IOPT,NPTS,FILL, &
+  SUBROUTINE GDSWZD_1D_ARRAY_desc(grid_desc,IOPT,NPTS,FILL, &
        XPTS,YPTS,RLON,RLAT,NRET, &
        CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
     !$$$  SUBPROGRAM DOCUMENTATION BLOCK
@@ -588,6 +670,6 @@ CONTAINS
     end select
 
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  END SUBROUTINE GDSWZD_1D_ARRAY
+  END SUBROUTINE GDSWZD_1D_ARRAY_desc
 
 END MODULE GDSWZD_MOD
