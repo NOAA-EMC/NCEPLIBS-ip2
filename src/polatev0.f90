@@ -1,5 +1,12 @@
- SUBROUTINE POLATEV0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-                     IGDTNUMO,IGDTMPLO,IGDTLENO, &
+module polatev0_mod
+  use ip_grid_descriptor_mod
+  use ijkgds0_mod
+  private
+  public :: polatev0
+
+contains
+  
+SUBROUTINE POLATEV0(IPOPT, input_desc, output_desc,  &
                      MI,MO,KM,IBI,LI,UI,VI, &
                      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
@@ -152,10 +159,6 @@
  IMPLICIT NONE
 !
  INTEGER,            INTENT(IN   ) :: IPOPT(20),IBI(KM),MI,MO,KM
- INTEGER,            INTENT(IN   ) :: IGDTNUMI, IGDTLENI
- INTEGER,            INTENT(IN   ) :: IGDTMPLI(IGDTLENI)
- INTEGER,            INTENT(IN   ) :: IGDTNUMO, IGDTLENO
- INTEGER,            INTENT(IN   ) :: IGDTMPLO(IGDTLENO)
  INTEGER,            INTENT(INOUT) :: NO
  INTEGER,            INTENT(  OUT) :: IRET, IBO(KM)
 !
@@ -185,6 +188,8 @@
  REAL,           ALLOCATABLE,SAVE  :: RLATX(:),RLONX(:)
  REAL,           ALLOCATABLE,SAVE  :: CROTX(:),SROTX(:)
  REAL,           ALLOCATABLE,SAVE  :: WXY(:,:,:),CXY(:,:,:),SXY(:,:,:)
+
+ class(ip_grid_descriptor), intent(in) :: input_desc, output_desc
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  SET PARAMETERS
  IRET=0
@@ -193,24 +198,22 @@
  IF(MP.LT.0.OR.MP.GT.100) IRET=32
  PMP=MP*0.01
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- CALL CHECK_GRIDS0V(IGDTNUMI,IGDTMPLI,IGDTLENI, &
-                    IGDTNUMO,IGDTMPLO,IGDTLENO, &
-                    SAME_GRIDI,SAME_GRIDO)
+ CALL CHECK_GRIDS0V(input_desc, output_desc, SAME_GRIDI, SAME_GRIDO)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  SAVE OR SKIP WEIGHT COMPUTATION
- IF(IRET.EQ.0.AND.(IGDTNUMO.LT.0.OR..NOT.SAME_GRIDI.OR..NOT.SAME_GRIDO))THEN
+ IF(IRET.EQ.0.AND.(output_desc%grid_number.LT.0.OR..NOT.SAME_GRIDI.OR..NOT.SAME_GRIDO))THEN
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
-   IF(IGDTNUMO.GE.0) THEN
-     CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT, &
+   IF(output_desc%grid_number.GE.0) THEN
+     CALL GDSWZD(output_desc, 0,MO,FILL,XPTS,YPTS,RLON,RLAT, &
                  NO,CROT,SROT)
      IF(NO.EQ.0) IRET=3
    ENDIF
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  LOCATE INPUT POINTS
-   CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+   CALL GDSWZD(input_desc,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
    IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
-   CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI, 0,MI,FILL,XPTI,YPTI,RLOI,RLAI,NV,&
+   CALL GDSWZD(input_desc, 0,MI,FILL,XPTI,YPTI,RLOI,RLAI,NV,&
                CROI,SROI)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  ALLOCATE AND SAVE GRID DATA
@@ -224,7 +227,7 @@
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE WEIGHTS
    IF(IRET.EQ.0) THEN
-     CALL IJKGDS0(IGDTNUMI,IGDTMPLI,IGDTLENI,IJKGDSA)
+     CALL IJKGDS0(input_desc,IJKGDSA)
 !$OMP PARALLEL DO PRIVATE(N,XIJ,YIJ,IJX,IJY,XF,YF,J,I,WX,WY,CM,SM) SCHEDULE(STATIC)
      DO N=1,NO
        RLONX(N)=RLON(N)
@@ -263,7 +266,7 @@
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  INTERPOLATE OVER ALL FIELDS
  IF(IRET.EQ.0.AND.IRETX.EQ.0) THEN
-   IF(IGDTNUMO.GE.0) THEN
+   IF(output_desc%grid_number.GE.0) THEN
      NO=NOX
      DO N=1,NO
        RLON(N)=RLONX(N)
@@ -307,18 +310,16 @@
      IBO(K)=IBI(K)
      IF(.NOT.ALL(LO(1:NO,K))) IBO(K)=1
    ENDDO
-   IF(IGDTNUMO.EQ.0) CALL POLFIXV(NO,MO,KM,RLAT,RLON,IBO,LO,UO,VO)
+   IF(output_desc%grid_number.EQ.0) CALL POLFIXV(NO,MO,KM,RLAT,RLON,IBO,LO,UO,VO)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  ELSE
    IF(IRET.EQ.0) IRET=IRETX
-   IF(IGDTNUMO.GE.0) NO=0
+   IF(output_desc%grid_number.GE.0) NO=0
  ENDIF
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  END SUBROUTINE POLATEV0
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- SUBROUTINE CHECK_GRIDS0V(IGDTNUMI,IGDTMPLI,IGDTLENI, &
-                          IGDTNUMO,IGDTMPLO,IGDTLENO, &
-                          SAME_GRIDI, SAME_GRIDO)
+ SUBROUTINE CHECK_GRIDS0V(input_desc, output_desc, SAME_GRIDI, SAME_GRIDO)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
 ! SUBPROGRAM:  CHECK_GRIDS0V   CHECK GRID INFORMATION
@@ -361,49 +362,75 @@
 !   LANGUAGE: FORTRAN 90
 !
 !$$$
- IMPLICIT NONE
-!
- INTEGER,        INTENT(IN   ) :: IGDTNUMI, IGDTLENI
- INTEGER,        INTENT(IN   ) :: IGDTMPLI(IGDTLENI)
- INTEGER,        INTENT(IN   ) :: IGDTNUMO, IGDTLENO
- INTEGER,        INTENT(IN   ) :: IGDTMPLO(IGDTLENO)
-!
- LOGICAL,        INTENT(  OUT) :: SAME_GRIDI, SAME_GRIDO
-!
- INTEGER, SAVE                 :: IGDTNUMI_SAVE=-9999
- INTEGER, SAVE                 :: IGDTLENI_SAVE=-9999
- INTEGER, SAVE                 :: IGDTMPLI_SAVE(1000)=-9999
- INTEGER, SAVE                 :: IGDTNUMO_SAVE=-9999
- INTEGER, SAVE                 :: IGDTLENO_SAVE=-9999
- INTEGER, SAVE                 :: IGDTMPLO_SAVE(1000)=-9999
-!
-! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- SAME_GRIDI=.FALSE.
- IF(IGDTNUMI==IGDTNUMI_SAVE)THEN
-   IF(IGDTLENI==IGDTLENI_SAVE)THEN
-     IF(ALL(IGDTMPLI==IGDTMPLI_SAVE(1:IGDTLENI)))THEN
-       SAME_GRIDI=.TRUE.
-     ENDIF
-   ENDIF
- ENDIF
-!
- IGDTNUMI_SAVE=IGDTNUMI
- IGDTLENI_SAVE=IGDTLENI
- IGDTMPLI_SAVE(1:IGDTLENI)=IGDTMPLI
- IGDTMPLI_SAVE(IGDTLENI+1:1000)=-9999
-!
- SAME_GRIDO=.FALSE.
- IF(IGDTNUMO==IGDTNUMO_SAVE)THEN
-   IF(IGDTLENO==IGDTLENO_SAVE)THEN
-     IF(ALL(IGDTMPLO==IGDTMPLO_SAVE(1:IGDTLENO)))THEN
-       SAME_GRIDO=.TRUE.
-     ENDIF
-   ENDIF
- ENDIF
-!
- IGDTNUMO_SAVE=IGDTNUMO
- IGDTLENO_SAVE=IGDTLENO
- IGDTMPLO_SAVE(1:IGDTLENO)=IGDTMPLO
- IGDTMPLO_SAVE(IGDTLENO+1:1000)=-9999
-! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   !
+   !$$$
+   IMPLICIT NONE
+   !
+   class(ip_grid_descriptor), intent(in) :: input_desc, output_desc
+   !
+   LOGICAL,        INTENT(  OUT) :: SAME_GRIDI, SAME_GRIDO
+   !
+   INTEGER, SAVE                 :: IGDTNUMI_SAVE=-9999 
+   INTEGER, SAVE                 :: IGDTLENI_SAVE=-9999
+   INTEGER, SAVE                 :: IGDTMPLI_SAVE(1000)=-9999
+   INTEGER, SAVE                 :: IGDTNUMO_SAVE=-9999 
+   INTEGER, SAVE                 :: IGDTLENO_SAVE=-9999
+   INTEGER, SAVE                 :: IGDTMPLO_SAVE(1000)=-9999
+
+   INTEGER,SAVE                  :: KGDSIX(200)=-1,KGDSOX(200)=-1
+
+   select type(input_desc)
+   type is(grib1_descriptor)
+
+   type is(grib2_descriptor)
+      associate(igdtnumi => input_desc%gdt_num, igdtleni => input_desc%gdt_len, &
+           igdtmpli => input_desc%gdt_tmpl)
+        SAME_GRIDI=.FALSE.
+        IF(IGDTNUMI==IGDTNUMI_SAVE)THEN
+           IF(IGDTLENI==IGDTLENI_SAVE)THEN
+              IF(ALL(IGDTMPLI==IGDTMPLI_SAVE(1:IGDTLENI)))THEN
+                 SAME_GRIDI=.TRUE.
+              ENDIF
+           ENDIF
+        ENDIF
+        !
+        IGDTNUMI_SAVE=IGDTNUMI
+        IGDTLENI_SAVE=IGDTLENI
+        IGDTMPLI_SAVE(1:IGDTLENI)=IGDTMPLI
+        IGDTMPLI_SAVE(IGDTLENI+1:1000)=-9999
+      end associate
+      class default
+      print *, "descriptor not recognized"
+      error stop
+   end select
+
+
+
+   select type(output_desc)
+   type is(grib1_descriptor)
+   type is(grib2_descriptor)
+      associate(igdtnumo => output_desc%gdt_num, igdtleno => output_desc%gdt_len, &
+           igdtmplo => output_desc%gdt_tmpl)
+        SAME_GRIDO=.FALSE.
+        IF(IGDTNUMO==IGDTNUMO_SAVE)THEN
+           IF(IGDTLENO==IGDTLENO_SAVE)THEN
+              IF(ALL(IGDTMPLO==IGDTMPLO_SAVE(1:IGDTLENO)))THEN
+                 SAME_GRIDO=.TRUE.
+              ENDIF
+           ENDIF
+        ENDIF
+        !
+        IGDTNUMO_SAVE=IGDTNUMO
+        IGDTLENO_SAVE=IGDTLENO
+        IGDTMPLO_SAVE(1:IGDTLENO)=IGDTMPLO
+        IGDTMPLO_SAVE(IGDTLENO+1:1000)=-9999
+      end associate
+      class default
+      print *, "descriptor not recognized"
+      error stop
+   end select
+
+   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  END SUBROUTINE CHECK_GRIDS0V
+
+end module polatev0_mod
