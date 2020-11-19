@@ -160,7 +160,7 @@
 !
 !$$$
 !
- USE GDSWZD_MOD
+ USE GDSWZD_MOD_ip2
 !
  IMPLICIT NONE
 !
