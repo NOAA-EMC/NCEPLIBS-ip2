@@ -12,6 +12,10 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU)$")
   set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fno-range-check -g -fbacktrace -fcheck=bounds")
 endif()
 
+if(${CMAKE_Fortran_COMPILER_ID} MATCHES "^(GNU)$" AND ${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 10)
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -w -fallow-argument-mismatch -fallow-invalid-boz")
+endif()
+
 # Contains common routines used for testing such as reading and interpolating data
 add_library(test_library input_data_mod.f90 interp_mod.f90)
 target_link_libraries(test_library PUBLIC ip2::ip2_d)
