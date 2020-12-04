@@ -6,6 +6,8 @@ project(
   ip2
   VERSION ${pVersion}
   LANGUAGES C Fortran)
+  
+include(GNUInstallDirs)
 
 option(OPENMP "use OpenMP threading" OFF)
 option(ENABLE_TESTS "Build pfunit tests?" OFF)
