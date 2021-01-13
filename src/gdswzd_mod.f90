@@ -1,4 +1,4 @@
-MODULE GDSWZD_MOD_IP2
+MODULE GDSWZD_MOD
   !$$$  MODULE DOCUMENTATION BLOCK
   !
   ! MODULE:  GDSWZD_MOD  GDS WIZARD MODULE
@@ -833,4 +833,4 @@ CONTAINS
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE GDSWZD_grib1
 
-END MODULE GDSWZD_MOD_IP2
+END MODULE GDSWZD_MOD
