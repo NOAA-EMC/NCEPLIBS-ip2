@@ -1,4 +1,6 @@
 module polates0_mod
+  use ijkgds_mod
+  use gdswzd_mod
   implicit none
 
   private
@@ -139,11 +141,6 @@ contains
     !   LANGUAGE: FORTRAN 90
     !
     !$$$
-    !
-    USE GDSWZD_MOD_ip2
-    !
-    IMPLICIT NONE
-    !
     INTEGER,               INTENT(IN   ) :: IGDTNUMI, IGDTLENI
     INTEGER,               INTENT(IN   ) :: IGDTMPLI(IGDTLENI)
     INTEGER,               INTENT(IN   ) :: IGDTNUMO, IGDTLENO
@@ -500,10 +497,6 @@ contains
   !!
   SUBROUTINE POLATES0_grib1(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI, &
        NO,RLAT,RLON,IBO,LO,GO,IRET)!
-    USE GDSWZD_MOD
-    !
-    IMPLICIT NONE
-    !
     INTEGER,               INTENT(IN   ):: IPOPT(20),KGDSI(200)
     INTEGER,               INTENT(IN   ):: KGDSO(200),MI,MO,KM
     INTEGER,               INTENT(IN   ):: IBI(KM)

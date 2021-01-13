@@ -1,4 +1,6 @@
 module polatev2_mod
+  use ijkgds_mod
+  use gdswzd_mod
   implicit none
 
   private
@@ -158,11 +160,6 @@ contains
     !   LANGUAGE: FORTRAN 90
     !
     !$$$
-    ! 
-    USE GDSWZD_MOD_ip2
-    !
-    IMPLICIT NONE
-    !
     INTEGER,            INTENT(IN   ) :: IPOPT(20)
     INTEGER,            INTENT(IN   ) :: IGDTNUMI, IGDTLENI
     INTEGER,            INTENT(IN   ) :: IGDTMPLI(IGDTLENI)
