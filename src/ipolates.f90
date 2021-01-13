@@ -1,4 +1,10 @@
 module ipolates_mod
+  use polates0_mod
+  use polates1_mod
+  use polates2_mod
+  use polates3_mod
+  use polates4_mod
+  use polates6_mod
   implicit none
 
   private
@@ -29,43 +35,43 @@ contains
     REAL,       INTENT(  OUT) :: GO(MO,KM)
     !
     INTEGER                   :: K, N
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  BILINEAR INTERPOLATION
-    IF(IP.EQ.0) THEN
-       CALL POLATES0(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
-    ELSEIF(IP.EQ.1) THEN
-       CALL POLATES1(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR INTERPOLATION
-    ELSEIF(IP.EQ.2) THEN
-       CALL POLATES2(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.3) THEN
-       CALL POLATES3(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  SPECTRAL INTERPOLATION
-    ELSEIF(IP.EQ.4) THEN
-       CALL POLATES4(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR-BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.6) THEN
-       CALL POLATES6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  UNRECOGNIZED INTERPOLATION METHOD
-    ELSE
-       IF(KGDSO(1).GE.0) NO=0
-       DO K=1,KM
-          IBO(K)=1
-          DO N=1,NO
-             LO(N,K)=.FALSE.
-             GO(N,K)=0.
-          ENDDO
-       ENDDO
-       IRET=1
-    ENDIF
+
+    ! ! BILINEAR INTERPOLATION
+    ! IF(IP.EQ.0) THEN
+    !    CALL POLATES0(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  BICUBIC INTERPOLATION
+    ! ELSEIF(IP.EQ.1) THEN
+    !    CALL POLATES1(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  NEIGHBOR INTERPOLATION
+    ! ELSEIF(IP.EQ.2) THEN
+    !    CALL POLATES2(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  BUDGET INTERPOLATION
+    ! ELSEIF(IP.EQ.3) THEN
+    !    CALL POLATES3(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  SPECTRAL INTERPOLATION
+    ! ELSEIF(IP.EQ.4) THEN
+    !    CALL POLATES4(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  NEIGHBOR-BUDGET INTERPOLATION
+    ! ELSEIF(IP.EQ.6) THEN
+    !    CALL POLATES6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    !    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    !    !  UNRECOGNIZED INTERPOLATION METHOD
+    ! ELSE
+    !    IF(KGDSO(1).GE.0) NO=0
+    !    DO K=1,KM
+    !       IBO(K)=1
+    !       DO N=1,NO
+    !          LO(N,K)=.FALSE.
+    !          GO(N,K)=0.
+    !       ENDDO
+    !    ENDDO
+    !    IRET=1
+    ! ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE IPOLATES_GRIB1
   
