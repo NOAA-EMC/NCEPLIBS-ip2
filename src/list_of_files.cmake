@@ -35,4 +35,5 @@ set(fortran_src
   polatev6.f90
   polfixs.f90
   polfixv.f90
+  ip_mod.f90
   )
