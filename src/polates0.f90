@@ -1,6 +1,9 @@
 module polates0_mod
   use ijkgds_mod
   use gdswzd_mod
+  use ip_grid_mod
+  use ip_grid_descriptor_mod
+  use ip_grid_factory_mod
   implicit none
 
   private
@@ -175,14 +178,23 @@ contains
     REAL                                 :: XPTS(MO),YPTS(MO)
     REAL                                 :: PMP,XIJ,YIJ,XF,YF,G,W
     REAL,ALLOCATABLE,SAVE                :: RLATX(:),RLONX(:),WXY(:,:,:)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  SET PARAMETERS
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
     IRET=0
     MP=IPOPT(1)
     IF(MP.EQ.-1.OR.MP.EQ.0) MP=50
     IF(MP.LT.0.OR.MP.GT.100) IRET=32
     PMP=MP*0.01
     MSPIRAL=MAX(IPOPT(2),0)
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     CALL CHECK_GRIDS0(IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
          SAME_GRIDI,SAME_GRIDO) 
@@ -192,13 +204,13 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(IGDTNUMO.GE.0) THEN
-          CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS, &
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS, &
                RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -211,7 +223,6 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE WEIGHTS
        IF(IRET.EQ.0) THEN
-          CALL IJKGDS0(IGDTNUMI,IGDTMPLI,IGDTLENI,IJKGDSA)
           !$OMP PARALLEL DO PRIVATE(N,XIJ,YIJ,IJX,IJY,XF,YF,J,I,WX,WY) SCHEDULE(STATIC)
           DO N=1,NO
              RLONX(N)=RLON(N)
@@ -229,7 +240,7 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      NXY(I,J,N)=IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j)) !IJKGDS1(IJX(I),IJY(J),IJKGDSA)
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -292,7 +303,7 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                NX=IJKGDS1(IX,JX,IJKGDSA)
+                NX=grid_in%field_pos(ix, jx)
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
@@ -526,6 +537,9 @@ contains
     REAL                                :: XPTS(MO),YPTS(MO)
     REAL                                :: PMP,XIJ,YIJ,XF,YF,G,W
     REAL,ALLOCATABLE,SAVE               :: RLATX(:),RLONX(:),WXY(:,:,:)
+
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SET PARAMETERS
     IRET=0
@@ -534,6 +548,14 @@ contains
     IF(MP.LT.0.OR.MP.GT.100) IRET=32
     PMP=MP*0.01
     MSPIRAL=MAX(IPOPT(2),0)
+
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SAVE OR SKIP WEIGHT COMPUTATION
     IF(IRET.EQ.0.AND.(KGDSO(1).LT.0.OR. &
@@ -541,12 +563,12 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(KGDSO(1).GE.0) THEN
-          CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(KGDSI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -561,7 +583,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE WEIGHTS
        IF(IRET.EQ.0) THEN
-          CALL IJKGDS0(KGDSI,IJKGDSA)
+          !CALL IJKGDS0(KGDSI,IJKGDSA)
           !$OMP PARALLEL DO PRIVATE(N,XIJ,YIJ,IJX,IJY,XF,YF,J,I,WX,WY)
           DO N=1,NO
              RLONX(N)=RLON(N)
@@ -579,7 +601,7 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      NXY(I,J,N)=IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j)) !IJKGDS1(IJX(I),IJY(J),IJKGDSA)
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -642,7 +664,7 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                NX=IJKGDS1(IX,JX,IJKGDSA)
+                NX=grid_in%field_pos(ix, jx) ! IJKGDS1(IX,JX,IJKGDSA)
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
