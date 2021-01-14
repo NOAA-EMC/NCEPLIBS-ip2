@@ -43,4 +43,19 @@ set(fortran_src
   polfixs.f90
   polfixv.f90
   ip_mod.f90
+  ip_grid_descriptor_mod.f90
+  ip_grid_mod.f90
+  ip_station_points_grid_mod.f90
+  ip_gaussian_grid_mod.f90
+  ip_equid_cylind_grid_mod.f90
+  ip_lambert_conf_grid_mod.f90
+  ip_mercator_grid_mod.f90
+  ip_polar_stereo_grid_mod.f90
+  ip_rot_equid_cylind_egrid_mod.f90
+  ip_rot_equid_cylind_grid_mod.f90
+  constants_mod.f90
+  ip_grids_mod.f90
+  ip_grid_factory_mod.f90
+  ip_interpolators_mod.f90
+  earth_radius_mod.f90
   )

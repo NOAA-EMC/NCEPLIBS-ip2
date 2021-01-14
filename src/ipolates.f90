@@ -5,6 +5,7 @@ module ipolates_mod
   use polates3_mod
   use polates4_mod
   use polates6_mod
+  use ip_grid_descriptor_mod
   implicit none
 
   private
