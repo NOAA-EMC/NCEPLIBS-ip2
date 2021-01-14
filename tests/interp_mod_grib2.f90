@@ -352,8 +352,8 @@ contains
 
     logical*1, allocatable    :: output_bitmap(:,:)
 
-    real, allocatable         :: output_rlat(:,:), output_rlon(:,:)
-    real, allocatable         :: output_crot(:,:), output_srot(:,:)
+    real, allocatable         :: output_rlat(:), output_rlon(:)
+    real, allocatable         :: output_crot(:), output_srot(:)
     real, allocatable         :: output_u_data(:,:), output_v_data(:,:)
     real                      :: avg_u_diff, avg_v_diff
     real                      :: max_u_diff, max_v_diff
@@ -502,13 +502,13 @@ contains
 
     mo = i_output * j_output 
 
-    allocate (output_rlat(i_output,j_output))
-    allocate (output_rlon(i_output,j_output))
+    allocate (output_rlat(i_output*j_output))
+    allocate (output_rlon(i_output*j_output))
     allocate (output_u_data(i_output,j_output))
     allocate (output_v_data(i_output,j_output))
     allocate (output_bitmap(i_output,j_output))
-    allocate (output_srot(i_output,j_output))
-    allocate (output_crot(i_output,j_output))
+    allocate (output_srot(i_output*j_output))
+    allocate (output_crot(i_output*j_output))
 
     call ipolatev(ip, ipopt, input_gdtnum, vector_input_gdtmpl, input_gdtlen, &
          output_gdtnum, output_gdtmpl, output_gdtlen, mi, mo,   &

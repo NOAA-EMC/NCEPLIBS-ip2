@@ -202,20 +202,6 @@
    ELSE
      LAREA=.FALSE.
   ENDIF
-
-  
-   print *, "rerth: ", rerth
-    
-    print *, "rlon0: ", rlon0
-    print *, "rlon1: ", rlon1
-    print *, "rlat1: ", rlat1
-    print *, "clat0: ", clat0
-    print *, "slat0: ", slat0
-    print *, "dlats: ", dlats
-    print *, "dlons: ", dlons
-    print *, "hi: ", hi
-    print *, "irot: ", irot
-    print *, "kscan: ", kscan
  
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  TRANSLATE GRID COORDINATES TO EARTH COORDINATES

@@ -1,6 +1,6 @@
 program test_vector
-  use input_data_mod
-  use interp_mod
+  use input_data_mod_grib1
+  use interp_mod_grib1
   implicit none
 
   integer :: num_args, i, len, status
