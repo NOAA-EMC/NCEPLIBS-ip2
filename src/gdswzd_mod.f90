@@ -1,4 +1,8 @@
 MODULE GDSWZD_MOD
+  use ip_grid_descriptor_mod
+  use ip_grids_mod
+  use ip_grid_mod
+  use ip_grid_factory_mod
   !$$$  MODULE DOCUMENTATION BLOCK
   !
   ! MODULE:  GDSWZD_MOD  GDS WIZARD MODULE
@@ -40,11 +44,142 @@ MODULE GDSWZD_MOD
      MODULE PROCEDURE GDSWZD_2D_ARRAY
      MODULE PROCEDURE GDSWZD_SCALAR
      module procedure gdswzd_grib1
+     module procedure gdswzd_grid
   END INTERFACE GDSWZD
 
   PUBLIC                       :: GDSWZD
 
 CONTAINS
+
+  subroutine gdswzd_grid(grid,IOPT,NPTS,FILL, &
+       XPTS,YPTS,RLON,RLAT,NRET, &
+       CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+
+    class(ip_grid), intent(in) :: grid
+    INTEGER,        INTENT(IN   ) :: IOPT, NPTS
+    INTEGER,        INTENT(  OUT) :: NRET
+    !
+    REAL,           INTENT(IN   ) :: FILL
+    REAL,           INTENT(INOUT) :: RLON(NPTS),RLAT(NPTS)
+    REAL,           INTENT(INOUT) :: XPTS(NPTS),YPTS(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: CROT(NPTS),SROT(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: XLON(NPTS),XLAT(NPTS)
+    REAL, OPTIONAL, INTENT(  OUT) :: YLON(NPTS),YLAT(NPTS),AREA(NPTS)
+
+    INTEGER                       :: IS1, IM, JM, NM, KSCAN, NSCAN, N
+    INTEGER                       :: IOPF, NN, I, J
+    INTEGER                       :: I_OFFSET_ODD, I_OFFSET_EVEN
+
+    !  COMPUTE GRID COORDINATES FOR ALL GRID POINTS
+    IF(IOPT.EQ.0) THEN
+       IOPF=1
+
+       im = grid%im
+       jm = grid%jm
+       nm = im * jm
+       nscan = grid%nscan
+       kscan = grid%kscan
+
+       if (nm > npts) then
+          RLAT=FILL
+          RLON=FILL
+          XPTS=FILL
+          YPTS=FILL
+          return
+       end if
+
+       select type(grid)
+       type is(ip_rot_equid_cylind_egrid)
+          if(kscan == 0) then
+             is1 = (jm + 1) / 2
+          else
+             is1 = jm / 2
+          end if
+
+          DO N=1,NM
+             IF(NSCAN.EQ.0) THEN
+                J=(N-1)/IM+1
+                I=(N-IM*(J-1))*2-MOD(J+KSCAN,2)
+             ELSE
+                NN=(N*2)-1+KSCAN
+                I = (NN-1)/JM + 1
+                J = MOD(NN-1,JM) + 1
+                IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==0) J = J + 1
+                IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==1) J = J - 1
+             ENDIF
+             XPTS(N)=IS1+(I-(J-KSCAN))/2
+             YPTS(N)=(I+(J-KSCAN))/2
+          ENDDO
+          class default
+          DO N=1,NM
+             IF(NSCAN.EQ.0) THEN
+                J=(N-1)/IM+1
+                I=N-IM*(J-1)
+             ELSE
+                I=(N-1)/JM+1
+                J=N-JM*(I-1)
+             ENDIF
+             XPTS(N)=I
+             YPTS(N)=J
+          ENDDO
+       end select
+
+       DO N=NM+1,NPTS
+          XPTS(N)=FILL
+          YPTS(N)=FILL
+       ENDDO
+
+    ELSE  ! IOPT /= 0
+       IOPF=IOPT
+    ENDIF ! IOPT CHECK
+
+    call grid%gdswzd(IOPF,NPTS,FILL,  &
+            XPTS,YPTS,RLON,RLAT,NRET, &
+            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    
+    ! select type(grid)
+    ! type is(ip_equid_cylind_grid)
+    !    call grid%gdswzd(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_mercator_grid)
+    !    CALL grid%gdswzd(IOPF,NPTS,FILL,  &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_lambert_conf_grid)
+    !    CALL GDSWZD_LAMBERT_CONF(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_gaussian_grid)
+    !    CALL GDSWZD_GAUSSIAN(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_polar_stereo_grid)
+    !    CALL GDSWZD_POLAR_STEREO(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_rot_equid_cylind_egrid)
+    !    CALL GDSWZD_ROT_EQUID_CYLIND_EGRID(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! type is(ip_rot_equid_cylind_grid)
+    !    CALL GDSWZD_ROT_EQUID_CYLIND(grid,IOPF,NPTS,FILL, &
+    !         XPTS,YPTS,RLON,RLAT,NRET, &
+    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+    ! class default
+    !    IF(IOPT.GE.0) THEN
+    !       RLON=FILL
+    !       RLAT=FILL
+    !    ENDIF
+    !    IF(IOPT.LE.0) THEN
+    !       XPTS=FILL
+    !       YPTS=FILL
+    !    ENDIF
+    ! end select
+
+  end subroutine gdswzd_grid
+
+
 
   SUBROUTINE GDSWZD_SCALAR(IGDTNUM,IGDTMPL,IGDTLEN,IOPT,NPTS,FILL, &
        XPTS,YPTS,RLON,RLAT,NRET, &
@@ -779,7 +914,7 @@ CONTAINS
        IOPF=IOPT
     ENDIF
 
-   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  EQUIDISTANT CYLINDRICAL
     IF(KGDS(1).EQ.000) THEN
        CALL GDSWZD00(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
