@@ -1,6 +1,7 @@
 module polates2_mod
   use ijkgds_mod
   use gdswzd_mod
+  use polfix_mod
   implicit none
 
   private
@@ -601,7 +602,7 @@ contains
           IBO(K)=IBI(K)
           IF(.NOT.ALL(LO(1:NO,K))) IBO(K)=1
        ENDDO
-       IF(KGDSO(1).EQ.0) CALL POLFIXS(NO,MO,KM,RLAT,RLON,IBO,LO,GO)
+       IF(KGDSO(1).EQ.0) CALL POLFIXS(NO,MO,KM,RLAT,IBO,LO,GO)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     ELSE
        IF(IRET.EQ.0) IRET=IRETX

@@ -1,6 +1,7 @@
 module polates3_mod
   use ijkgds_mod
   use gdswzd_mod
+  use polfix_mod
   implicit none
 
   private
@@ -728,7 +729,7 @@ contains
           ENDIF
        ENDDO N_LOOP
     ENDDO KM_LOOP
-    IF(KGDSO_new(1).EQ.0) CALL POLFIXS(NO,MO,KM,RLAT,RLON,IBO,LO,GO)
+    IF(KGDSO_new(1).EQ.0) CALL POLFIXS(NO,MO,KM,RLAT,IBO,LO,GO)
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE POLATES3_GRIB1
 

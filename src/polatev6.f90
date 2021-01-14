@@ -1,6 +1,7 @@
 module polatev6_mod
   use ijkgds_mod
   use gdswzd_mod
+  use polfix_mod
   implicit none
 
   private

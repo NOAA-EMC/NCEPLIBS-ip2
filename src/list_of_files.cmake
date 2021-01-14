@@ -40,8 +40,6 @@ set(fortran_src
   polatev3.f90
   polatev4.f90
   polatev6.f90
-  polfixs.f90
-  polfixv.f90
   ip_mod.f90
   ip_grid_descriptor_mod.f90
   ip_grid_mod.f90
@@ -58,4 +56,5 @@ set(fortran_src
   ip_grid_factory_mod.f90
   ip_interpolators_mod.f90
   earth_radius_mod.f90
+  polfix_mod.f90
   )

@@ -4,6 +4,7 @@ module polates0_mod
   use ip_grid_mod
   use ip_grid_descriptor_mod
   use ip_grid_factory_mod
+  use polfix_mod
   implicit none
 
   private
