@@ -550,11 +550,11 @@ contains
     MSPIRAL=MAX(IPOPT(2),0)
 
 
-    desc_in = init_descriptor(kgdsi)
-    desc_out = init_descriptor(kgdso)
+    !desc_in = init_descriptor(kgdsi)
+    !desc_out = init_descriptor(kgdso)
 
-    grid_in = init_grid(desc_in)
-    grid_out = init_grid(desc_out)
+    !grid_in = init_grid(desc_in)
+    !grid_out = init_grid(desc_out)
     
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SAVE OR SKIP WEIGHT COMPUTATION
@@ -563,12 +563,12 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(KGDSO(1).GE.0) THEN
-          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(KGDSI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -583,7 +583,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE WEIGHTS
        IF(IRET.EQ.0) THEN
-          !CALL IJKGDS0(KGDSI,IJKGDSA)
+          CALL IJKGDS0(KGDSI,IJKGDSA)
           !$OMP PARALLEL DO PRIVATE(N,XIJ,YIJ,IJX,IJY,XF,YF,J,I,WX,WY)
           DO N=1,NO
              RLONX(N)=RLON(N)
@@ -601,7 +601,7 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j)) !IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=IJKGDS1(IJX(I),IJY(J),IJKGDSA)!grid_in%field_pos(ijx(i), ijy(j))
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -664,7 +664,7 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                NX=grid_in%field_pos(ix, jx) ! IJKGDS1(IX,JX,IJKGDSA)
+                NX=IJKGDS1(IX,JX,IJKGDSA)!grid_in%field_pos(ix, jx) 
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
