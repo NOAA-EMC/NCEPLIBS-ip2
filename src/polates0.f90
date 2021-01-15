@@ -205,16 +205,14 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(IGDTNUMO.GE.0) THEN
-          ! CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS, &
-          !      RLON,RLAT,NO)
-          CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS, &
-               RLON,RLAT,NO)
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       !CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
-       CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       !CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -245,8 +243,8 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      !NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
-                      NXY(i,j,n) = IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
+                      !NXY(i,j,n) = IJKGDS1(IJX(I),IJY(J),IJKGDSA)
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -309,8 +307,8 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                !NX=grid_in%field_pos(ix, jx)
-                nx = ijkgds1(ix, jx, ijkgdsa)
+                NX=grid_in%field_pos(ix, jx)
+                !nx = ijkgds1(ix, jx, ijkgdsa)
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
@@ -570,15 +568,14 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(KGDSO(1).GE.0) THEN
-          !CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
-          CALL GDSWZD(kgdso, 0,MO,FILL,XPTS,YPTS, &
-               RLON,RLAT,NO)
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          !CALL GDSWZD(kgdso, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       !CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
-       call gdswzd(kgdsi, -1, NO, FILL, XPTS, YPTS, RLON, RLAT, NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       !call gdswzd(kgdsi, -1, NO, FILL, XPTS, YPTS, RLON, RLAT, NV)
        
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -612,8 +609,8 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      !NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
-                      NXY(I,J,N)=IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
+                      !XY(I,J,N)=IJKGDS1(IJX(I),IJY(J),IJKGDSA)
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -676,8 +673,8 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                !NX=grid_in%field_pos(ix, jx)
-                NX=IJKGDS1(IX,JX,IJKGDSA)
+                NX=grid_in%field_pos(ix, jx)
+                !NX=IJKGDS1(IX,JX,IJKGDSA)
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
