@@ -55,6 +55,7 @@ CONTAINS
       self%jwrap1 = 0
       self%jwrap2 = 0
       self%nscan = mod(kgds(11) / 32, 2)
+      self%nscan_field_pos = self%nscan
       self%kscan = 0
 
       self%iwrap = nint(360 / abs(self%dlon))
@@ -95,6 +96,7 @@ CONTAINS
       self%jwrap2 = 0
       self%kscan = 0
       self%nscan=mod(igdtmpl(16) / 32,2)
+      self%nscan_field_pos = self%nscan
 
       self%iwrap = nint(360 / abs(self%dlon))
       if(self%im < self%iwrap) self%iwrap = 0

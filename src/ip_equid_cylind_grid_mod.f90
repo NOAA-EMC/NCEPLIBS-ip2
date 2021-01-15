@@ -45,6 +45,7 @@ contains
       self%jwrap1 = 0
       self%jwrap2 = 0
       self%nscan = mod(kgds(11) / 32, 2)
+      self%nscan_field_pos = self%nscan
       self%kscan = 0
 
       self%iwrap = nint(360/abs(self%dlon))
@@ -93,6 +94,7 @@ contains
       self%DLAT=(self%RLAT2-self%RLAT1)/(self%JM-1)
 
       self%nscan = MOD(IGDTMPL(19)/32,2)
+      self%nscan_field_pos = self%nscan
       self%kscan = 0
       self%iwrap = NINT(360/ABS(self%DLON))
 

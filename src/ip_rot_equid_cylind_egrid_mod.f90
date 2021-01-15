@@ -49,6 +49,9 @@ contains
       IM=KGDS(2)
       JM=KGDS(3)
 
+      self%nscan_field_pos = 3
+      self%nscan = MOD(KGDS(11)/32,2)
+
       RLAT1=KGDS(4)*1.E-3_KD
       RLON1=KGDS(5)*1.E-3_KD
       RLAT0=KGDS(7)*1.E-3_KD
@@ -121,6 +124,9 @@ contains
 
       self%IM=IGDTMPL(8)
       self%JM=IGDTMPL(9)
+
+      self%NSCAN=MOD(IGDTMPL(16)/32,2)
+      self%nscan_field_pos = 3
 
       ISCALE=IGDTMPL(10)*IGDTMPL(11)
       IF(ISCALE==0) ISCALE=10**6

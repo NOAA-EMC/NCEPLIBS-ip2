@@ -51,6 +51,7 @@ contains
       self%jwrap1 = 0
       self%jwrap2 = 0
       self%nscan = mod(kgds(11) / 32, 2)
+      self%nscan_field_pos = self%nscan
       self%kscan = 0
 
       self%iwrap=nint(360 / abs(self%dlon))
@@ -103,6 +104,7 @@ contains
          endif
       endif
       self%nscan = mod(igdtmpl(19) / 32, 2)
+      self%nscan_field_pos = self%nscan
       self%kscan = 0
     end associate
 
