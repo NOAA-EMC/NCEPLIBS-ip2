@@ -2,6 +2,9 @@ module polates3_mod
   use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
+  use ip_grid_mod
+  use ip_grid_descriptor_mod
+  use ip_grid_factory_mod
   implicit none
 
   private
@@ -194,16 +197,32 @@ contains
     REAL                          :: WO(MO,KM), XF, YF, XI, YI, XX, YY
     REAL                          :: XPTS(MO),YPTS(MO),XPTB(MO),YPTB(MO)
     REAL                          :: XXX(1), YYY(1)
+
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     !  DO SUBSECTION OF GRID IF KGDSO(1) IS SUBTRACTED FROM 255.
     IRET=0
     IF(IGDTNUMO.GE.0) THEN
-       CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
        IGDTNUMO2=255+IGDTNUMO
-       CALL GDSWZD(IGDTNUMO2,IGDTMPLO,IGDTLENO,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       desc_out = init_descriptor(igdtnumo2, igdtleno, igdtmplo)
+       grid_out = init_grid(desc_out)
+       !CALL GDSWZD(IGDTNUMO2,IGDTMPLO,IGDTLENO,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -266,8 +285,10 @@ contains
              YPTB(N)=YPTS(N)+JB*RB2
           ENDDO
           !$OMP END PARALLEL DO
-          CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
-          CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          !CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
           !$OMP PARALLEL DO PRIVATE(N,XI,YI,I1,I2,J1,J2,XF,YF) SCHEDULE(STATIC)
           DO N=1,NO
@@ -280,10 +301,14 @@ contains
                 J2=J1+1
                 XF=XI-I1
                 YF=YI-J1
-                N11(N)=IJKGDS1(I1,J1,IJKGDSA)
-                N21(N)=IJKGDS1(I2,J1,IJKGDSA)
-                N12(N)=IJKGDS1(I1,J2,IJKGDSA)
-                N22(N)=IJKGDS1(I2,J2,IJKGDSA)
+                ! N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                ! N21(N)=IJKGDS1(I2,J1,IJKGDSA)
+                ! N12(N)=IJKGDS1(I1,J2,IJKGDSA)
+                ! N22(N)=IJKGDS1(I2,J2,IJKGDSA)
+                N11(N)=grid_in%field_pos(I1,J1)
+                N21(N)=grid_in%field_pos(I2,J1)
+                N12(N)=grid_in%field_pos(I1,J2)
+                N22(N)=grid_in%field_pos(I2,J2)
                 IF(MIN(N11(N),N21(N),N12(N),N22(N)).GT.0) THEN
                    W11(N)=(1-XF)*(1-YF)
                    W21(N)=XF*(1-YF)
@@ -351,7 +376,8 @@ contains
           ELSEIF (MSPIRAL.GT.1) THEN
              LAT(1)=RLAT(N)
              LON(1)=RLON(N)
-             CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,1,FILL,XXX,YYY,LON,LAT,NV)
+             !CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,1,FILL,XXX,YYY,LON,LAT,NV)
+             CALL GDSWZD(grid_in,-1,1,FILL,XXX,YYY,LON,LAT,NV)
              XX=XXX(1)
              YY=YYY(1)
              IF(NV.EQ.1)THEN
@@ -376,7 +402,8 @@ contains
                       IX=I1-IXS*KXS/4
                       JX=J1+JXS*(KXS/4-KXT)
                    END SELECT
-                   NX=IJKGDS1(IX,JX,IJKGDSA)
+                   !NX=IJKGDS1(IX,JX,IJKGDSA)
+                   nx = grid_in%field_pos(ix, jx)
                    IF(NX.GT.0.)THEN
                       IF(LI(NX,K).OR.IBI(K).EQ.0) THEN
                          GO(N,K)=GI(NX,K)
@@ -533,17 +560,30 @@ contains
     REAL                      :: XXX(1), YYY(1)
 
     integer :: kgdso_new(200)
+
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     !  DO SUBSECTION OF GRID IF KGDSO(1) IS SUBTRACTED FROM 255.
     kgdso_new = kgdso
     IRET=0
     IF(KGDSO(1).GE.0) THEN
-       CALL GDSWZD(KGDSO_new, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       !CALL GDSWZD(KGDSO_new, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
        KGDSO_new(1)=255+KGDSO(1)
-       CALL GDSWZD(KGDSO_new,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       desc_out = init_descriptor(kgdso_new)
+       grid_out = init_grid(desc_out)
+       !CALL GDSWZD(KGDSO_new,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out,-1,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -604,8 +644,12 @@ contains
              XPTB(N)=XPTS(N)+IB*RB2
              YPTB(N)=YPTS(N)+JB*RB2
           ENDDO
-          CALL GDSWZD(KGDSO_new, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
-          CALL GDSWZD(KGDSI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          !CALL GDSWZD(KGDSO_new, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          !CALL GDSWZD(KGDSI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          
+          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
           DO N=1,NO
              XI=XPTB(N)
@@ -617,10 +661,16 @@ contains
                 J2=J1+1
                 XF=XI-I1
                 YF=YI-J1
-                N11(N)=IJKGDS1(I1,J1,IJKGDSA)
-                N21(N)=IJKGDS1(I2,J1,IJKGDSA)
-                N12(N)=IJKGDS1(I1,J2,IJKGDSA)
-                N22(N)=IJKGDS1(I2,J2,IJKGDSA)
+                ! N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                ! N21(N)=IJKGDS1(I2,J1,IJKGDSA)
+                ! N12(N)=IJKGDS1(I1,J2,IJKGDSA)
+                ! N22(N)=IJKGDS1(I2,J2,IJKGDSA)
+
+                N11(N)=grid_in%field_pos(I1,J1)
+                N21(N)=grid_in%field_pos(I2,J1)
+                N12(N)=grid_in%field_pos(I1,J2)
+                N22(N)=grid_in%field_pos(I2,J2)
+                
                 IF(MIN(N11(N),N21(N),N12(N),N22(N)).GT.0) THEN
                    W11(N)=(1-XF)*(1-YF)
                    W21(N)=XF*(1-YF)
@@ -683,7 +733,8 @@ contains
           ELSEIF (MSPIRAL.GT.1) THEN
              LAT(1)=RLAT(N)
              LON(1)=RLON(N)
-             CALL GDSWZD(KGDSI,-1,1,FILL,XXX,YYY,LON,LAT,NV)
+             !CALL GDSWZD(KGDSI,-1,1,FILL,XXX,YYY,LON,LAT,NV)
+             CALL GDSWZD(grid_in,-1,1,FILL,XXX,YYY,LON,LAT,NV)
              XX=XXX(1)
              YY=YYY(1)
              IF(NV.EQ.1)THEN
@@ -708,7 +759,8 @@ contains
                       IX=I1-IXS*KXS/4
                       JX=J1+JXS*(KXS/4-KXT)
                    END SELECT
-                   NX=IJKGDS1(IX,JX,IJKGDSA)
+                   !NX=IJKGDS1(IX,JX,IJKGDSA)
+                   NX=grid_in%field_pos(ix, jx)
                    IF(NX.GT.0.)THEN
                       IF(LI(NX,K).OR.IBI(K).EQ.0) THEN
                          GO(N,K)=GI(NX,K)
