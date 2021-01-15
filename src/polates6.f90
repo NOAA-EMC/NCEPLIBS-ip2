@@ -2,6 +2,9 @@ module polates6_mod
   use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
+  use ip_grid_mod
+  use ip_grid_descriptor_mod
+  use ip_grid_factory_mod
   implicit none
 
   private
@@ -164,11 +167,22 @@ contains
     REAL                          :: PMP,RLOB(MO),RLAB(MO)
     REAL                          :: WB, WO(MO,KM), XI, YI
     REAL                          :: XPTB(MO),YPTB(MO),XPTS(MO),YPTS(MO)
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     IRET=0
     IF(IGDTNUMO.GE.0) THEN
-       CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
        IRET=31
@@ -221,8 +235,10 @@ contains
              XPTB(N)=XPTS(N)+IB/REAL(NB2)
              YPTB(N)=YPTS(N)+JB/REAL(NB2)
           ENDDO
-          CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
-          CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          ! CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          ! CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
           DO N=1,NO
              XI=XPTB(N)
@@ -230,7 +246,8 @@ contains
              IF(XI.NE.FILL.AND.YI.NE.FILL) THEN
                 I1=NINT(XI)
                 J1=NINT(YI)
-                N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                ! N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                N11(N)=grid_in%field_pos(i1, j1)
              ELSE
                 N11(N)=0
              ENDIF
@@ -371,11 +388,21 @@ contains
     REAL                      :: PMP,RLOB(MO),RLAB(MO)
     REAL                      :: WB, WO(MO,KM), XI, YI
     REAL                      :: XPTB(MO),YPTB(MO),XPTS(MO),YPTS(MO)
+
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     IRET=0
     IF(KGDSO(1).GE.0) THEN
-       CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
        IRET=31
@@ -428,8 +455,10 @@ contains
              XPTB(N)=XPTS(N)+IB/REAL(NB2)
              YPTB(N)=YPTS(N)+JB/REAL(NB2)
           ENDDO
-          CALL GDSWZD(KGDSO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
-          CALL GDSWZD(KGDSI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          ! CALL GDSWZD(KGDSO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          ! CALL GDSWZD(KGDSI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
           DO N=1,NO
              XI=XPTB(N)
@@ -437,7 +466,8 @@ contains
              IF(XI.NE.FILL.AND.YI.NE.FILL) THEN
                 I1=NINT(XI)
                 J1=NINT(YI)
-                N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                ! N11(N)=IJKGDS1(I1,J1,IJKGDSA)
+                N11(N)=grid_in%field_pos(i1, j1)
              ELSE
                 N11(N)=0
              ENDIF
