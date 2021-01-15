@@ -2,6 +2,9 @@ module polates2_mod
   use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
+  use ip_grid_factory_mod
+  use ip_grid_mod
+  use ip_grid_descriptor_mod
   implicit none
 
   private
@@ -175,7 +178,16 @@ contains
     REAL,              ALLOCATABLE,SAVE  :: RLATX(:),RLONX(:)
     REAL,              ALLOCATABLE,SAVE  :: XPTSX(:),YPTSX(:)
     REAL                                 :: XPTS(MO),YPTS(MO)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+
     !  SET PARAMETERS
     IRET=0
     MSPIRAL=MAX(IPOPT(1),1)
@@ -189,12 +201,14 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(IGDTNUMO.GE.0) THEN
-          CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       !CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -269,7 +283,8 @@ contains
                       IX=I1-IXS*KXS/4
                       JX=J1+JXS*(KXS/4-KXT)
                    END SELECT
-                   NX=IJKGDS1(IX,JX,IJKGDSA)
+                   !NX=IJKGDS1(IX,JX,IJKGDSA)
+                   nx = grid_in%field_pos(ix, jx)
                    IF(NX.GT.0) THEN
                       IF(LI(NX,K)) THEN
                          GO(N,K)=GI(NX,K)
@@ -493,7 +508,16 @@ contains
     REAL,              ALLOCATABLE,SAVE :: RLATX(:),RLONX(:)
     REAL,              ALLOCATABLE,SAVE :: XPTSX(:),YPTSX(:)
     REAL                                :: XPTS(MO),YPTS(MO)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     !  SET PARAMETERS
     IRET=0
     MSPIRAL=MAX(IPOPT(1),1)
@@ -504,12 +528,14 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(KGDSO(1).GE.0) THEN
-          CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          !CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(KGDSI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       !CALL GDSWZD(KGDSI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
@@ -532,7 +558,8 @@ contains
              XPTSX(N)=XPTS(N)
              YPTSX(N)=YPTS(N)
              IF(XPTS(N).NE.FILL.AND.YPTS(N).NE.FILL) THEN
-                NXY(N)=IJKGDS1(NINT(XPTS(N)),NINT(YPTS(N)),IJKGDSA)
+                !NXY(N)=IJKGDS1(NINT(XPTS(N)),NINT(YPTS(N)),IJKGDSA)
+                NXY(N) = grid_in%field_pos(NINT(XPTS(N)),NINT(YPTS(N)))
              ELSE
                 NXY(N)=0
              ENDIF
@@ -586,7 +613,8 @@ contains
                       IX=I1-IXS*KXS/4
                       JX=J1+JXS*(KXS/4-KXT)
                    END SELECT
-                   NX=IJKGDS1(IX,JX,IJKGDSA)
+                   !NX=IJKGDS1(IX,JX,IJKGDSA)
+                   nx = grid_in%field_pos(ix, jx)
                    IF(NX.GT.0) THEN
                       IF(LI(NX,K)) THEN
                          GO(N,K)=GI(NX,K)
