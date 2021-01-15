@@ -243,8 +243,8 @@ contains
                 WY(2)=YF
                 DO J=1,2
                    DO I=1,2
-                      !NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
-                      NXY(i,j,n) = IJKGDS1(IJX(I),IJY(J),IJKGDSA)
+                      NXY(I,J,N)=grid_in%field_pos(ijx(i), ijy(j))
+                      !NXY(i,j,n) = IJKGDS1(IJX(I),IJY(J),IJKGDSA)
                       WXY(I,J,N)=WX(I)*WY(J)
                    ENDDO
                 ENDDO
@@ -307,8 +307,8 @@ contains
                    IX=I1-IXS*KXS/4
                    JX=J1+JXS*(KXS/4-KXT)
                 END SELECT
-                !NX=grid_in%field_pos(ix, jx)
-                nx = ijkgds1(ix, jx, ijkgdsa)
+                NX=grid_in%field_pos(ix, jx)
+                !nx = ijkgds1(ix, jx, ijkgdsa)
                 IF(NX.GT.0.)THEN
                    IF(LI(NX,K).OR.IBI(K).EQ.0)THEN
                       GO(N,K)=GI(NX,K)
