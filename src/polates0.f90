@@ -211,8 +211,8 @@ contains
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  LOCATE INPUT POINTS
-       CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
-       !CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       !CALL GDSWZD(grid_in,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
+       CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTS,YPTS,RLON,RLAT,NV)
        IF(IRET.EQ.0.AND.NV.EQ.0) IRET=2
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
