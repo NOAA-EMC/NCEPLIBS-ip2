@@ -8,6 +8,7 @@ module ip_grids_mod
   use ip_rot_equid_cylind_egrid_mod
   use ip_mercator_grid_mod
   use ip_station_points_grid_mod
+  use ip_grid_mod
   implicit none
 end module ip_grids_mod
 
