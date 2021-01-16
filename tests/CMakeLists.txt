@@ -28,7 +28,7 @@ target_link_libraries(test_gdswzd_grib2 PRIVATE test_library_grib2)
 target_link_libraries(test_scalar_grib2 PRIVATE test_library_grib2)
 target_link_libraries(test_vector_grib2 PRIVATE test_library_grib2)
 
-#add_test(test_gdswzd_c test_gdswzd)
+add_test(test_gdswzd_c_grib2 test_gdswzd_grib2)
 
 # scalar tests
 add_test(test_lambert_bilinear_scalar_grib2 test_scalar_grib2 218 0)
