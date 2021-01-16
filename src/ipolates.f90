@@ -73,7 +73,8 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
-       CALL POLATES6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+       !CALL POLATES6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+       CALL interpolate_neighbor_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD
     ELSE
@@ -437,8 +438,9 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
-       CALL POLATES6(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+       ! CALL POLATES6(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+       CALL interpolate_neighbor_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD
     ELSE
