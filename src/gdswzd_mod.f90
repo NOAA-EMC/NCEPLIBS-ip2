@@ -136,46 +136,6 @@ CONTAINS
     call grid%gdswzd(IOPF,NPTS,FILL,  &
             XPTS,YPTS,RLON,RLAT,NRET, &
             CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    
-    ! select type(grid)
-    ! type is(ip_equid_cylind_grid)
-    !    call grid%gdswzd(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_mercator_grid)
-    !    CALL grid%gdswzd(IOPF,NPTS,FILL,  &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_lambert_conf_grid)
-    !    CALL GDSWZD_LAMBERT_CONF(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_gaussian_grid)
-    !    CALL GDSWZD_GAUSSIAN(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_polar_stereo_grid)
-    !    CALL GDSWZD_POLAR_STEREO(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_rot_equid_cylind_egrid)
-    !    CALL GDSWZD_ROT_EQUID_CYLIND_EGRID(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! type is(ip_rot_equid_cylind_grid)
-    !    CALL GDSWZD_ROT_EQUID_CYLIND(grid,IOPF,NPTS,FILL, &
-    !         XPTS,YPTS,RLON,RLAT,NRET, &
-    !         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-    ! class default
-    !    IF(IOPT.GE.0) THEN
-    !       RLON=FILL
-    !       RLAT=FILL
-    !    ENDIF
-    !    IF(IOPT.LE.0) THEN
-    !       XPTS=FILL
-    !       YPTS=FILL
-    !    ENDIF
-    ! end select
 
   end subroutine gdswzd_grid
 
@@ -540,17 +500,6 @@ CONTAINS
     !   LANGUAGE: FORTRAN 90
     !
     !$$$
-    !
-    USE GDSWZD_EQUID_CYLIND_MOD
-    USE GDSWZD_MERCATOR_MOD
-    USE GDSWZD_LAMBERT_CONF_MOD
-    USE GDSWZD_GAUSSIAN_MOD
-    USE GDSWZD_POLAR_STEREO_MOD
-    USE GDSWZD_ROT_EQUID_CYLIND_EGRID_MOD
-    USE GDSWZD_ROT_EQUID_CYLIND_MOD
-    !
-    IMPLICIT NONE
-    !
     INTEGER,        INTENT(IN   ) :: IGDTNUM, IGDTLEN
     INTEGER,        INTENT(IN   ) :: IGDTMPL(IGDTLEN)
     INTEGER,        INTENT(IN   ) :: IOPT, NPTS
@@ -562,163 +511,17 @@ CONTAINS
     REAL, OPTIONAL, INTENT(  OUT) :: CROT(NPTS),SROT(NPTS)
     REAL, OPTIONAL, INTENT(  OUT) :: XLON(NPTS),XLAT(NPTS)
     REAL, OPTIONAL, INTENT(  OUT) :: YLON(NPTS),YLAT(NPTS),AREA(NPTS)
-    !
-    INTEGER                       :: IS1, IM, JM, NM, KSCAN, NSCAN, N
-    INTEGER                       :: IOPF, NN, I, J
-    INTEGER                       :: I_OFFSET_ODD, I_OFFSET_EVEN
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  COMPUTE GRID COORDINATES FOR ALL GRID POINTS
-    IF(IOPT.EQ.0) THEN
-       IF(IGDTNUM==0) THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          NSCAN=MOD(IGDTMPL(19)/32,2)
-       ELSEIF(IGDTNUM==1) THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          I_OFFSET_ODD=MOD(IGDTMPL(19)/8,2)
-          I_OFFSET_EVEN=MOD(IGDTMPL(19)/4,2)
-          IF(I_OFFSET_ODD/=I_OFFSET_EVEN)THEN
-             IF(I_OFFSET_ODD==0) THEN
-                IS1=(JM+1)/2
-             ELSE
-                IS1=JM/2
-             ENDIF
-          ENDIF
-          NSCAN=MOD(IGDTMPL(19)/32,2)
-       ELSEIF(IGDTNUM==10) THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          NSCAN=MOD(IGDTMPL(16)/32,2)
-       ELSEIF(IGDTNUM==20) THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          NSCAN=MOD(IGDTMPL(18)/32,2)
-       ELSEIF(IGDTNUM==30) THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          NSCAN=MOD(IGDTMPL(18)/32,2)
-       ELSEIF(IGDTNUM==40)THEN
-          IM=IGDTMPL(8)
-          JM=IGDTMPL(9)
-          NM=IM*JM
-          NSCAN=MOD(IGDTMPL(19)/32,2)
-       ELSE ! PROJECTION NOT RECOGNIZED
-          RLAT=FILL
-          RLON=FILL
-          XPTS=FILL
-          YPTS=FILL
-          RETURN
-       ENDIF
-       IF(NM.LE.NPTS) THEN
-          IF(IGDTNUM==1.AND.(I_OFFSET_ODD/=I_OFFSET_EVEN)) THEN
-             KSCAN=I_OFFSET_ODD
-             DO N=1,NM
-                IF(NSCAN.EQ.0) THEN
-                   J=(N-1)/IM+1
-                   I=(N-IM*(J-1))*2-MOD(J+KSCAN,2)
-                ELSE
-                   NN=(N*2)-1+KSCAN
-                   I = (NN-1)/JM + 1
-                   J = MOD(NN-1,JM) + 1
-                   IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==0) J = J + 1
-                   IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==1) J = J - 1
-                ENDIF
-                XPTS(N)=IS1+(I-(J-KSCAN))/2
-                YPTS(N)=(I+(J-KSCAN))/2
-             ENDDO
-          ELSE
-             DO N=1,NM
-                IF(NSCAN.EQ.0) THEN
-                   J=(N-1)/IM+1
-                   I=N-IM*(J-1)
-                ELSE
-                   I=(N-1)/JM+1
-                   J=N-JM*(I-1)
-                ENDIF
-                XPTS(N)=I
-                YPTS(N)=J
-             ENDDO
-          ENDIF
-          DO N=NM+1,NPTS
-             XPTS(N)=FILL
-             YPTS(N)=FILL
-          ENDDO
-       ELSE ! NM > NPTS
-          RLAT=FILL
-          RLON=FILL
-          XPTS=FILL
-          YPTS=FILL
-          RETURN
-       ENDIF
-       IOPF=1
-    ELSE  ! IOPT /= 0
-       IOPF=IOPT
-       IF(IGDTNUM==1) THEN
-          I_OFFSET_ODD=MOD(IGDTMPL(19)/8,2)
-          I_OFFSET_EVEN=MOD(IGDTMPL(19)/4,2)
-       ENDIF
-    ENDIF ! IOPT CHECK
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  EQUIDISTANT CYLINDRICAL
-    IF(IGDTNUM==0) THEN
-       CALL GDSWZD_EQUID_CYLIND(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  MERCATOR CYLINDRICAL
-    ELSEIF(IGDTNUM==10) THEN
-       CALL GDSWZD_MERCATOR(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL,  &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  LAMBERT CONFORMAL CONICAL
-    ELSEIF(IGDTNUM==30) THEN
-       CALL GDSWZD_LAMBERT_CONF(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  GAUSSIAN CYLINDRICAL
-    ELSEIF(IGDTNUM==40) THEN
-       CALL GDSWZD_GAUSSIAN(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  POLAR STEREOGRAPHIC AZIMUTHAL
-    ELSEIF(IGDTNUM==20) THEN
-       CALL GDSWZD_POLAR_STEREO(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  2-D E-STAGGERED ROTATED EQUIDISTANT CYLINDRICAL
-    ELSEIF(IGDTNUM==1.AND.(I_OFFSET_ODD/=I_OFFSET_EVEN)) THEN
-       CALL GDSWZD_ROT_EQUID_CYLIND_EGRID(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  2-D B-STAGGERED ROTATED EQUIDISTANT CYLINDRICAL
-    ELSEIF(IGDTNUM==1) THEN
-       CALL GDSWZD_ROT_EQUID_CYLIND(IGDTNUM,IGDTMPL,IGDTLEN,IOPF,NPTS,FILL, &
-            XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  PROJECTION UNRECOGNIZED
-    ELSE
-       IF(IOPT.GE.0) THEN
-          RLON=FILL
-          RLAT=FILL
-       ENDIF
-       IF(IOPT.LE.0) THEN
-          XPTS=FILL
-          YPTS=FILL
-       ENDIF
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    type(grib2_descriptor) :: desc
+    class(ip_grid), allocatable :: grid
+
+    desc = init_descriptor(igdtnum, igdtlen, igdtmpl)
+    grid = init_grid(desc)
+    
+    call gdswzd_grid(grid,IOPT,NPTS,FILL, &
+         XPTS,YPTS,RLON,RLAT,NRET, &
+         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+  
   END SUBROUTINE GDSWZD_1D_ARRAY
 
   SUBROUTINE GDSWZD_grib1(KGDS,IOPT,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
@@ -819,17 +622,6 @@ CONTAINS
     !   LANGUAGE: FORTRAN 90
     !
     !$$$
-    !
-    USE GDSWZD00_MOD
-    USE GDSWZD01_MOD
-    USE GDSWZD03_MOD
-    USE GDSWZD04_MOD
-    USE GDSWZD05_MOD
-    USE GDSWZDCB_MOD
-    USE GDSWZDCD_MOD
-    !
-    IMPLICIT NONE
-    !
     INTEGER,        INTENT(IN   ) :: IOPT, KGDS(200), NPTS
     INTEGER,        INTENT(  OUT) :: NRET
     !
@@ -839,133 +631,18 @@ CONTAINS
     REAL, OPTIONAL, INTENT(  OUT) :: CROT(NPTS),SROT(NPTS)
     REAL, OPTIONAL, INTENT(  OUT) :: XLON(NPTS),XLAT(NPTS)
     REAL, OPTIONAL, INTENT(  OUT) :: YLON(NPTS),YLAT(NPTS),AREA(NPTS)
-    !
-    INTEGER                       :: IS1, IM, JM, NM, KSCAN, NSCAN, N
-    INTEGER                       :: IOPF, NN, I, J
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  COMPUTE GRID COORDINATES FOR ALL GRID POINTS
 
-    IF(IOPT.EQ.0) THEN
+    
+    type(grib1_descriptor) :: desc
+    class(ip_grid), allocatable :: grid
 
-       IF(KGDS(1).EQ.203) THEN
-          IM=KGDS(2)
-          JM=KGDS(3)
-          NM=IM*JM
-          KSCAN=MOD(KGDS(11)/256,2)
-          IF(KSCAN.EQ.0) THEN
-             IS1=(JM+1)/2
-          ELSE
-             IS1=JM/2
-          ENDIF
-       ELSE
-          IM=KGDS(2)
-          JM=KGDS(3)
-          NM=IM*JM
-       ENDIF
+    desc = init_descriptor(kgds)
+    grid = init_grid(desc)
+    
+    call gdswzd_grid(grid,IOPT,NPTS,FILL, &
+         XPTS,YPTS,RLON,RLAT,NRET, &
+         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
-       NSCAN=MOD(KGDS(11)/32,2)
-
-       IF(NM.LE.NPTS) THEN
-
-          IF(KGDS(1).EQ.203) THEN
-             DO N=1,NM
-                IF(NSCAN.EQ.0) THEN
-                   J=(N-1)/IM+1
-                   I=(N-IM*(J-1))*2-MOD(J+KSCAN,2)
-                ELSE
-                   NN=(N*2)-1+KSCAN
-                   I = (NN-1)/JM + 1
-                   J = MOD(NN-1,JM) + 1
-                   IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==0) J = J + 1
-                   IF (MOD(JM,2)==0.AND.MOD(I,2)==0.AND.KSCAN==1) J = J - 1
-                ENDIF
-                XPTS(N)=IS1+(I-(J-KSCAN))/2
-                YPTS(N)=(I+(J-KSCAN))/2
-             ENDDO
-          ELSE
-             DO N=1,NM
-                IF(NSCAN.EQ.0) THEN
-                   J=(N-1)/IM+1
-                   I=N-IM*(J-1)
-                ELSE
-                   I=(N-1)/JM+1
-                   J=N-JM*(I-1)
-                ENDIF
-                XPTS(N)=I
-                YPTS(N)=J
-             ENDDO
-          ENDIF
-
-
-          DO N=NM+1,NPTS
-             XPTS(N)=FILL
-             YPTS(N)=FILL
-          ENDDO
-
-       ELSE
-          DO N=1,NPTS
-             XPTS(N)=FILL
-             YPTS(N)=FILL
-          ENDDO
-
-       ENDIF
-       IOPF=1
-    ELSE
-       IOPF=IOPT
-    ENDIF
-
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  EQUIDISTANT CYLINDRICAL
-    IF(KGDS(1).EQ.000) THEN
-       CALL GDSWZD00(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  MERCATOR CYLINDRICAL
-    ELSEIF(KGDS(1).EQ.001) THEN
-       CALL GDSWZD01(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  LAMBERT CONFORMAL CONICAL
-    ELSEIF(KGDS(1).EQ.003) THEN
-       CALL GDSWZD03(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  GAUSSIAN CYLINDRICAL
-    ELSEIF(KGDS(1).EQ.004) THEN
-       CALL GDSWZD04(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  POLAR STEREOGRAPHIC AZIMUTHAL
-    ELSEIF(KGDS(1).EQ.005) THEN
-       CALL GDSWZD05(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  2-D E-STAGGERED ROTATED EQUIDISTANT CYLINDRICAL
-    ELSEIF(KGDS(1).EQ.203) THEN
-       CALL GDSWZDCB(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  2-D B-STAGGERED ROTATED EQUIDISTANT CYLINDRICAL
-    ELSEIF(KGDS(1).EQ.205) THEN
-       CALL GDSWZDCD(KGDS,IOPF,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
-            CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  PROJECTION UNRECOGNIZED
-    ELSE
-       IF(IOPT.GE.0) THEN
-          DO N=1,NPTS
-             RLON(N)=FILL
-             RLAT(N)=FILL
-          ENDDO
-       ENDIF
-       IF(IOPT.LE.0) THEN
-          DO N=1,NPTS
-             XPTS(N)=FILL
-             YPTS(N)=FILL
-          ENDDO
-       ENDIF
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE GDSWZD_grib1
 
 END MODULE GDSWZD_MOD
