@@ -6,6 +6,10 @@ module ipolatev_mod
   use polatev4_mod
   use polatev6_mod
 
+  use ip_grid_factory_mod
+  use ip_grid_descriptor_mod
+  use ip_grid_mod
+
   implicit none
 
   private
@@ -341,11 +345,24 @@ contains
     REAL,                  INTENT(  OUT) :: UO(MO,KM),VO(MO,KM)
     !
     INTEGER                              :: K, N
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  BILINEAR INTERPOLATION
     IF(IP.EQ.0) THEN
-       CALL POLATEV0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-            IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       ! CALL POLATEV0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
+       !      IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       !      MI,MO,KM,IBI,LI,UI,VI,&
+       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+
+       CALL interpolate_bilinear_vector(IPOPT,grid_in,grid_out, &
             MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -580,6 +597,16 @@ contains
     REAL,                  INTENT(  OUT):: UO(MO,KM),VO(MO,KM)
     !
     INTEGER                             :: K, N, KGDSI11, KGDSO11
+
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     IF(KGDSI(1).EQ.203) THEN
        KGDSI11=KGDSI(11)
@@ -592,7 +619,9 @@ contains
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  BILINEAR INTERPOLATION
     IF(IP.EQ.0) THEN
-       CALL POLATEV0(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
+       ! CALL POLATEV0(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
+       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+       CALL interpolate_bilinear_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BICUBIC INTERPOLATION
