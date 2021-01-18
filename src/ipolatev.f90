@@ -368,10 +368,8 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BICUBIC INTERPOLATION
     ELSEIF(IP.EQ.1) THEN
-       CALL POLATEV1(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-            IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+      CALL interpolate_bicubic_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
     ELSEIF(IP.EQ.2) THEN
@@ -626,7 +624,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BICUBIC INTERPOLATION
     ELSEIF(IP.EQ.1) THEN
-       CALL POLATEV1(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
+       CALL interpolate_bicubic_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
