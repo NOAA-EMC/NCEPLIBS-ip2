@@ -394,9 +394,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
-       CALL POLATEV6(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-            IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,LI,UI,VI,&
+       CALL interpolate_neighbor_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD
@@ -645,7 +643,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
-       CALL POLATEV6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
+       CALL interpolate_neighbor_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD
