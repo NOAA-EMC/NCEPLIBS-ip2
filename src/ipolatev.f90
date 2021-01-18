@@ -373,10 +373,12 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
     ELSEIF(IP.EQ.2) THEN
-       CALL POLATEV2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-            IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+       ! CALL POLATEV2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
+       !      IGDTNUMO,IGDTMPLO,IGDTLENO, &
+       !      MI,MO,KM,IBI,LI,UI,VI,&
+       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+       CALL interpolate_neighbor_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
@@ -629,8 +631,8 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
     ELSEIF(IP.EQ.2) THEN
-       CALL POLATEV2(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+      CALL interpolate_neighbor_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
