@@ -382,9 +382,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
-       CALL POLATEV3(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-            IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,LI,UI,VI,&
+       CALL interpolate_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  SPECTRAL INTERPOLATION
@@ -601,13 +599,7 @@ contains
     type(grib1_descriptor) :: desc_in, desc_out
     class(ip_grid), allocatable :: grid_in, grid_out
 
-    desc_in = init_descriptor(kgdsi)
-    desc_out = init_descriptor(kgdso)
-
-    grid_in = init_grid(desc_in)
-    grid_out = init_grid(desc_out)
-    
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     IF(KGDSI(1).EQ.203) THEN
        KGDSI11=KGDSI(11)
        KGDSI(11)=IOR(KGDSI(11),256)
@@ -616,6 +608,13 @@ contains
        KGDSO11=KGDSO(11)
        KGDSO(11)=IOR(KGDSO(11),256)
     ENDIF
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  BILINEAR INTERPOLATION
     IF(IP.EQ.0) THEN
@@ -636,7 +635,7 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
-       CALL POLATEV3(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
+       CALL interpolate_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  SPECTRAL INTERPOLATION

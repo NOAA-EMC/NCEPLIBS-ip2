@@ -30,7 +30,7 @@ contains
     type(grib1_descriptor), intent(in) :: g1_desc
     class(ip_grid), allocatable :: grid
     
-    select case(g1_desc%gds(1))
+    select case(g1_desc%grid_num)
     case(:-1)
        allocate(ip_station_points_grid::grid)
     case(EQUID_CYLIND_GRID_ID_GRIB1)
@@ -60,7 +60,7 @@ contains
 
     integer :: i_offset_odd, i_offset_even
 
-    select case(g2_desc%gdt_num)
+    select case(g2_desc%grid_num)
     case(:-1)
        allocate(ip_station_points_grid::grid)
     case(EQUID_CYLIND_GRID_ID_GRIB2)
