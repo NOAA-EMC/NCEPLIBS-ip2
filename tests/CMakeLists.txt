@@ -18,7 +18,7 @@ endif()
 
 # grib-2 tests
 add_library(test_library_grib2 input_data_mod_grib2.f90 interp_mod_grib2.f90)
-target_link_libraries(test_library_grib2 PUBLIC ip2::ip2_d)
+target_link_libraries(test_library_grib2 PUBLIC ip::ip_d)
 
 add_executable(test_gdswzd_grib2 test_gdswzd_grib2.c)
 add_executable(test_scalar_grib2 test_scalar_grib2.f90)
@@ -51,7 +51,7 @@ add_test(test_rotatedE_budget_vector_grib2 test_vector_grib2 203 3)
 
 # grib-1 tests
 add_library(test_library_grib1 input_data_mod_grib1.f90 interp_mod_grib1.f90)
-target_link_libraries(test_library_grib1 PUBLIC ip2::ip2_d)
+target_link_libraries(test_library_grib1 PUBLIC ip::ip_d)
 
 add_executable(test_gdswzd_grib1 test_gdswzd_grib1.c)
 add_executable(test_scalar_grib1 test_scalar_grib1.f90)
@@ -59,7 +59,7 @@ add_executable(test_vector_grib1 test_vector_grib1.f90)
 
 target_link_libraries(test_scalar_grib1 PRIVATE test_library_grib1)
 target_link_libraries(test_vector_grib1 PRIVATE test_library_grib1)
-target_link_libraries(test_gdswzd_grib1 ip2::ip2_d)
+target_link_libraries(test_gdswzd_grib1 ip::ip_d)
 
 add_test(test_gdswzd_c_grib1 test_gdswzd_grib1)
 add_test(test_lambert_bilinear_scalar_grib1 test_scalar_grib1 218 0)
