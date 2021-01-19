@@ -18,12 +18,6 @@ set(fortran_src
   budget_interp_mod.f90
   spectral_interp_mod.f90
   neighbor_budget_interp_mod.f90
-  polatev0.f90
-  polatev1.f90
-  polatev2.f90
-  polatev3.f90
-  polatev4.f90
-  polatev6.f90
   ip_mod.f90
   ip_grid_descriptor_mod.f90
   ip_grid_mod.f90

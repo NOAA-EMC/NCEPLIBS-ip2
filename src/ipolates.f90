@@ -7,6 +7,7 @@ module ipolates_mod
   use neighbor_budget_interp_mod
   use ip_grid_descriptor_mod
   use ip_grid_factory_mod
+  use ip_interpolators_mod
   use ip_grid_mod
   implicit none
 
@@ -17,9 +18,53 @@ module ipolates_mod
      module procedure ipolates_grib1
      module procedure ipolates_grib2
   end interface ipolates
-  
 
 contains
+
+  subroutine ipolates_grid(ip, ipopt, grid_in, grid_out, mi, mo, km, ibi, li, gi, no, rlat, rlon, ibo, lo, go, iret)
+    class(ip_grid), intent(in) :: grid_in, grid_out
+    INTEGER,    INTENT(IN   ) :: IP, IPOPT(20), KM, MI, MO
+    INTEGER,    INTENT(IN   ) :: IBI(KM)
+    INTEGER,    INTENT(INOUT) :: NO
+    INTEGER,    INTENT(  OUT) :: IRET, IBO(KM)
+    !
+    LOGICAL*1,  INTENT(IN   ) :: LI(MI,KM)
+    LOGICAL*1,  INTENT(  OUT) :: LO(MO,KM)
+    !
+    REAL,       INTENT(IN   ) :: GI(MI,KM)
+    REAL,       INTENT(INOUT) :: RLAT(MO),RLON(MO)
+    REAL,       INTENT(  OUT) :: GO(MO,KM)
+    !
+
+    select case(ip)
+    case(BILINEAR_INTERP_ID)
+       CALL interpolate_bilinear(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case(BICUBIC_INTERP_ID)
+       CALL interpolate_bicubic(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case(NEIGHBOR_INTERP_ID)
+       CALL interpolate_neighbor(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case(BUDGET_INTERP_ID)
+       CALL interpolate_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case(SPECTRAL_INTERP_ID)
+       CALL interpolate_spectral(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case(NEIGHBOR_BUDGET_INTERP_ID)
+       CALL interpolate_neighbor_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+    case default
+       ! IF(KGDSO(1).GE.0) NO=0
+       ! DO K=1,KM
+       !    IBO(K)=1
+       !    DO N=1,NO
+       !       LO(N,K)=.FALSE.
+       !       GO(N,K)=0.
+       !    ENDDO
+       ! ENDDO
+       IRET=1
+       print *, "Unrecognized interp option: ", ip
+       error stop
+    end select
+
+  end subroutine ipolates_grid
+  
 
   SUBROUTINE IPOLATES_grib1(IP,IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI, &
        NO,RLAT,RLON,IBO,LO,GO,IRET)
@@ -48,47 +93,8 @@ contains
     grid_in = init_grid(desc_in)
     grid_out = init_grid(desc_out)
 
-    ! BILINEAR INTERPOLATION
-    IF(IP.EQ.0) THEN
-       CALL interpolate_bilinear_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
-    ELSEIF(IP.EQ.1) THEN
-       ! CALL POLATES1(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_bicubic_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR INTERPOLATION
-    ELSEIF(IP.EQ.2) THEN
-       !CALL POLATES2(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_neighbor_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.3) THEN
-       !CALL POLATES3(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  SPECTRAL INTERPOLATION
-    ELSEIF(IP.EQ.4) THEN
-       CALL POLATES4(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR-BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.6) THEN
-       !CALL POLATES6(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_neighbor_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  UNRECOGNIZED INTERPOLATION METHOD
-    ELSE
-       IF(KGDSO(1).GE.0) NO=0
-       DO K=1,KM
-          IBO(K)=1
-          DO N=1,NO
-             LO(N,K)=.FALSE.
-             GO(N,K)=0.
-          ENDDO
-       ENDDO
-       IRET=1
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    call ipolates_grid(ip, ipopt, grid_in, grid_out, mi, mo, km, ibi, li, gi, no, rlat, rlon, ibo, lo, go, iret)
+
   END SUBROUTINE IPOLATES_GRIB1
   
 
@@ -377,8 +383,6 @@ contains
     !   LANGUAGE: FORTRAN 90
     !
     !$$$
-    IMPLICIT NONE
-    !
     INTEGER,        INTENT(IN   )     :: IP, IPOPT(20), KM, MI, MO
     INTEGER,        INTENT(IN   )     :: IBI(KM)
     INTEGER,        INTENT(IN   )     :: IGDTNUMI, IGDTLENI
@@ -394,8 +398,6 @@ contains
     REAL,           INTENT(IN   )     :: GI(MI,KM)
     REAL,           INTENT(INOUT)     :: RLAT(MO),RLON(MO)
     REAL,           INTENT(  OUT)     :: GO(MO,KM)
-    !
-    INTEGER                           :: K, N
 
     type(grib2_descriptor) :: desc_in, desc_out
     class(ip_grid), allocatable :: grid_in, grid_out
@@ -405,56 +407,9 @@ contains
 
     grid_in = init_grid(desc_in)
     grid_out = init_grid(desc_out)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  BILINEAR INTERPOLATION
-    IF(IP.EQ.0) THEN
-       
-       ! CALL POLATES0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_bilinear_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
-    ELSEIF(IP.EQ.1) THEN
-       ! CALL POLATES1(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_bicubic_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR INTERPOLATION
-    ELSEIF(IP.EQ.2) THEN
-       ! CALL POLATES2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_neighbor_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.3) THEN
-       ! CALL POLATES3(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  SPECTRAL INTERPOLATION
-    ELSEIF(IP.EQ.4) THEN
-       CALL POLATES4(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-            MI,MO,KM,IBI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR-BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.6) THEN
-       ! CALL POLATES6(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI,IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       CALL interpolate_neighbor_budget_scalar(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  UNRECOGNIZED INTERPOLATION METHOD
-    ELSE
-       IF(IGDTNUMO.GE.0) NO=0
-       DO K=1,KM
-          IBO(K)=1
-          DO N=1,NO
-             LO(N,K)=.FALSE.
-             GO(N,K)=0.
-          ENDDO
-       ENDDO
-       IRET=1
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    CALL ipolates_grid(ip,IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,GI,NO,RLAT,RLON,IBO,LO,GO,IRET)
+
   END SUBROUTINE IPOLATES_GRIB2
 
 
