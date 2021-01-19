@@ -2,22 +2,6 @@ set(fortran_src
   earth_radius.f90
   gdswzd_c.F90
   gdswzd_mod.f90
-  gdswzd_equid_cylind_mod.f90
-  gdswzd_gaussian_mod.f90
-  gdswzd_lambert_conf_mod.f90
-  gdswzd_mercator_mod.f90
-  gdswzd_polar_stereo_mod.f90
-  gdswzd_rot_equid_cylind_egrid_mod.f90
-  gdswzd_rot_equid_cylind_mod.f90
-  gdswzd_equid_cylind_mod_grib1.f90
-  gdswzd_gaussian_mod_grib1.f90
-  gdswzd_lambert_conf_mod_grib1.f90
-  gdswzd_mercator_mod_grib1.f90
-  gdswzd_polar_stereo_mod_grib1.f90
-  gdswzd_rot_equid_cylind_egrid_mod_grib1.f90
-  gdswzd_rot_equid_cylind_mod_grib1.f90
-  ijkgds0.f90
-  ijkgds1.f90
   ip2lib_4.h
   ip2lib_8.h
   ip2lib_d.h

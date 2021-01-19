@@ -1,5 +1,4 @@
 module polates4_mod
-  use ijkgds_mod
   use gdswzd_mod
   use ip_grid_mod
   use ip_grid_descriptor_mod
@@ -40,7 +39,7 @@ contains
     !
     !           THE CODE RECOGNIZES THE FOLLOWING PROJECTIONS, WHERE
     !           "IGDTNUMI/O" IS THE GRIB 2 GRID DEFINTION TEMPLATE NUMBER
-    !           FOR THE INPUT AND OUTPUT GRIDS, RESPECTIVELY:
+    !           FOR THE INPUT AND OnUTPUT GRIDS, RESPECTIVELY:
     !             (IGDTNUMI/O=00) EQUIDISTANT CYLINDRICAL
     !             (IGDTNUMO  =01) ROTATED EQUIDISTANT CYLINDRICAL. "E" AND
     !                             NON-"E" STAGGERED

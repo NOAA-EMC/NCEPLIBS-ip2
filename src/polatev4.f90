@@ -1,5 +1,4 @@
 module polatev4_mod
-  use ijkgds_mod
   use gdswzd_mod
   use ip_grid_descriptor_mod
   use ip_grids_mod
