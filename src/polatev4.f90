@@ -1,6 +1,9 @@
 module polatev4_mod
   use ijkgds_mod
   use gdswzd_mod
+  use ip_grid_descriptor_mod
+  use ip_grids_mod
+  use ip_grid_factory_mod
   implicit none
 
   private
@@ -195,11 +198,21 @@ contains
     REAL                            :: RLAT1, RLON1, RLAT2, RLON2, RLATI
     REAL                            :: UROT, VROT, UO2(MO,KM),VO2(MO,KM)
     REAL                            :: XMESH, X, XP, YP, XPTS(MO),YPTS(MO)
+
+    type(grib2_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(igdtnumi, igdtleni, igdtmpli)
+    desc_out = init_descriptor(igdtnumo, igdtleno, igdtmplo)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
+
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     IRET=0
     IF(IGDTNUMO.GE.0) THEN
-       CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS, &
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS, &
             RLON,RLAT,NO,CROT,SROT)
        IF(NO.EQ.0) IRET=3
     ENDIF
@@ -523,11 +536,20 @@ contains
     REAL                            :: RLAT1, RLON1, RLAT2, RLON2, RLATI
     REAL                            :: UROT, VROT, UO2(MO,KM),VO2(MO,KM)
     REAL                            :: XMESH, X, XP, YP, XPTS(MO),YPTS(MO)
+
+    type(grib1_descriptor) :: desc_in, desc_out
+    class(ip_grid), allocatable :: grid_in, grid_out
+
+    desc_in = init_descriptor(kgdsi)
+    desc_out = init_descriptor(kgdso)
+
+    grid_in = init_grid(desc_in)
+    grid_out = init_grid(desc_out)
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     IRET=0
     IF(KGDSO(1).GE.0) THEN
-       CALL GDSWZD(KGDSO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO,CROT,SROT)
+       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO,CROT,SROT)
        IF(NO.EQ.0) IRET=3
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
