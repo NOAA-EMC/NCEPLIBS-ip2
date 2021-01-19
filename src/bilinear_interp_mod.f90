@@ -1,4 +1,4 @@
-module polates0_mod
+module bilinear_interp_mod
   use gdswzd_mod
   use ip_grids_mod
   use ip_grid_descriptor_mod
@@ -204,7 +204,7 @@ contains
     select type(grid_out)
     type is(ip_station_points_grid)
        to_station_points = .true.
-    class default
+       class default
        to_station_points = .false.
     end select
 
@@ -347,4 +347,4 @@ contains
 
   end subroutine interpolate_bilinear_scalar
 
-end module polates0_mod
+end module bilinear_interp_mod

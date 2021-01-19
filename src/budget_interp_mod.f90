@@ -1,4 +1,4 @@
-module polates3_mod
+module budget_interp_mod
   use gdswzd_mod
   use polfix_mod
   use ip_grids_mod
@@ -204,7 +204,7 @@ contains
        IF(NO.EQ.0) then
           IRET=3
        end if
-    class default
+       class default
        CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     end select
@@ -409,4 +409,4 @@ contains
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE interpolate_budget_scalar
 
-end module polates3_mod
+end module budget_interp_mod

@@ -1,4 +1,4 @@
-module polates6_mod
+module neighbor_budget_interp_mod
   use gdswzd_mod
   use polfix_mod
   use ip_grids_mod
@@ -161,7 +161,7 @@ contains
     select type(grid_out)
     type is(ip_station_points_grid)
        to_station_points = .true.
-    class default
+       class default
        to_station_points = .false.
     end select
 
@@ -272,4 +272,4 @@ contains
 
   END SUBROUTINE INTERPOLATE_NEIGHBOR_BUDGET_SCALAR
 
-end module polates6_mod
+end module neighbor_budget_interp_mod

@@ -1,39 +1,39 @@
-module polates2_mod
+module bicubic_interp_mod
   use gdswzd_mod
   use polfix_mod
   use ip_grids_mod
   implicit none
 
   private
-  public :: interpolate_neighbor_scalar
+  public :: interpolate_bicubic_scalar
 
-  INTEGER,           ALLOCATABLE,SAVE  :: NXY(:)
-  INTEGER,                       SAVE  :: NOX=-1,IRETX=-1
-  REAL,              ALLOCATABLE,SAVE  :: RLATX(:),RLONX(:)
-  REAL,              ALLOCATABLE,SAVE  :: XPTSX(:),YPTSX(:)
+  REAL,               ALLOCATABLE,SAVE  :: RLATX(:),RLONX(:),WXY(:,:,:)
+  INTEGER,            ALLOCATABLE,SAVE  :: NXY(:,:,:),NC(:)
+  INTEGER,            SAVE              :: NOX=-1,IRETX=-1
 
   class(ip_grid), allocatable :: prev_grid_in, prev_grid_out
 
 contains
 
-  SUBROUTINE interpolate_neighbor_scalar(IPOPT,grid_in,grid_out, &
-       MI,MO,KM,IBI,LI,GI,  &
+  SUBROUTINE interpolate_bicubic_scalar(IPOPT,grid_in,grid_out, &
+       MI,MO,KM,IBI,LI,GI, &
        NO,RLAT,RLON,IBO,LO,GO,IRET)
     !$$$  SUBPROGRAM DOCUMENTATION BLOCK
     !
-    ! SUBPROGRAM:  POLATES2   INTERPOLATE SCALAR FIELDS (NEIGHBOR)
+    ! SUBPROGRAM:  POLATES1   INTERPOLATE SCALAR FIELDS (BICUBIC)
     !   PRGMMR: IREDELL       ORG: W/NMC23       DATE: 96-04-10
     !
-    ! ABSTRACT: THIS SUBPROGRAM PERFORMS NEIGHBOR INTERPOLATION
+    ! ABSTRACT: THIS SUBPROGRAM PERFORMS BICUBIC INTERPOLATION
     !           FROM ANY GRID TO ANY GRID FOR SCALAR FIELDS.
-    !           OPTIONS ALLOW CHOOSING THE WIDTH OF THE GRID SQUARE
-    !           (IPOPT(1)) TO SEARCH FOR VALID DATA, WHICH DEFAULTS TO 1
-    !           (IF IPOPT(1)=-1).  ODD WIDTH SQUARES ARE CENTERED ON
-    !           THE NEAREST INPUT GRID POINT; EVEN WIDTH SQUARES ARE
-    !           CENTERED ON THE NEAREST FOUR INPUT GRID POINTS.
-    !           SQUARES ARE SEARCHED FOR VALID DATA IN A SPIRAL PATTERN
-    !           STARTING FROM THE CENTER.  NO SEARCHING IS DONE WHERE
-    !           THE OUTPUT GRID IS OUTSIDE THE INPUT GRID.
+    !           BITMAPS ARE NOW ALLOWED EVEN WHEN INVALID POINTS ARE WITHIN
+    !           THE BICUBIC TEMPLATE PROVIDED THE MINIMUM WEIGHT IS REACHED. 
+    !           OPTIONS ALLOW CHOICES BETWEEN STRAIGHT BICUBIC (IPOPT(1)=0)
+    !           AND CONSTRAINED BICUBIC (IPOPT(1)=1) WHERE THE VALUE IS
+    !           CONFINED WITHIN THE RANGE OF THE SURROUNDING 16 POINTS.
+    !           ANOTHER OPTION IS THE MINIMUM PERCENTAGE FOR MASK,
+    !           I.E. PERCENT VALID INPUT DATA REQUIRED TO MAKE OUTPUT DATA,
+    !           (IPOPT(2)) WHICH DEFAULTS TO 50 (IF IPOPT(2)=-1).
+    !           BILINEAR USED WITHIN ONE GRID LENGTH OF BOUNDARIES.
     !           ONLY HORIZONTAL INTERPOLATION IS PERFORMED.
     !           THE CODE RECOGNIZES THE FOLLOWING PROJECTIONS, WHERE
     !           "IGDTNUMI/O" IS THE GRIB 2 GRID DEFINTION TEMPLATE NUMBER
@@ -50,33 +50,37 @@ contains
     !           ON THE OTHER HAND, THE OUTPUT CAN BE A SET OF STATION POINTS
     !           IF IGDTNUMO<0, IN WHICH CASE THE NUMBER OF POINTS
     !           AND THEIR LATITUDES AND LONGITUDES MUST BE INPUT.
-    !           INPUT BITMAPS WILL BE INTERPOLATED TO OUTPUT BITMAPS.
-    !           OUTPUT BITMAPS WILL ALSO BE CREATED WHEN THE OUTPUT GRID
+    !           OUTPUT BITMAPS WILL ONLY BE CREATED WHEN THE OUTPUT GRID
     !           EXTENDS OUTSIDE OF THE DOMAIN OF THE INPUT GRID.
     !           THE OUTPUT FIELD IS SET TO 0 WHERE THE OUTPUT BITMAP IS OFF.
     !        
     ! PROGRAM HISTORY LOG:
     !   96-04-10  IREDELL
     ! 1999-04-08  IREDELL  SPLIT IJKGDS INTO TWO PIECES
-    ! 2001-06-18  IREDELL  INCLUDE SPIRAL SEARCH OPTION
-    ! 2006-01-04  GAYNO    MINOR BUG FIX
-    ! 2007-10-30  IREDELL  SAVE WEIGHTS AND THREAD FOR PERFORMANCE
-    ! 2012-06-26  GAYNO    FIX OUT-OF-BOUNDS ERROR. SEE NCEPLIBS
+    ! 2001-06-18  IREDELL  INCLUDE MINIMUM MASK PERCENTAGE OPTION
+    ! 2007-05-22  IREDELL  EXTRAPOLATE UP TO HALF A GRID CELL
+    ! 2007-10-30  IREDELL  CORRECT NORTH POLE INDEXING PROBLEM,
+    !                      UNIFY MASKED AND NON-MASKED ALGORITHMS,
+    !                      AND SAVE WEIGHTS FOR PERFORMANCE.
+    ! 2012-06-26  GAYNO    FIX OUT-OF-BOUNDS ERROR.  SEE NCEPLIBS
     !                      TICKET #9.
     ! 2015-01-27  GAYNO    REPLACE CALLS TO GDSWIZ WITH NEW MERGED
-    !                      VERSION OF GDSWZD.
+    !                      VERSION OF GDSWZD. 
     ! 2015-07-13  GAYNO    CONVERT TO GRIB 2. REPLACE GRIB 1 KGDS ARRAYS
     !                      WITH GRIB 2 GRID DEFINITION TEMPLATE ARRAYS.
     !
-    ! USAGE:    CALL POLATES2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
+    ! USAGE:    CALL POLATES1(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
     !                         IGDTNUMO,IGDTMPLO,IGDTLENO, &
-    !                         MI,MO,KM,IBI,LI,GI,  &
+    !                         MI,MO,KM,IBI,LI,GI, &
     !                         NO,RLAT,RLON,IBO,LO,GO,IRET)
     !
     !   INPUT ARGUMENT LIST:
     !     IPOPT    - INTEGER (20) INTERPOLATION OPTIONS
-    !                IPOPT(1) IS WIDTH OF SQUARE TO EXAMINE IN SPIRAL SEARCH
-    !                (DEFAULTS TO 1 IF IPOPT(1)=-1)
+    !                IPOPT(1)=0 FOR STRAIGHT BICUBIC;
+    !                IPOPT(1)=1 FOR CONSTRAINED BICUBIC WHERE VALUE IS
+    !                CONFINED WITHIN THE RANGE OF THE SURROUNDING 4 POINTS.
+    !                IPOPT(2) IS MINIMUM PERCENTAGE FOR MASK
+    !                (DEFAULTS TO 50 IF IPOPT(2)=-1)
     !     IGDTNUMI - INTEGER GRID DEFINITION TEMPLATE NUMBER - INPUT GRID.
     !                CORRESPONDS TO THE GFLD%IGDTNUM COMPONENT OF THE
     !                NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE:
@@ -97,7 +101,7 @@ contains
     !                COMPONENT OF THE NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE.
     !     IGDTNUMO - INTEGER GRID DEFINITION TEMPLATE NUMBER - OUTPUT GRID.
     !                CORRESPONDS TO THE GFLD%IGDTNUM COMPONENT OF THE
-    !                NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE.  IGDTNUMO<0
+    !                NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE. IGDTNUMO<0
     !                MEANS INTERPOLATE TO RANDOM STATION POINTS.
     !                OTHERWISE, SAME DEFINITION AS "IGDTNUMI".
     !     IGDTMPLO - INTEGER (IGDTLENO) GRID DEFINITION TEMPLATE ARRAY -
@@ -137,7 +141,7 @@ contains
     !   IJKGDS0      SET UP PARAMETERS FOR IJKGDS1
     !   IJKGDS1      RETURN FIELD POSITION FOR A GIVEN GRID POINT
     !   POLFIXS      MAKE MULTIPLE POLE SCALAR VALUES CONSISTENT
-    !   CHECK_GRIDS2 DETERMINE IF INPUT OR OUTPUT GRIDS HAVE CHANGED
+    !   CHECK_GRIDS1 DETERMINE IF INPUT OR OUTPUT GRIDS HAVE CHANGED
     !                BETWEEN CALLS TO THIS ROUTINE.
     !
     ! ATTRIBUTES:
@@ -146,35 +150,40 @@ contains
     !$$$
     !
     class(ip_grid), intent(in) :: grid_in, grid_out
-    INTEGER,               INTENT(IN   ) :: IPOPT(20)
-    INTEGER,               INTENT(IN   ) :: MI,MO,KM
-    INTEGER,               INTENT(IN   ) :: IBI(KM)
-    INTEGER,               INTENT(INOUT) :: NO
-    INTEGER,               INTENT(  OUT) :: IRET, IBO(KM)
+    INTEGER,                INTENT(IN   ) :: IPOPT(20)
+    INTEGER,                INTENT(IN   ) :: MI,MO,KM
+    INTEGER,                INTENT(IN   ) :: IBI(KM)
+    INTEGER,                INTENT(INOUT) :: NO
+    INTEGER,                INTENT(  OUT) :: IRET, IBO(KM)
     !
-    LOGICAL*1,             INTENT(IN   ) :: LI(MI,KM)
-    LOGICAL*1,             INTENT(  OUT) :: LO(MO,KM)
+    LOGICAL*1,              INTENT(IN   ) :: LI(MI,KM)
+    LOGICAL*1,              INTENT(  OUT) :: LO(MO,KM)
     !
-    REAL,                  INTENT(IN   ) :: GI(MI,KM)
-    REAL,                  INTENT(INOUT) :: RLAT(MO),RLON(MO)
-    REAL,                  INTENT(  OUT) :: GO(MO,KM)
+    REAL,                   INTENT(IN   ) :: GI(MI,KM)
+    REAL,                   INTENT(INOUT) :: RLAT(MO),RLON(MO)
+    REAL,                   INTENT(  OUT) :: GO(MO,KM)
     !
-    REAL,                  PARAMETER     :: FILL=-9999.
+    REAL,                   PARAMETER     :: FILL=-9999.
     !
-    INTEGER                              :: I1,J1,IXS,JXS
-    INTEGER                              :: MSPIRAL,N,K,NK
-    INTEGER                              :: NV
-    INTEGER                              :: MX,KXS,KXT,IX,JX,NX
+    INTEGER                               :: IJX(4),IJY(4)
+    INTEGER                               :: MCON,MP,N,I,J,K
+    INTEGER                               :: NK,NV
+    LOGICAL                               :: SAME_GRIDI, SAME_GRIDO
     !
-    LOGICAL                              :: SAME_GRIDI, SAME_GRIDO
-    !
-    REAL                                 :: XPTS(MO),YPTS(MO)
+    REAL                                  :: PMP,XIJ,YIJ,XF,YF
+    REAL                                  :: G,W,GMIN,GMAX
+    REAL                                  :: WX(4),WY(4)
+    REAL                                  :: XPTS(MO),YPTS(MO)
     logical :: to_station_points
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SET PARAMETERS
     IRET=0
-    MSPIRAL=MAX(IPOPT(1),1)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    MCON=IPOPT(1)
+    MP=IPOPT(2)
+    IF(MP.EQ.-1.OR.MP.EQ.0) MP=50
+    IF(MP.LT.0.OR.MP.GT.100) IRET=32
+    PMP=MP*0.01
+
     if (.not. allocated(prev_grid_in) .or. .not. allocated(prev_grid_out)) then
        allocate(prev_grid_in, source = grid_in)
        allocate(prev_grid_out, source = grid_out)
@@ -200,13 +209,14 @@ contains
        class default
        to_station_points = .false.
     end select
+
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SAVE OR SKIP WEIGHT COMPUTATION
     IF(IRET.EQ.0.AND.(to_station_points.OR..NOT.SAME_GRIDI.OR..NOT.SAME_GRIDO))THEN
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
        IF(.not. to_station_points) THEN
-          CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+          CALL GDSWZD(grid_out,0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
           IF(NO.EQ.0) IRET=3
        ENDIF
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -216,24 +226,60 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  ALLOCATE AND SAVE GRID DATA
        IF(NOX.NE.NO) THEN
-          IF(NOX.GE.0) DEALLOCATE(RLATX,RLONX,XPTSX,YPTSX,NXY)
-          ALLOCATE(RLATX(NO),RLONX(NO),XPTSX(NO),YPTSX(NO),NXY(NO))
+          IF(NOX.GE.0) DEALLOCATE(RLATX,RLONX,NC,NXY,WXY)
+          ALLOCATE(RLATX(NO),RLONX(NO),NC(NO),NXY(4,4,NO),WXY(4,4,NO))
           NOX=NO
        ENDIF
        IRETX=IRET
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  COMPUTE WEIGHTS
        IF(IRET.EQ.0) THEN
-          !$OMP PARALLEL DO PRIVATE(N) SCHEDULE(STATIC)
+          !$OMP PARALLEL DO PRIVATE(N,XIJ,YIJ,IJX,IJY,XF,YF,J,I,WX,WY) SCHEDULE(STATIC)
           DO N=1,NO
              RLONX(N)=RLON(N)
              RLATX(N)=RLAT(N)
-             XPTSX(N)=XPTS(N)
-             YPTSX(N)=YPTS(N)
-             IF(XPTS(N).NE.FILL.AND.YPTS(N).NE.FILL) THEN
-                nxy(n) = grid_in%field_pos(NINT(XPTS(N)), NINT(YPTS(N)))
+             XIJ=XPTS(N)
+             YIJ=YPTS(N)
+             IF(XIJ.NE.FILL.AND.YIJ.NE.FILL) THEN
+                IJX(1:4)=FLOOR(XIJ-1)+(/0,1,2,3/)
+                IJY(1:4)=FLOOR(YIJ-1)+(/0,1,2,3/)
+                XF=XIJ-IJX(2)
+                YF=YIJ-IJY(2)
+                DO J=1,4
+                   DO I=1,4
+                      NXY(I,J,N) = grid_in%field_pos(ijx(i), ijy(j))
+                   ENDDO
+                ENDDO
+                IF(MINVAL(NXY(1:4,1:4,N)).GT.0) THEN
+                   !  BICUBIC WHERE 16-POINT STENCIL IS AVAILABLE
+                   NC(N)=1
+                   WX(1)=XF*(1-XF)*(2-XF)/(-6.)
+                   WX(2)=(XF+1)*(1-XF)*(2-XF)/2.
+                   WX(3)=(XF+1)*XF*(2-XF)/2.
+                   WX(4)=(XF+1)*XF*(1-XF)/(-6.)
+                   WY(1)=YF*(1-YF)*(2-YF)/(-6.)
+                   WY(2)=(YF+1)*(1-YF)*(2-YF)/2.
+                   WY(3)=(YF+1)*YF*(2-YF)/2.
+                   WY(4)=(YF+1)*YF*(1-YF)/(-6.)
+                ELSE
+                   !  BILINEAR ELSEWHERE NEAR THE EDGE OF THE GRID
+                   NC(N)=2
+                   WX(1)=0
+                   WX(2)=(1-XF)
+                   WX(3)=XF
+                   WX(4)=0
+                   WY(1)=0
+                   WY(2)=(1-YF)
+                   WY(3)=YF
+                   WY(4)=0
+                ENDIF
+                DO J=1,4
+                   DO I=1,4
+                      WXY(I,J,N)=WX(I)*WY(J)
+                   ENDDO
+                ENDDO
              ELSE
-                NXY(N)=0
+                NC(N)=0
              ENDIF
           ENDDO
        ENDIF
@@ -248,61 +294,43 @@ contains
              RLAT(N)=RLATX(N)
           ENDDO
        ENDIF
-       DO N=1,NO
-          XPTS(N)=XPTSX(N)
-          YPTS(N)=YPTSX(N)
-       ENDDO
-       !$OMP PARALLEL DO PRIVATE(NK,K,N,I1,J1,IXS,JXS,MX,KXS,KXT,IX,JX,NX) SCHEDULE(STATIC)
+       !$OMP PARALLEL DO PRIVATE(NK,K,N,G,W,GMIN,GMAX,J,I) SCHEDULE(STATIC)
        DO NK=1,NO*KM
           K=(NK-1)/NO+1
           N=NK-NO*(K-1)
-          GO(N,K)=0
-          LO(N,K)=.FALSE.
-          IF(NXY(N).GT.0) THEN
-             IF(IBI(K).EQ.0.OR.LI(NXY(N),K)) THEN
-                GO(N,K)=GI(NXY(N),K)
-                LO(N,K)=.TRUE.
-                ! SPIRAL AROUND UNTIL VALID DATA IS FOUND.
-             ELSEIF(MSPIRAL.GT.1) THEN
-                I1=NINT(XPTS(N))
-                J1=NINT(YPTS(N))
-                IXS=SIGN(1.,XPTS(N)-I1)
-                JXS=SIGN(1.,YPTS(N)-J1)
-                DO MX=2,MSPIRAL**2
-                   KXS=SQRT(4*MX-2.5)
-                   KXT=MX-(KXS**2/4+1)
-                   SELECT CASE(MOD(KXS,4))
-                   CASE(1)
-                      IX=I1-IXS*(KXS/4-KXT)
-                      JX=J1-JXS*KXS/4
-                   CASE(2)
-                      IX=I1+IXS*(1+KXS/4)
-                      JX=J1-JXS*(KXS/4-KXT)
-                   CASE(3)
-                      IX=I1+IXS*(1+KXS/4-KXT)
-                      JX=J1+JXS*(1+KXS/4)
-                   CASE DEFAULT
-                      IX=I1-IXS*KXS/4
-                      JX=J1+JXS*(KXS/4-KXT)
-                   END SELECT
-                   nx = grid_in%field_pos(ix, jx)
-                   IF(NX.GT.0) THEN
-                      IF(LI(NX,K)) THEN
-                         GO(N,K)=GI(NX,K)
-                         LO(N,K)=.TRUE.
-                         EXIT
+          IF(NC(N).GT.0) THEN
+             G=0
+             W=0
+             IF(MCON.GT.0) GMIN=HUGE(GMIN)
+             IF(MCON.GT.0) GMAX=-HUGE(GMAX)
+             DO J=NC(N),5-NC(N)
+                DO I=NC(N),5-NC(N)
+                   IF(NXY(I,J,N).GT.0)THEN
+                      IF(IBI(K).EQ.0.OR.LI(NXY(I,J,N),K))THEN
+                         G=G+WXY(I,J,N)*GI(NXY(I,J,N),K)
+                         W=W+WXY(I,J,N)
+                         IF(MCON.GT.0) GMIN=MIN(GMIN,GI(NXY(I,J,N),K))
+                         IF(MCON.GT.0) GMAX=MAX(GMAX,GI(NXY(I,J,N),K))
                       ENDIF
                    ENDIF
                 ENDDO
+             ENDDO
+             LO(N,K)=W.GE.PMP
+             IF(LO(N,K)) THEN
+                GO(N,K)=G/W
+                IF(MCON.GT.0) GO(N,K)=MIN(MAX(GO(N,K),GMIN),GMAX)
+             ELSE
+                GO(N,K)=0.
              ENDIF
+          ELSE
+             LO(N,K)=.FALSE.
+             GO(N,K)=0.
           ENDIF
        ENDDO
-       
        DO K=1,KM
           IBO(K)=IBI(K)
           IF(.NOT.ALL(LO(1:NO,K))) IBO(K)=1
        ENDDO
-       
        select type(grid_out)
        type is(ip_equid_cylind_grid)
           CALL POLFIXS(NO,MO,KM,RLAT,IBO,LO,GO)
@@ -313,6 +341,6 @@ contains
        IF(.not. to_station_points) NO=0
     ENDIF
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  END SUBROUTINE interpolate_neighbor_scalar
+  END SUBROUTINE interpolate_bicubic_scalar
 
-end module polates2_mod
+end module bicubic_interp_mod

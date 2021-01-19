@@ -12,12 +12,12 @@ set(fortran_src
   ipxwafs2.f90
   ipxwafs3.f90
   movect.f90
-  polates0.f90
-  polates1.f90
-  polates2.f90
-  polates3.f90
-  polates4.f90
-  polates6.f90
+  bilinear_interp_mod.f90
+  bicubic_interp_mod.f90
+  neighbor_interp_mod.f90
+  budget_interp_mod.f90
+  spectral_interp_mod.f90
+  neighbor_budget_interp_mod.f90
   polatev0.f90
   polatev1.f90
   polatev2.f90

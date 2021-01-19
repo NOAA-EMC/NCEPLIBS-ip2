@@ -1,4 +1,4 @@
-module polates4_mod
+module spectral_interp_mod
   use gdswzd_mod
   use ip_grid_mod
   use ip_grid_descriptor_mod
@@ -668,4 +668,4 @@ contains
   END SUBROUTINE POLATES4_GRIB1
 
 
-end module polates4_mod
+end module spectral_interp_mod

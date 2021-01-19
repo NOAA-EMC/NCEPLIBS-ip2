@@ -1,10 +1,10 @@
 module ipolates_mod
-  use polates0_mod
-  use polates1_mod
-  use polates2_mod
-  use polates3_mod
-  use polates4_mod
-  use polates6_mod
+  use bilinear_interp_mod
+  use bicubic_interp_mod
+  use budget_interp_mod
+  use neighbor_interp_mod
+  use spectral_interp_mod
+  use neighbor_budget_interp_mod
   use ip_grid_descriptor_mod
   use ip_grid_factory_mod
   use ip_grid_mod
