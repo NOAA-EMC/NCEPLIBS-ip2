@@ -1,5 +1,4 @@
 module polatev6_mod
-  use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
   use ip_grids_mod

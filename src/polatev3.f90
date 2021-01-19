@@ -9,6 +9,12 @@ module polatev3_mod
   private
   public :: interpolate_budget_vector
 
+  INTEGER,          SAVE          :: MIX=-1
+  REAL,         ALLOCATABLE, SAVE :: CROI(:),SROI(:)
+  REAL,         ALLOCATABLE, SAVE :: XPTI(:),YPTI(:),RLOI(:),RLAI(:)
+
+  class(ip_grid), allocatable :: prev_grid_in
+
 contains
 
   SUBROUTINE interpolate_budget_vector(IPOPT,grid_in,grid_out, &
@@ -187,7 +193,6 @@ contains
     !
     INTEGER                         :: IGDTNUMO2
     INTEGER                         :: I1,I2,J1,J2,IB,JB,LSW,MP
-    INTEGER,          SAVE          :: MIX=-1
     INTEGER                         :: K,LB,N,NB,NB1,NB2,NB3,NB4,NV
     INTEGER                         :: N11(MO),N21(MO),N12(MO),N22(MO)
     !
@@ -205,14 +210,14 @@ contains
     REAL                            :: WO(MO,KM),XI,YI
     REAL                            :: XPTS(MO),YPTS(MO)
     REAL                            :: XPTB(MO),YPTB(MO),RLOB(MO),RLAB(MO)
-    REAL,         ALLOCATABLE, SAVE :: CROI(:),SROI(:)
-    REAL,         ALLOCATABLE, SAVE :: XPTI(:),YPTI(:),RLOI(:),RLAI(:)
 
     class(ip_grid_descriptor), allocatable :: desc_out_subgrid
     class(ip_grid), allocatable :: subgrid
 
     IRET=0
 
+    ! Negative grid number means interpolate to subgrid
+    ! The type of the subgrid is calculated by 255 + 
     select type(grid_out)
     type is(ip_station_points_grid)
        desc_out_subgrid = grid_out%descriptor
@@ -222,15 +227,24 @@ contains
        CALL GDSWZD(subgrid,-1,MO,FILL,XPTS,YPTS, &
             RLON,RLAT,NO,CROT,SROT)
        IF(NO.EQ.0) IRET=3
-       class default
+    class default
        CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS, &
             RLON,RLAT,NO,CROT,SROT)
     end select
 
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
-    !CALL CHECK_GRIDS3V(IGDTNUMI,IGDTMPLI,IGDTLENI,SAME_GRID)
-    same_grid = .false.
+    if (.not. allocated(prev_grid_in)) then
+       allocate(prev_grid_in, source = grid_in)
+
+       same_grid = .false.
+    else
+       same_grid = grid_in == prev_grid_in
+
+       if (.not. same_grid) then
+          deallocate(prev_grid_in)
+          allocate(prev_grid_in, source = grid_in)
+       end if
+    end if
+    
     IF(.NOT.SAME_GRID) THEN
        IF(MIX.NE.MI) THEN
           IF(MIX.GE.0) DEALLOCATE(XPTI,YPTI,RLOI,RLAI,CROI,SROI)
@@ -240,6 +254,7 @@ contains
        CALL GDSWZD(grid_in, 0,MI,FILL,XPTI,YPTI, &
             RLOI,RLAI,NV,CROI,SROI)
     ENDIF
+    
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  SET PARAMETERS
     NB1=IPOPT(1)
@@ -439,65 +454,5 @@ contains
     end select
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE INTERPOLATE_BUDGET_VECTOR
-  ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  SUBROUTINE CHECK_GRIDS3V(IGDTNUM,IGDTMPL,IGDTLEN,SAME_GRID)
-    !$$$  SUBPROGRAM DOCUMENTATION BLOCK
-    !
-    ! SUBPROGRAM:  CHECK_GRIDS3V   CHECK GRID INFORMATION
-    !   PRGMMR: GAYNO       ORG: W/NMC23       DATE: 2015-07-13
-    !
-    ! ABSTRACT: DETERMINE WHETHER THE GRID SPECS
-    !           HAVE CHANGED.
-    !
-    ! PROGRAM HISTORY LOG:
-    ! 2015-07-13  GAYNO     INITIAL VERSION
-    !
-    ! USAGE:  CALL CHECK_GRIDS3V(IGDTNUM,IGDTMPL,IGDTLEN,SAME_GRID)
-    !
-    !   INPUT ARGUMENT LIST:
-    !     IGDTNUM - INTEGER GRID DEFINITION TEMPLATE NUMBER.
-    !               CORRESPONDS TO THE GFLD%IGDTNUM COMPONENT OF THE
-    !               NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE.
-    !     IGDTMPL - INTEGER (IGDTLENI) GRID DEFINITION TEMPLATE ARRAY.
-    !               CORRESPONDS TO THE GFLD%IGDTMPL COMPONENT
-    !               OF THE NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE.
-    !     IGDTLEN - INTEGER NUMBER OF ELEMENTS OF THE GRID DEFINITION
-    !               TEMPLATE ARRAY.  CORRESPONDS TO THE GFLD%IGDTLEN
-    !               COMPONENT OF THE NCEP G2 LIBRARY GRIDMOD DATA STRUCTURE.
-    !
-    !   OUTPUT ARGUMENT LIST:
-    !     SAME_GRID  - WHEN TRUE, THE GRID HAS NOT CHANGED BETWEEN CALLS.
-    !
-    ! ATTRIBUTES:
-    !   LANGUAGE: FORTRAN 90
-    !
-    !$$$
-    IMPLICIT NONE
-    !
-    INTEGER,        INTENT(IN   ) :: IGDTNUM, IGDTLEN
-    INTEGER,        INTENT(IN   ) :: IGDTMPL(IGDTLEN)
-    !
-    LOGICAL,        INTENT(  OUT) :: SAME_GRID
-    !
-    INTEGER, SAVE                 :: IGDTNUM_SAVE=-9999
-    INTEGER, SAVE                 :: IGDTLEN_SAVE=-9999
-    INTEGER, SAVE                 :: IGDTMPL_SAVE(1000)=-9999
-    !
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SAME_GRID=.FALSE.
-    IF(IGDTNUM==IGDTNUM_SAVE)THEN
-       IF(IGDTLEN==IGDTLEN_SAVE)THEN
-          IF(ALL(IGDTMPL==IGDTMPL_SAVE(1:IGDTLEN)))THEN
-             SAME_GRID=.TRUE.
-          ENDIF
-       ENDIF
-    ENDIF
-    !
-    IGDTNUM_SAVE=IGDTNUM
-    IGDTLEN_SAVE=IGDTLEN
-    IGDTMPL_SAVE(1:IGDTLEN)=IGDTMPL
-    IGDTMPL_SAVE(IGDTLEN+1:1000)=-9999
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  END SUBROUTINE CHECK_GRIDS3V
 
 end module polatev3_mod

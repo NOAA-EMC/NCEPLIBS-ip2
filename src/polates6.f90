@@ -1,10 +1,7 @@
 module polates6_mod
-  use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
   use ip_grids_mod
-  use ip_grid_descriptor_mod
-  use ip_grid_factory_mod
   implicit none
 
   private
@@ -131,8 +128,6 @@ contains
     !
     ! SUBPROGRAMS CALLED:
     !   GDSWZD       GRID DESCRIPTION SECTION WIZARD
-    !   IJKGDS0      SET UP PARAMETERS FOR IJKGDS1
-    !   IJKGDS1      RETURN FIELD POSITION FOR A GIVEN GRID POINT
     !   POLFIXS      MAKE MULTIPLE POLE SCALAR VALUES CONSISTENT
     !
     ! ATTRIBUTES:
@@ -153,7 +148,7 @@ contains
     !
     REAL,       PARAMETER         :: FILL=-9999.
     !
-    INTEGER                       :: IB, I1, IJKGDS1, IJKGDSA(20)
+    INTEGER                       :: IB, I1
     INTEGER                       :: JB, J1, K, LB, LSW, MP, N
     INTEGER                       :: N11(MO), NB, NB1, NB2, NB3, NB4, NV
     !
@@ -174,7 +169,6 @@ contains
     !  COMPUTE NUMBER OF OUTPUT POINTS AND THEIR LATITUDES AND LONGITUDES.
     IRET=0
     IF(.not. to_station_points) THEN
-       !CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     ELSE
@@ -228,8 +222,6 @@ contains
              XPTB(N)=XPTS(N)+IB/REAL(NB2)
              YPTB(N)=YPTS(N)+JB/REAL(NB2)
           ENDDO
-          ! CALL GDSWZD(IGDTNUMO,IGDTMPLO,IGDTLENO, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
-          ! CALL GDSWZD(IGDTNUMI,IGDTMPLI,IGDTLENI,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
@@ -239,7 +231,6 @@ contains
              IF(XI.NE.FILL.AND.YI.NE.FILL) THEN
                 I1=NINT(XI)
                 J1=NINT(YI)
-                ! N11(N)=IJKGDS1(I1,J1,IJKGDSA)
                 N11(N)=grid_in%field_pos(i1, j1)
              ELSE
                 N11(N)=0

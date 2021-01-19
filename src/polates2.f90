@@ -1,10 +1,7 @@
 module polates2_mod
-  use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
-  use ip_grid_factory_mod
   use ip_grids_mod
-  use ip_grid_descriptor_mod
   implicit none
 
   private
@@ -164,10 +161,9 @@ contains
     !
     REAL,                  PARAMETER     :: FILL=-9999.
     !
-    INTEGER                              :: IJKGDSA(20)
     INTEGER                              :: I1,J1,IXS,JXS
     INTEGER                              :: MSPIRAL,N,K,NK
-    INTEGER                              :: NV,IJKGDS1
+    INTEGER                              :: NV
     INTEGER                              :: MX,KXS,KXT,IX,JX,NX
     !
     LOGICAL                              :: SAME_GRIDI, SAME_GRIDO

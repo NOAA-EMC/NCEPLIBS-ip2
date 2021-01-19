@@ -357,11 +357,6 @@ contains
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  BILINEAR INTERPOLATION
     IF(IP.EQ.0) THEN
-       ! CALL POLATEV0(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-       !      IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,UI,VI,&
-       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-
        CALL interpolate_bilinear_vector(IPOPT,grid_in,grid_out, &
             MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
@@ -373,30 +368,24 @@ contains
        ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  NEIGHBOR INTERPOLATION
     ELSEIF(IP.EQ.2) THEN
-       ! CALL POLATEV2(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
-       !      IGDTNUMO,IGDTMPLO,IGDTLENO, &
-       !      MI,MO,KM,IBI,LI,UI,VI,&
-       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
        CALL interpolate_neighbor_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
        !  BUDGET INTERPOLATION
     ELSEIF(IP.EQ.3) THEN
        CALL interpolate_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  SPECTRAL INTERPOLATION
     ELSEIF(IP.EQ.4) THEN
        CALL POLATEV4(IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
             IGDTNUMO,IGDTMPLO,IGDTLENO, &
             MI,MO,KM,IBI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
        !  NEIGHBOR-BUDGET INTERPOLATION
     ELSEIF(IP.EQ.6) THEN
        CALL interpolate_neighbor_budget_vector(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
             NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        !  UNRECOGNIZED INTERPOLATION METHOD
     ELSE
        IF(IGDTNUMO.GE.0) NO=0

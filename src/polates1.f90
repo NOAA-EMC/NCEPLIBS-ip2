@@ -1,11 +1,7 @@
 module polates1_mod
-  use ijkgds_mod
   use gdswzd_mod
   use polfix_mod
-  use ip_grid_descriptor_mod
   use ip_grids_mod
-  use ip_grid_factory_mod
-  use ijkgds_mod
   implicit none
 
   private
@@ -18,7 +14,6 @@ module polates1_mod
   class(ip_grid), allocatable :: prev_grid_in, prev_grid_out
 
 contains
-
 
   SUBROUTINE interpolate_bicubic_scalar(IPOPT,grid_in,grid_out, &
        MI,MO,KM,IBI,LI,GI, &
@@ -170,10 +165,9 @@ contains
     !
     REAL,                   PARAMETER     :: FILL=-9999.
     !
-    INTEGER                               :: IJKGDSA(20)
     INTEGER                               :: IJX(4),IJY(4)
     INTEGER                               :: MCON,MP,N,I,J,K
-    INTEGER                               :: NK,NV,IJKGDS1
+    INTEGER                               :: NK,NV
     LOGICAL                               :: SAME_GRIDI, SAME_GRIDO
     !
     REAL                                  :: PMP,XIJ,YIJ,XF,YF
