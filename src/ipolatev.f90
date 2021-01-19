@@ -5,6 +5,7 @@ module ipolatev_mod
   use budget_interp_mod
   use spectral_interp_mod
   use neighbor_budget_interp_mod
+  use ip_interpolators_mod
 
   use ip_grid_factory_mod
   use ip_grid_descriptor_mod
@@ -21,6 +22,61 @@ module ipolatev_mod
   end interface ipolatev
 
 contains
+
+  SUBROUTINE ipolatev_grid(IP,IPOPT,grid_in,grid_out, &
+       MI,MO,KM,IBI,LI,UI,VI, &
+       NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    class(ip_grid), intent(in) :: grid_in, grid_out
+    INTEGER,               INTENT(IN   ) :: IP, IPOPT(20), IBI(KM)
+    INTEGER,               INTENT(IN   ) :: KM, MI, MO
+    INTEGER,               INTENT(  OUT) :: IBO(KM), IRET, NO
+    !
+    LOGICAL*1,             INTENT(IN   ) :: LI(MI,KM)
+    LOGICAL*1,             INTENT(  OUT) :: LO(MO,KM)
+    !
+    REAL,                  INTENT(IN   ) :: UI(MI,KM),VI(MI,KM)
+    REAL,                  INTENT(INOUT) :: CROT(MO),SROT(MO)
+    REAL,                  INTENT(INOUT) :: RLAT(MO),RLON(MO)
+    REAL,                  INTENT(  OUT) :: UO(MO,KM),VO(MO,KM)
+
+    select case(ip)
+    case(BILINEAR_INTERP_ID)
+       CALL interpolate_bilinear(IPOPT,grid_in,grid_out, &
+            MI,MO,KM,IBI,LI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case(BICUBIC_INTERP_ID)
+       CALL interpolate_bicubic(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case(NEIGHBOR_INTERP_ID)
+       CALL interpolate_neighbor(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case(BUDGET_INTERP_ID)
+       CALL interpolate_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case(SPECTRAL_INTERP_ID)
+       CALL interpolate_spectral(IPOPT,grid_in,grid_out, &
+            MI,MO,KM,IBI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case(NEIGHBOR_BUDGET_INTERP_ID)
+       CALL interpolate_neighbor_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
+            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    case default
+       print *, "unrecognized interpolation option: ", ip
+       error stop
+       ! IF(IGDTNUMO.GE.0) NO=0
+       ! DO K=1,KM
+       !    IBO(K)=1
+       !    DO N=1,NO
+       !       LO(N,K)=.FALSE.
+       !       UO(N,K)=0.
+       !       VO(N,K)=0.
+       !    ENDDO
+       ! ENDDO
+       ! IRET=1
+    end select
+
+  end subroutine ipolatev_grid
+
 
   SUBROUTINE IPOLATEV_grib2(IP,IPOPT,IGDTNUMI,IGDTMPLI,IGDTLENI, &
        IGDTNUMO,IGDTMPLO,IGDTLENO, &
@@ -354,51 +410,11 @@ contains
 
     grid_in = init_grid(desc_in)
     grid_out = init_grid(desc_out)
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  BILINEAR INTERPOLATION
-    IF(IP.EQ.0) THEN
-       CALL interpolate_bilinear(IPOPT,grid_in,grid_out, &
-            MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
-    ELSEIF(IP.EQ.1) THEN
-      CALL interpolate_bicubic(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR INTERPOLATION
-    ELSEIF(IP.EQ.2) THEN
-       CALL interpolate_neighbor(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
 
-       !  BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.3) THEN
-       CALL interpolate_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       !  SPECTRAL INTERPOLATION
-    ELSEIF(IP.EQ.4) THEN
-       CALL interpolate_spectral(IPOPT,grid_in,grid_out, &
-            MI,MO,KM,IBI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+    CALL ipolatev_grid(ip,IPOPT,grid_in,grid_out, &
+         MI,MO,KM,IBI,LI,UI,VI,&
+         NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
 
-       !  NEIGHBOR-BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.6) THEN
-       CALL interpolate_neighbor_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       !  UNRECOGNIZED INTERPOLATION METHOD
-    ELSE
-       IF(IGDTNUMO.GE.0) NO=0
-       DO K=1,KM
-          IBO(K)=1
-          DO N=1,NO
-             LO(N,K)=.FALSE.
-             UO(N,K)=0.
-             VO(N,K)=0.
-          ENDDO
-       ENDDO
-       IRET=1
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   END SUBROUTINE IPOLATEV_GRIB2
 
 
@@ -585,7 +601,7 @@ contains
     type(grib1_descriptor) :: desc_in, desc_out
     class(ip_grid), allocatable :: grid_in, grid_out
 
-     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     IF(KGDSI(1).EQ.203) THEN
        KGDSI11=KGDSI(11)
        KGDSI(11)=IOR(KGDSI(11),256)
@@ -600,60 +616,18 @@ contains
 
     grid_in = init_grid(desc_in)
     grid_out = init_grid(desc_out)
-    
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    !  BILINEAR INTERPOLATION
-    IF(IP.EQ.0) THEN
-       ! CALL POLATEV0(IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,UI,VI,&
-       !      NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       CALL interpolate_bilinear(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BICUBIC INTERPOLATION
-    ELSEIF(IP.EQ.1) THEN
-       CALL interpolate_bicubic(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR INTERPOLATION
-    ELSEIF(IP.EQ.2) THEN
-      CALL interpolate_neighbor(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-           NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.3) THEN
-       CALL interpolate_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  SPECTRAL INTERPOLATION
-    ELSEIF(IP.EQ.4) THEN
-       CALL interpolate_spectral(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  NEIGHBOR-BUDGET INTERPOLATION
-    ELSEIF(IP.EQ.6) THEN
-       CALL interpolate_neighbor_budget(IPOPT,grid_in,grid_out,MI,MO,KM,IBI,LI,UI,VI,&
-            NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
-       ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-       !  UNRECOGNIZED INTERPOLATION METHOD
-    ELSE
-       IF(KGDSO(1).GE.0) NO=0
-       DO K=1,KM
-          IBO(K)=1
-          DO N=1,NO
-             LO(N,K)=.FALSE.
-             UO(N,K)=0.
-             VO(N,K)=0.
-          ENDDO
-       ENDDO
-       IRET=1
-    ENDIF
-    ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    CALL ipolatev_grid(ip,IPOPT,grid_in,grid_out, &
+         MI,MO,KM,IBI,LI,UI,VI,&
+         NO,RLAT,RLON,CROT,SROT,IBO,LO,UO,VO,IRET)
+
     IF(KGDSI(1).EQ.203) THEN
        KGDSI(11)=KGDSI11
     ENDIF
     IF(KGDSO(1).EQ.203) THEN
        KGDSO(11)=KGDSO11
     ENDIF
+
   END SUBROUTINE IPOLATEV_GRIB1
 
 
