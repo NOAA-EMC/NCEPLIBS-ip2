@@ -39,15 +39,17 @@ MODULE GDSWZD_MOD
 
   PRIVATE
 
+  public :: GDSWZD_2D_ARRAY_grib1, gdswzd_grib1, gdswzd
+
   INTERFACE GDSWZD
      MODULE PROCEDURE GDSWZD_1D_ARRAY
      MODULE PROCEDURE GDSWZD_2D_ARRAY
      MODULE PROCEDURE GDSWZD_SCALAR
      module procedure gdswzd_grib1
+     module procedure GDSWZD_2D_ARRAY_grib1
      module procedure gdswzd_grid
   END INTERFACE GDSWZD
 
-  PUBLIC                       :: GDSWZD
 
 CONTAINS
 
@@ -644,5 +646,35 @@ CONTAINS
          CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
 
   END SUBROUTINE GDSWZD_grib1
+
+
+    SUBROUTINE GDSWZD_2d_array_grib1(KGDS,IOPT,NPTS,FILL,XPTS,YPTS,RLON,RLAT,NRET, &
+       CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+   
+    !$$$
+    INTEGER,        INTENT(IN   ) :: IOPT, KGDS(200), NPTS
+    INTEGER,        INTENT(  OUT) :: NRET
+    !
+    REAL,           INTENT(IN   ) :: FILL
+    REAL,           INTENT(INOUT) :: RLON(:,:),RLAT(:,:)
+    REAL,           INTENT(INOUT) :: XPTS(:,:),YPTS(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: CROT(:,:),SROT(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: XLON(:,:),XLAT(:,:)
+    REAL, OPTIONAL, INTENT(  OUT) :: YLON(:,:),YLAT(:,:),AREA(:,:)
+
+    
+    type(grib1_descriptor) :: desc
+    class(ip_grid), allocatable :: grid
+
+    desc = init_descriptor(kgds)
+    grid = init_grid(desc)
+    
+    call gdswzd_grid(grid,IOPT,NPTS,FILL, &
+         XPTS,YPTS,RLON,RLAT,NRET, &
+         CROT,SROT,XLON,XLAT,YLON,YLAT,AREA)
+
+  END SUBROUTINE GDSWZD_2d_array_grib1
+
+
 
 END MODULE GDSWZD_MOD
