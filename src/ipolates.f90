@@ -12,7 +12,7 @@ module ipolates_mod
   implicit none
 
   private
-  public :: ipolates
+  public :: ipolates, ipolates_grib1, ipolates_grib2
 
   interface ipolates
      module procedure ipolates_grib1
@@ -63,8 +63,7 @@ contains
        error stop
     end select
 
-  end subroutine ipolates_grid
-  
+  end subroutine ipolates_grid  
 
   SUBROUTINE IPOLATES_grib1(IP,IPOPT,KGDSI,KGDSO,MI,MO,KM,IBI,LI,GI, &
        NO,RLAT,RLON,IBO,LO,GO,IRET)

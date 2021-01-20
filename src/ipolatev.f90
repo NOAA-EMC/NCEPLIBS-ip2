@@ -14,7 +14,7 @@ module ipolatev_mod
   implicit none
 
   private
-  public :: ipolatev
+  public :: ipolatev, ipolatev_grib1, ipolatev_grib2
 
   interface ipolatev
      module procedure ipolatev_grib1
