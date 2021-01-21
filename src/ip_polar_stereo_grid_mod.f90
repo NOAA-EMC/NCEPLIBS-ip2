@@ -62,6 +62,8 @@ CONTAINS
       HI=(-1.)**ISCAN
       HJ=(-1.)**(1-JSCAN)
 
+      IF(self%H.EQ.-1)self%ORIENT=self%ORIENT+180.
+
       self%DXS=DX*HI
       self%DYS=DY*HJ
 
