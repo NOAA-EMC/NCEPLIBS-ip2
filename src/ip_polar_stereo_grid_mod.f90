@@ -1,7 +1,7 @@
 module ip_polar_stereo_grid_mod
   use ip_grid_descriptor_mod
   use ip_grid_mod
-  use constants_mod, only: DPR, PI, PI2, PI4
+  use constants_mod, only: DPR, PI, PI2, PI4, RERTH_WGS84, E2_WGS84
   use earth_radius_mod
   implicit none
 
@@ -35,13 +35,19 @@ CONTAINS
     integer :: iproj, iscan, jscan
 
     associate(kgds => g1_desc%gds)
-      self%rerth = 6.3712E6
-      self%eccen_squared = 0.00669437999013 !wgs84 datum
       self%ELLIPTICAL=MOD(KGDS(6)/64,2).EQ.1
+      
+      if (.not. self%elliptical) then
+         self%rerth = 6.3712E6
+         self%eccen_squared = 0d0
+      else
+         self%rerth = RERTH_WGS84
+         self%eccen_squared = E2_WGS84 !wgs84 datum
+      end if
 
       self%IM=KGDS(2)
       self%JM=KGDS(3)
-
+      
       self%RLAT1=KGDS(4)*1.E-3
       self%RLON1=KGDS(5)*1.E-3
 
