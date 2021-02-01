@@ -215,8 +215,9 @@ contains
        IF(NO.EQ.0) then
           IRET=3
        end if
-       class default
-       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
+    class default
+       allocate(grid_out2, source = grid_out)
+       CALL GDSWZD(grid_out2, 0,MO,FILL,XPTS,YPTS,RLON,RLAT,NO)
        IF(NO.EQ.0) IRET=3
     end select
 
@@ -261,7 +262,6 @@ contains
     ENDDO
     ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     !  LOOP OVER SAMPLE POINTS IN OUTPUT GRID BOX
-    !CALL IJKGDS0(IGDTNUMI,IGDTMPLI,IGDTLENI,IJKGDSA)
     DO NB=1,NB3
        !  LOCATE INPUT POINTS AND COMPUTE THEIR WEIGHTS
        JB=(NB-1)/NB2-NB1
@@ -280,7 +280,7 @@ contains
              YPTB(N)=YPTS(N)+JB*RB2
           ENDDO
           !$OMP END PARALLEL DO
-          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
+          CALL GDSWZD(grid_out2, 1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB,RLOB,RLAB,NV)
           IF(IRET.EQ.0.AND.NV.EQ.0.AND.LB.EQ.0) IRET=2
           !$OMP PARALLEL DO PRIVATE(N,XI,YI,I1,I2,J1,J2,XF,YF) SCHEDULE(STATIC)
@@ -395,7 +395,7 @@ contains
                       IF(LI(NX,K).OR.IBI(K).EQ.0) THEN
                          GO(N,K)=GI(NX,K)
                          LO(N,K)=.TRUE.
-                         GOTO 99              
+                         CYCLE N_LOOP           
                       ENDIF
                    ENDIF
                 ENDDO SPIRAL_LOOP
@@ -409,11 +409,11 @@ contains
              IBO(K)=1
              GO(N,K)=0.
           ENDIF
-99        CONTINUE 
        ENDDO N_LOOP
        !$OMP END PARALLEL DO
     ENDDO KM_LOOP
-    select type(grid_out)
+    
+    select type(grid_out2)
     type is(ip_equid_cylind_grid)
        CALL POLFIXS(NO,MO,KM,RLAT,IBO,LO,GO)
     end select
@@ -616,7 +616,7 @@ contains
     REAL                            :: XPTB(MO),YPTB(MO),RLOB(MO),RLAB(MO)
 
     class(ip_grid_descriptor), allocatable :: desc_out_subgrid
-    class(ip_grid), allocatable :: subgrid
+    class(ip_grid), allocatable :: grid_out2
 
     IRET=0
 
@@ -627,12 +627,13 @@ contains
        desc_out_subgrid = grid_out%descriptor
        desc_out_subgrid%grid_num = 255 + grid_out%descriptor%grid_num
 
-       subgrid = init_grid(desc_out_subgrid)
-       CALL GDSWZD(subgrid,-1,MO,FILL,XPTS,YPTS, &
+       grid_out2 = init_grid(desc_out_subgrid)
+       CALL GDSWZD(grid_out2,-1,MO,FILL,XPTS,YPTS, &
             RLON,RLAT,NO,CROT,SROT)
        IF(NO.EQ.0) IRET=3
-       class default
-       CALL GDSWZD(grid_out, 0,MO,FILL,XPTS,YPTS, &
+    class default
+       allocate(grid_out2, source = grid_out)
+       CALL GDSWZD(grid_out2, 0,MO,FILL,XPTS,YPTS, &
             RLON,RLAT,NO,CROT,SROT)
     end select
 
@@ -717,7 +718,7 @@ contains
              YPTB(N)=YPTS(N)+JB*RB2
           ENDDO
           !$OMP END PARALLEL DO
-          CALL GDSWZD(grid_out, 1,NO,FILL,XPTB,YPTB, &
+          CALL GDSWZD(grid_out2, 1,NO,FILL,XPTB,YPTB, &
                RLOB,RLAB,NV)
           CALL GDSWZD(grid_in,-1,NO,FILL,XPTB,YPTB, &
                RLOB,RLAB,NV)
@@ -852,7 +853,7 @@ contains
        !$OMP END PARALLEL DO
     ENDDO
 
-    select type(grid_out)
+    select type(grid_out2)
     type is(ip_equid_cylind_grid)
        CALL POLFIXV(NO,MO,KM,RLAT,RLON,IBO,LO,UO,VO)
     end select
