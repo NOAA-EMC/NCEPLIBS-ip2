@@ -2,11 +2,17 @@
 
 # Interpolation Library 2
 
-The NCEP general interpolation library 2 (ip2lib) contains Fortran 90
+@note The NCEPLIBS-ip2 library has been deprecated. Please do not use
+it in new work. All functionality from the NCEPLIBS-ip2 library has
+been merged into the
+[NCEPLIBS-ip](https://github.com/NOAA-EMC/NCEPLIBS-ip) library. Please
+use the NCEPLIBS-ip library for all future development. No further
+release of NCEPLIBS-ip2 will be made.
+
+The NCEP general interpolation library 2 contains Fortran 90
 subprograms to be used for interpolating between nearly all grids used
 at NCEP. The library is particularly efficient when interpolating many
-fields at one time. The library has been extensively tested with AIX
-and Intel Fortran compilers.
+fields at one time.
 
 This is part of the [NCEPLIBS](https://github.com/NOAA-EMC/NCEPLIBS)
 project.
