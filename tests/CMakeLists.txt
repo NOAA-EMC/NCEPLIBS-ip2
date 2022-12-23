@@ -5,7 +5,7 @@ execute_process(COMMAND cmake -E create_symlink
   "${CMAKE_CURRENT_BINARY_DIR}/data" # New name
   )
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
+if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|IntelLLVM)$")
   set(CMAKE_Fortran_FLAGS "-r8 -g -traceback -assume byterecl")
   set(CMAKE_C_FLAGS "-std=c99")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU)$")
