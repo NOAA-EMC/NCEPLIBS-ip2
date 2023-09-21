@@ -1,13 +1,11 @@
-![Status](https://github.com/NOAA-EMC/NCEPLIBS-sp/workflows/Build%20and%20Test/badge.svg)
-
 # Interpolation Library 2
 
-@note The NCEPLIBS-ip2 library has been deprecated. Please do not use
-it in new work. All functionality from the NCEPLIBS-ip2 library has
+**The NCEPLIBS-ip2 library has been deprecated. Please do not use
+it in new work.** All functionality from the NCEPLIBS-ip2 library has
 been merged into the
 [NCEPLIBS-ip](https://github.com/NOAA-EMC/NCEPLIBS-ip) library. Please
-use the NCEPLIBS-ip library for all future development. No further
-release of NCEPLIBS-ip2 will be made.
+use the NCEPLIBS-ip library for all future development. **No further
+release of NCEPLIBS-ip2 will be made.**
 
 The NCEP general interpolation library 2 contains Fortran 90
 subprograms to be used for interpolating between nearly all grids used
